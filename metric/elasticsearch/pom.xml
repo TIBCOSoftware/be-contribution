@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.tibco.metrics.store</groupId>
+  <artifactId>cep-elasticsearch</artifactId>
+  <version>1.0.0</version>
+  <name>elasticsearch</name>
+  
+  <properties>
+    <be.home>/Users/vpatil/Work/svn/be/trunk/build/Enterprise/exp/macosx/x86_64/dbg</be.home>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+  </properties>
+    
+  <dependencies>
+  	<dependency>
+  		<groupId>org.elasticsearch.client</groupId>
+  		<artifactId>elasticsearch-rest-high-level-client</artifactId>
+  		<version>7.10.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.tibco.cep.common</groupId>
+  		<artifactId>cep-common</artifactId>
+  		<version>6.0</version>
+  		<scope>system</scope>
+  		<systemPath>${be.home}/lib/cep-common.jar</systemPath>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.tibco.cep.kernel</groupId>
+  		<artifactId>cep-kernel</artifactId>
+  		<version>6.0</version>
+  		<scope>system</scope>
+  		<systemPath>${be.home}/lib/cep-kernel.jar</systemPath>
+  	</dependency>
+  </dependencies>
+</project>

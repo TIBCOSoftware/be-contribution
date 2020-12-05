@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metrics-store>
+	<!--Type of metrics store-->
+    <type>Elasticsearch</type>
+    <!--Display name of metrics store-->
+    <label>Elasticsearch</label>
+    <!--The class that implements com.tibco.cep.runtime.service.cluster.metric.MetricsStore, initialized at runtime-->
+    <class>com.tibco.metric.store.elastic.ElasticSearchMetricsStoreProvider</class>
+    <description>Elasticsearch is a open source, distributed, search and analytics engine built on top of Apache Lucene</description>
+    <version>1.0.0</version>
+    <!--The input required by the metrics store provider e.g connection details, ssl config etc.-->
+    <properties>
+        <property name="host" displayName="Host" type="String" default="localhost" mandatory="true"/>
+        <property name="port" displayName="Port" type="Integer" default="9200" mandatory="true"/>
+        <property name="acknowledgement-timeout" displayName="Acknowledgement Timeout(ms)" type="Integer" default="2000"/>
+        <property name="master-timeout" displayName="Master Timeout(ms)" type="Integer" default="2000"/>
+        <property name="active-shard-response-count" displayName="Active Shard Response Count" type="Integer" default="1"/>
+        <property name="username" displayName="User Name" type="String" default="" mask="false"/>
+	    <property name="password" displayName="Password" type="String" default="" mask="true"/>
+        <property name="access-token" displayName="Access Token" type="String" default="" mask="false"/>
+	    <property name="api-key" displayName="API Key" type="String" default="" mask="false"/>
+	    <property name="api-secret" displayName="API Secret" type="String" default="" mask="false"/>
+	    <security>
+		    <property name="trust-store-location" displayName="Trusted Certificates Location" type="File" directory="true" default="" mask="" mandatory="true"/>
+			<property name="trust-store-pwd" displayName="Trust Store Password" type="String" default="" mask="true" mandatory="false"/>
+		</security>
+    </properties>
+    <!--The input required for the entity-set, these properties will apply to all entities-->
+    <entity-set>
+	    <!--The input required for each entity-->
+	    <entity>
+	        <property name="no-of-shards" displayName="Number of Shards" type="String" default="1"/>
+	        <property name="no-of-replicas" displayName="Number of Replica" type="String" default="1"/>
+	    </entity>
+    </entity-set>
+</metrics-store>
