@@ -4,9 +4,9 @@ This repository is to add various contributions across different modules within 
 
 Below are some modules where contributions are available and/or can be added,
 
-* [Store]() - Persistent store implementations.
-* [Metric]() - Metric store implementations.
-* [Channel]() - Channels implementations.
+* [Store](https://github.com/tibco/be-contribution/tree/main/store) - Persistent store implementations.
+* [Metric](https://github.com/tibco/be-contribution/tree/main/metric) - Metric store implementations.
+* [Channel](https://github.com/tibco/be-contribution/tree/main/channel) - Channels implementations.
 
  ## Pre-requisites
 
@@ -26,12 +26,13 @@ Below are some modules where contributions are available and/or can be added,
 
 	git clone https://github.com/tibco/be-contribution.git
 
- Every contribution has a bundled jar which can be used as-is. It should be under '/<modules>/<contribution>/target'. E.g.
-    cd /metric/elasticsearch/target
+ Every contribution has a bundled jar which can be used as-is. It should be under '/module-name/contribution-name/target'. E.g.
+ 
+ 	cd /metric/elasticsearch/target
 
   ### Building
 
-  However, if you want to make any kind of changes around implementation and/or configuration, you can open the maven project into your choice of editor (Eclipse/IntelliJ/etc) and make appropriate changes.
+  If you want to make any kind of changes around implementation and/or configuration, you can open the maven project into your choice of editor (Eclipse/IntelliJ/etc) and make appropriate changes.
 
   * Edit `pom.xml` file,
   	- Set <be.home> path to point to the TIBCO Business Events installation home.
@@ -41,7 +42,7 @@ Below are some modules where contributions are available and/or can be added,
 
 	mvn clean package
 
-  A new jar should be created under '/<modules>/<contribution>/target'.
+  A new jar should be created under '/modules-name/contribution-name/target'.
 
 
 ## Contributing
