@@ -16,7 +16,7 @@ Below are some modules where contributions are available and/or can be added,
 
  * All contributions will be maven projects. Download/Install Maven and setup appropriate M2_HOME and PATH environment variables. Existing contribution use Maven 3.5.4. So use maven 3.5.4 or above.
 
- * Install TIBCO Business Events 6.1.0 or above.
+ * Install TIBCO Business Events 6.1.0 and above.
 
  * Add unit tests for each contribution.
 

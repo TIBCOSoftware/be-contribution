@@ -12,7 +12,7 @@ All metric store contributions that work with TIBCO BusinessEvents 6.1.0 and abo
 
 ## Getting Started
 
-* If a new metric store jar is needed, follow these [instructions](https://github.com/tibco/be-contribution/edit/main/README.md) to clone/update/build a new jar. 
+* If a new metric store jar is needed, follow these [instructions](https://github.com/tibco/be-contribution) to clone/update/build a new jar.
 
 * Follow the [steps]() outlined in the developer guide to setup and make the new store available for use and configuration. [TODO - Add appropriate link]
 
