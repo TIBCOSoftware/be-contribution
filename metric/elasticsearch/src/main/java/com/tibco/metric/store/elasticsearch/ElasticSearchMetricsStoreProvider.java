@@ -3,6 +3,7 @@
  */
 package com.tibco.metric.store.elasticsearch;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -34,6 +35,7 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;
 
@@ -124,6 +126,8 @@ public class ElasticSearchMetricsStoreProvider implements MetricsStoreProvider<E
 					return true;
 				}
 			}));
+		} else {
+			restBuilder = RestClient.builder(new HttpHost(host, port, "http"));
 		}
 		
 		elasticClient = new RestHighLevelClient(restBuilder);
@@ -156,29 +160,41 @@ public class ElasticSearchMetricsStoreProvider implements MetricsStoreProvider<E
 	
 	private void createIndexes() throws Exception {
 		appMetricsConfig.getEntities().forEach(entityUri -> {
-			logger.log(Level.INFO, "Creating index for Entity[%s]", entityUri);
-			CreateIndexRequest createIndexReq = new CreateIndexRequest(getIndexName(entityUri));
-			
-			int numOfShards = Integer.parseInt(appMetricsConfig.getAppMetricsEntityConfig(entityUri).getProperty("no-of-shards", "1"));
-			int numOfReplicas = Integer.parseInt(appMetricsConfig.getAppMetricsEntityConfig(entityUri).getProperty("no_of_replicas", "1"));
-			createIndexReq.settings(Settings.builder()
-					.put("index.number_of_shards", numOfShards)
-					.put("index.number_of_replicas", numOfReplicas));
-			
-			createIndexReq.setTimeout(TimeValue.timeValueMillis(ackTimeout));
-			createIndexReq.setMasterTimeout(TimeValue.timeValueMillis(masterTimeout));
-			createIndexReq.waitForActiveShards(ActiveShardCount.from(activeShardResponseCount));
+			boolean indexExist = false;
+			String indexName = getIndexName(entityUri);
+			GetIndexRequest getIndexReq = new GetIndexRequest(indexName);
 			try {
-				CreateIndexResponse createIndexResponse = elasticClient.indices().create(createIndexReq, RequestOptions.DEFAULT);
-				if (!createIndexResponse.isAcknowledged()) throw new Exception(String.format("Error creating index[%s] for entity[%s]", createIndexResponse.index(), entityUri));
-			} catch (Exception exception) {
-				throw new RuntimeException(exception);
+				indexExist = elasticClient.indices().exists(getIndexReq, RequestOptions.DEFAULT);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			
+			if(!indexExist) {
+				logger.log(Level.INFO, "Creating index for Entity[%s]", entityUri);
+				CreateIndexRequest createIndexReq = new CreateIndexRequest(getIndexName(entityUri).toLowerCase());
+				
+				int numOfShards = Integer.parseInt(appMetricsConfig.getAppMetricsEntityConfig(entityUri).getProperty("no-of-shards", "1"));
+				int numOfReplicas = Integer.parseInt(appMetricsConfig.getAppMetricsEntityConfig(entityUri).getProperty("no_of_replicas", "1"));
+				createIndexReq.settings(Settings.builder()
+						.put("index.number_of_shards", numOfShards)
+						.put("index.number_of_replicas", numOfReplicas));
+				
+				createIndexReq.setTimeout(TimeValue.timeValueMillis(ackTimeout));
+				createIndexReq.setMasterTimeout(TimeValue.timeValueMillis(masterTimeout));
+				createIndexReq.waitForActiveShards(ActiveShardCount.from(activeShardResponseCount));
+				try {
+	
+					CreateIndexResponse createIndexResponse = elasticClient.indices().create(createIndexReq, RequestOptions.DEFAULT);
+					if (!createIndexResponse.isAcknowledged()) throw new Exception(String.format("Error creating index[%s] for entity[%s]", createIndexResponse.index(), entityUri));
+				} catch (Exception exception) {
+					throw new RuntimeException(exception);
+				}
 			}
 		});
 	}
 	
 	private String getIndexName(String entityUri) {
-		return entityUri.substring(1).replace("/", "_") + "_index";
+		return entityUri.substring(1).replace("/", "_").concat("_index").toLowerCase();
 	}
 
 	@Override

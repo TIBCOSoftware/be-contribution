@@ -114,6 +114,6 @@ public class ElasticSearchMetricsRecordBuilder implements MetricsRecordBuilder<E
 	}
 	
 	private String getIndexName(String entityUri) {
-		return entityUri.substring(1).replace("/", "_") + "_index";
+		return entityUri.substring(1).replace("/", "_").concat("_index").toLowerCase();
 	}
 }
