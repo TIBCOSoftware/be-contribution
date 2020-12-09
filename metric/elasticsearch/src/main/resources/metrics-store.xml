@@ -5,7 +5,7 @@
     <!--Display name of metrics store-->
     <label>Elasticsearch</label>
     <!--The class that implements com.tibco.cep.runtime.service.cluster.metric.MetricsStore, initialized at runtime-->
-    <class>com.tibco.metric.store.elastic.ElasticSearchMetricsStoreProvider</class>
+    <class>com.tibco.metric.store.elasticsearch.ElasticSearchMetricsStoreProvider</class>
     <description>Elasticsearch is a open source, distributed, search and analytics engine built on top of Apache Lucene</description>
     <version>1.0.0</version>
     <!--The input required by the metrics store provider e.g connection details, ssl config etc.-->
