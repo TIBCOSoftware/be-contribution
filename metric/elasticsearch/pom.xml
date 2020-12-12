@@ -32,4 +32,40 @@
   		<systemPath>${be.home}/lib/cep-kernel.jar</systemPath>
   	</dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <excludes>
+                  <!-- Duplicate BE jars -->
+                  <exclude>com.tibco.cep.common:cep-common</exclude>
+				  <exclude>com.tibco.cep.kernel:cep-kernel</exclude>
+				  <!-- Duplicate/conflicting tpcl jars -->
+				  <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+				  <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</exclude>
+				  <exclude>org.apache.logging.log4j:log4j-api</exclude>
+				  <exclude>org.apache.httpcomponents:httpclient</exclude>
+				  <exclude>org.apache.httpcomponents:httpcore</exclude>
+				  <exclude>org.apache.httpcomponents:httpcore-nio</exclude>
+				  <exclude>commons-codec:commons-codec</exclude>
+				  <exclude>commons-logging:commons-logging</exclude>
+                </excludes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

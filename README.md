@@ -16,9 +16,11 @@ Below are some modules where contributions are available and/or can be added,
 
  * All contributions will be maven projects. Download/Install Maven and setup appropriate M2_HOME and PATH environment variables. Existing contribution use Maven 3.5.4. So use maven 3.5.4 or above.
 
+ * Install docker, since most integration test will need to create a light throw away container.
+
  * Install TIBCO Business Events 6.1.0 and above.
 
- * Add unit tests for each contribution.
+ * Add necessary unit and/or integration tests for each contribution.
 
  ## Getting Started
 
@@ -26,7 +28,7 @@ Below are some modules where contributions are available and/or can be added,
 
 	git clone https://github.com/tibco/be-contribution.git
 
- Every contribution has a bundled jar which can be used as-is. It should be under '/module-name/contribution-name/target'. E.g.
+ Every contribution has a bundled jar which can be used as-is. By default this will be an 'uber jar' so it should have all the necessary dependencies. It should be under '/module-name/contribution-name/target'. E.g. For Elasticsearch 'metric' store,
  
  	cd /metric/elasticsearch/target
 
@@ -37,10 +39,11 @@ Below are some modules where contributions are available and/or can be added,
   * Edit `pom.xml` file,
   	- Set <be.home> path to point to the TIBCO Business Events installation home.
     - Any third-party dependency version changes if needed.
+    - Exclude any conflicting/duplicate jars off BusinessEvents and/or thirdparty dependencies from being packaged into the 'uber jar'. Examples of conflicting/duplicate jars are, jackson, httpclient, log4j, etc, these are already available under 'BE_HOME/lib/tpcl/ext', so it would be best to avoid packaging them again to prevent any class loading as well as jar size related issues.
 
   * Once done, open the command prompt and run the following command to build a new jar,
 
-	mvn clean package
+	mvn clean install
 
   A new jar should be created under '/modules-name/contribution-name/target'.
 
