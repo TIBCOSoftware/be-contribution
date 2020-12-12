@@ -2,8 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.tibco.metrics.store</groupId>
   <artifactId>cep-elasticsearch</artifactId>
-  <version>1.0.0</version>
   <name>elasticsearch</name>
+  <version>1.0.0</version>
   
   <properties>
     <be.home>//Path to point to the TIBCO Business Events installation home</be.home>
@@ -15,19 +15,19 @@
   	<dependency>
   		<groupId>org.elasticsearch.client</groupId>
   		<artifactId>elasticsearch-rest-high-level-client</artifactId>
-  		<version>7.10.0</version>
+  		<version>7.10.1</version>
   	</dependency>
   	<dependency>
-  		<groupId>com.tibco.cep.common</groupId>
+  		<groupId>com.tibco.businessevents</groupId>
   		<artifactId>cep-common</artifactId>
-  		<version>6.0</version>
+  		<version>6.1</version>
   		<scope>system</scope>
   		<systemPath>${be.home}/lib/cep-common.jar</systemPath>
   	</dependency>
   	<dependency>
-  		<groupId>com.tibco.cep.kernel</groupId>
+  		<groupId>com.tibco.businessevents</groupId>
   		<artifactId>cep-kernel</artifactId>
-  		<version>6.0</version>
+  		<version>6.1</version>
   		<scope>system</scope>
   		<systemPath>${be.home}/lib/cep-kernel.jar</systemPath>
   	</dependency>
