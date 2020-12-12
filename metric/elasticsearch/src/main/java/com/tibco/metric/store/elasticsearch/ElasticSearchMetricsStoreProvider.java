@@ -162,14 +162,17 @@ public class ElasticSearchMetricsStoreProvider implements MetricsStoreProvider<E
 		appMetricsConfig.getEntities().forEach(entityUri -> {
 			boolean indexExist = false;
 			String indexName = getIndexName(entityUri);
+			
 			GetIndexRequest getIndexReq = new GetIndexRequest(indexName);
+			getIndexReq.setTimeout(TimeValue.timeValueMillis(ackTimeout));
+			getIndexReq.setMasterTimeout(TimeValue.timeValueMillis(masterTimeout));
 			try {
 				indexExist = elasticClient.indices().exists(getIndexReq, RequestOptions.DEFAULT);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 			
-			if(!indexExist) {
+			if (!indexExist) {
 				logger.log(Level.INFO, "Creating index for Entity[%s]", entityUri);
 				CreateIndexRequest createIndexReq = new CreateIndexRequest(getIndexName(entityUri).toLowerCase());
 				
@@ -213,5 +216,9 @@ public class ElasticSearchMetricsStoreProvider implements MetricsStoreProvider<E
 	public void reconnectOnError(Exception exception) throws Exception {
 		close();
 		connect();		
+	}
+	
+	public RestHighLevelClient getElasticsearchClient() {
+		return elasticClient;
 	}
 }

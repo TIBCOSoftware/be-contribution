@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.DocWriteRequest.OpType;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.update.UpdateRequest;
@@ -100,11 +101,11 @@ public class ElasticSearchMetricsRecordBuilder implements MetricsRecordBuilder<E
 
 	@Override
 	public ElasticSearchRecord build() {
-		String idValue = (Id.useLegacyID) ? String.valueOf((Long)properties.get(FIELD_NAME_ID)) : (String) properties.get(FIELD_NAME_ID);
+		String idValue = (Id.useLegacyID) ? String.valueOf((Long)properties.remove(FIELD_NAME_ID)) : (String) properties.remove(FIELD_NAME_ID);
 
 		DocWriteRequest<?> request = null;
 		switch(opType) {
-		case ADD: request = new IndexRequest(indexName).id(idValue).source(properties); break;
+		case ADD: request = new IndexRequest(indexName).id(idValue).opType(OpType.CREATE).source(properties); break;
 		case MODIFY: request = new UpdateRequest(indexName, idValue).doc(properties); break;
 		case DELETE: request = new DeleteRequest(indexName, idValue); break;
 		default: throw new RuntimeException(String.format("Invalid/null operation type[%s]", opType));
