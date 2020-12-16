@@ -6,3 +6,4 @@
 aws-sqs.eml
 aws-sqs.userlibraries
 dependency-reduced-pom.xml
+.gitignore
