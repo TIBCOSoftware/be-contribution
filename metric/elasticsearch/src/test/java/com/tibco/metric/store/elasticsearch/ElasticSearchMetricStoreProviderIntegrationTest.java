@@ -157,7 +157,7 @@ public class ElasticSearchMetricStoreProviderIntegrationTest {
 	
 	private Book getRecord(String entityUri, Object id) {
 		try {
-			Thread.sleep(700);
+			Thread.sleep(1000);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}

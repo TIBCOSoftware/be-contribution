@@ -12,6 +12,8 @@ Covers all persistent store contributions that work with TIBCO BusinessEvents 6.
 
 ## Getting Started
 
+* Follow the above documents to create add a new store implementation.
+
 * If a new store jar is needed, follow these [instructions](https://github.com/tibco/be-contribution) to clone/update/build a new jar.
 
 * Follow the [steps]() outlined in the developer guide to setup and make the new store available for use and configuration. [TODO - Add appropriate link]
