@@ -4,92 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.tibco.businessevents.contribution</groupId>
+    <!-- parent pom -->
+    <parent>
+        <groupId>com.tibco.businessevents</groupId>
+        <artifactId>channel</artifactId>
+        <version>1.0</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <groupId>com.tibco.businessevents</groupId>
     <artifactId>aws-sqs</artifactId>
+    <name>aws-sqs</name>
     <version>1.0</version>
 
-    <properties>
-        <be.home>/opt/tibco/be61/be/6.1</be.home>
-        <be.version>6.1</be.version>
-        <junit.verion>5.4.2</junit.verion>
-        <testcontainer.verion>1.15.0</testcontainer.verion>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.source>11</maven.compiler.source>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>bom</artifactId>
-                <version>2.15.15</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
-
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>*:cep-*</exclude>
-                                </excludes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-files-on-build</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${be.home}/lib/ext/tpcl</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>target</directory>
-                                    <include>${project.build.finalName}.${project.packaging}</include>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-        </plugins>
-    </build>
-
     <dependencies>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>bom</artifactId>
+            <version>2.15.15</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/sqs -->
         <dependency>
@@ -98,7 +33,6 @@
             <version>2.15.47</version>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/sts -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -106,30 +40,19 @@
             <version>2.15.45</version>
         </dependency>
 
-        <!-- System dependencies -->
+        <!-- BusinessEvents System dependencies -->
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-common</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/cep-common.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-kernel</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/cep-kernel.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-channel-api</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/cep-channel-api.jar</systemPath>
         </dependency>
-
-
     </dependencies>
 
 </project>

@@ -2,7 +2,7 @@
 
 All channel contributions that work with TIBCO BusinessEvents 5.6.0 and above. Below is the list of currently available channels,
 
-* [aws-sqs]()
+* [aws-sqs](https://github.com/tibco/be-contribution/tree/main/channel/aws-sqs)
 
 ## Pre-requisites
 

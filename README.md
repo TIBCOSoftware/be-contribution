@@ -62,7 +62,7 @@ Below are some modules where contributions are available and/or can be added,
     mvn clean install
 ```
   
-  A new jar should be created under '/modules-name/contribution-name/target'. E.g. /metric/elasticsearch/target.
+  * A new jar should be created under '/modules-name/contribution-name/target'. E.g. /metric/elasticsearch/target.
 
 
 ## Contributing
