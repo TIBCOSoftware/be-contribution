@@ -7,6 +7,7 @@ Below are some modules where contributions are available and/or can be added,
 * [Store](https://github.com/tibco/be-contribution/tree/main/store) - Persistent store implementations.
 * [Metric](https://github.com/tibco/be-contribution/tree/main/metric) - Metric store implementations.
 * [Channel](https://github.com/tibco/be-contribution/tree/main/channel) - Channels implementations.
+* [Catalog](https://github.com/tibco/be-contribution/tree/main/catalog) - Catalog functions implementations.
 
  ## Pre-requisites
 
