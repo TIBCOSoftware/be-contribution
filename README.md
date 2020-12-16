@@ -12,13 +12,13 @@ Below are some modules where contributions are available and/or can be added,
 
  Some pre-requisites that generically apply to all contributions existing or new. If there are conflicts/changes/limitations, call them out in individual contribution README's.
 
- * Download/install Java and setup appropriate JAVA_HOME and PATH environment variables. Existing contributions use Java 11. So use Java 11 or above.
+ * Download/install Java and setup appropriate JAVA_HOME and PATH environment variables. Existing contributions use `Java 11`. So use Java 11 or above.
 
- * All contributions will be maven projects. Download/Install Maven and setup appropriate M2_HOME and PATH environment variables. Existing contribution use Maven 3.5.4. So use maven 3.5.4 or above.
+ * All contributions will be maven projects. Download/Install Maven and setup appropriate M2_HOME and PATH environment variables. Existing contribution use `Maven 3.5.4`. So use maven 3.5.4 or above.
 
  * Install docker, since most integration test will need to create a light throw away container.
 
- * Install TIBCO BusinessEvents 6.1.0 and above.
+ * Install `TIBCO BusinessEvents 6.1.0` and above.
 
  * Add necessary unit and/or integration tests for each contribution.
 
@@ -29,27 +29,24 @@ Below are some modules where contributions are available and/or can be added,
  git clone https://github.com/tibco/be-contribution.git
  ```
 
- * To use existing contributions
+ * Existing Contribution,
 
-   - Every contribution has a bundled jar which can be used as-is. By default this will be an 'uber jar' so it should have all the necessary dependencies. It should be under '/module-name/contribution-name/target'. E.g. For Elasticsearch 'metric' store,
-  ```
-  cd /metric/elasticsearch/target
-  ```
+   - If you want to make any kind of changes around existing implementation and/or configuration, you can open the maven project into your choice of editor (Eclipse/IntelliJ/etc) and make appropriate changes. 
 
-  - If changes/updates are needed follow the steps outlined in 'Building' section below to create new contribution jar.
+   - Follow the steps outlined in 'Building' section below to create a contribution jar.
 
- * To add a new contribution altogether. 
+ * New Contribution, 
  
    - First step will be to go through existing module specific pre-requite documents and contributions to get a sense of how they are implemented/structured/built.
 
-   - Creat a new maven project. Add it as a child module to the parent module. E.g. 'elasticsearch' metric contribution is marked as a sub module within '/metric/pom.xml'.
+   - Creat a new maven project. Add it as a child module to the parent module. E.g. `elasticsearch` metric contribution is marked as a sub module within '/metric/pom.xml'.
 
    - Finally follow the steps outlined in 'Building' to build the new contribution jar.
    
 
   ### Building
 
-  If you want to make any kind of changes around existing implementation and/or configuration, you can open the maven project into your choice of editor (Eclipse/IntelliJ/etc) and make appropriate changes.
+  Follow the below steps to build a contribution jar,
 
   * Once all changes for existing for additions for any new contributions are done. Edit root `pom.xml` file located under 'be-contribution',
     - Set `<be.home>` path to point to the TIBCO BusinessEvents installation home.
@@ -64,7 +61,7 @@ Below are some modules where contributions are available and/or can be added,
     mvn clean install
 ```
   
-  A new jar should be created under '/modules-name/contribution-name/target'.
+  A new jar should be created under '/modules-name/contribution-name/target'. E.g. /metric/elasticsearch/target.
 
 
 ## Contributing
