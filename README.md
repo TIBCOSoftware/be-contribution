@@ -25,16 +25,18 @@ Below are some modules where contributions are available and/or can be added,
  ## Getting Started
 
  * Clone be-contribution repo,
-
-	 git clone https://github.com/tibco/be-contribution.git
+ ```
+ git clone https://github.com/tibco/be-contribution.git
+ ```
 
  * To use existing contributions
 
    - Every contribution has a bundled jar which can be used as-is. By default this will be an 'uber jar' so it should have all the necessary dependencies. It should be under '/module-name/contribution-name/target'. E.g. For Elasticsearch 'metric' store,
-  
-    cd /metric/elasticsearch/target
+  ```
+  cd /metric/elasticsearch/target
+  ```
 
-    - If changes/updates are needed follow the steps outlined in 'Building' section below to create new contribution jar.
+  - If changes/updates are needed follow the steps outlined in 'Building' section below to create new contribution jar.
 
  * To add a new contribution altogether. 
  
@@ -50,17 +52,18 @@ Below are some modules where contributions are available and/or can be added,
   If you want to make any kind of changes around existing implementation and/or configuration, you can open the maven project into your choice of editor (Eclipse/IntelliJ/etc) and make appropriate changes.
 
   * Once all changes for existing for additions for any new contributions are done. Edit root `pom.xml` file located under 'be-contribution',
-  	- Set <be.home> path to point to the TIBCO BusinessEvents installation home.
+    - Set `<be.home>` path to point to the TIBCO BusinessEvents installation home.
     - Any common third-party dependency version changes if needed.
     - Exclude any conflicting/duplicate jars off BusinessEvents and/or thirdparty dependencies from being packaged into the 'uber jar'. Some obvious ones are already excluded. Examples of conflicting/duplicate jars are, jackson, httpclient, log4j, etc, or BusinessEvents jars, these are already available under 'BE_HOME/lib/tpcl/ext', so it would be best to avoid packaging them again to prevent any class loading as well as jar size related issues.
 
   * Any contribution specific dependencies go in contribution specific `pom.xml` file.
 
   * Once done, open the command prompt, goto the the specific contribution folder('/modules-name/contribution-name') and run the maven command to build a new jar. E.g. 
-
+```
     cd /metric/elasticsearch
-	  mvn clean install
-
+    mvn clean install
+```
+  
   A new jar should be created under '/modules-name/contribution-name/target'.
 
 
