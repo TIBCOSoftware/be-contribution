@@ -1,0 +1,35 @@
+2020 Dec 15 11:47:02.206 GMT Z localhost DEBUG [main] - [custom.channel] Connecting to AWS SQS
+2020 Dec 15 11:47:02.207 GMT Z localhost DEBUG [main] - [custom.channel] Establishing AWS Credentials
+2020 Dec 15 11:47:03.051 GMT Z localhost DEBUG [main] - [custom.channel] Credentials established
+2020 Dec 15 11:47:03.095 GMT Z localhost DEBUG [main] - [custom.channel] Successfully connected to AWS SQS
+2020 Dec 15 11:47:03.095 GMT Z localhost INFO [main] - [custom.channel] Channel Connected : /Channels/SQS
+2020 Dec 15 11:47:03.096 GMT Z localhost INFO [main] - [custom.channel] Channel:Connected[/Channels/SQS]
+2020 Dec 15 11:47:03.096 GMT Z localhost DEBUG [main] - [runtime.session] inference-class binding input channel /Channels/SQS/NewDestination_0 to destination /Channels/SQS
+2020 Dec 15 11:47:03.097 GMT Z localhost DEBUG [main] - [custom.channel] Binding Message Receivers to Listener threads
+2020 Dec 15 11:47:03.097 GMT Z localhost DEBUG [main] - [custom.channel] Completed binding Message Receivers to Listener threads
+2020 Dec 15 11:47:03.097 GMT Z localhost INFO [main] - [custom.channel] Destination:Bind[/Channels/SQS/NewDestination_0]
+2020 Dec 15 11:47:03.098 GMT Z localhost DEBUG [main] - [custom.channel] Starting Listeners
+2020 Dec 15 11:47:03.098 GMT Z localhost DEBUG [main] - [custom.channel] Listeners started
+2020 Dec 15 11:47:03.098 GMT Z localhost INFO [main] - [custom.channel] Channel Started : /Channels/SQS
+2020 Dec 15 11:47:03.099 GMT Z localhost INFO [main] - [driver.local] Destination [/Channels/Internal/Dummy] Properties [Size=0 TimeOut=-1]
+2020 Dec 15 11:47:03.099 GMT Z localhost INFO [main] - [driver.local] Started Channel [/Channels/Internal]
+2020 Dec 15 11:47:03.102 GMT Z localhost DEBUG [pool-3-thread-1] - [custom.channel] Listener thread running
+2020 Dec 15 11:47:03.102 GMT Z localhost DEBUG [pool-3-thread-2] - [custom.channel] Listener thread running
+2020 Dec 15 11:47:03.102 GMT Z localhost DEBUG [pool-3-thread-2] - [custom.channel] Listener waiting for SQS message
+2020 Dec 15 11:47:03.102 GMT Z localhost DEBUG [pool-3-thread-1] - [custom.channel] Listener waiting for SQS message
+2020 Dec 15 11:47:03.103 GMT Z localhost DEBUG [main] - [runtime.scheduler] [inference-class] Resuming threadpool [%clusterName%:33050@mmussett-mbpro.local:session-inference-class:602142157:AsyncWorkerService:$default.be.mt$]
+2020 Dec 15 11:47:03.103 GMT Z localhost DEBUG [main] - [runtime.scheduler] [inference-class] Resumed threadpool [%clusterName%:33050@mmussett-mbpro.local:session-inference-class:602142157:AsyncWorkerService:$default.be.mt$]
+2020 Dec 15 11:47:03.108 GMT Z localhost INFO [main] - [user] [inference-class] Startup
+2020 Dec 15 11:47:03.111 GMT Z localhost DEBUG [main] - [kernel.core] [inference-class] RTC Operations: [Object=AdvisoryEvent@id=2, RtcOps=101]
+2020 Dec 15 11:47:03.112 GMT Z localhost INFO [main] - [custom.channel] Destination Resumed : /Channels/SQS/NewDestination_0
+2020 Dec 15 11:47:03.113 GMT Z localhost INFO [main] - [studio.core] Hot Deployment disabled
+2020 Dec 15 11:47:03.120 GMT Z localhost INFO [main] - [runtime.service] Registering all BE-Engine level Group MBeans...
+2020 Dec 15 11:47:03.124 GMT Z localhost INFO [main] - [runtime.service] All BE-Engine level Group MBeans SUCCESSFULLY registered
+2020 Dec 15 11:47:03.124 GMT Z localhost OFF [main] - [runtime.session] BE Engine localhost started
+2020 Dec 15 11:47:03.125 GMT Z localhost INFO [main] - [container.standalone] Starting debugger service...
+2020 Dec 15 11:47:08.962 GMT Z localhost DEBUG [pool-3-thread-2] - [custom.channel] De-serializing SQS Message
+2020 Dec 15 11:47:08.963 GMT Z localhost DEBUG [pool-3-thread-2] - [custom.channel] Dispatching message to Event Processor
+2020 Dec 15 11:47:08.965 GMT Z localhost DEBUG [pool-3-thread-2] - [custom.channel] Dispatch completed
+2020 Dec 15 11:47:08.965 GMT Z localhost DEBUG [pool-3-thread-2] - [custom.channel] Deleting SQS message
+2020 Dec 15 11:47:08.966 GMT Z localhost INFO [$default.be.mt$.Thread.1] - [user] [inference-class] 1d4349b4-c29a-4f00-ac8c-b22fb75043d9
+2020 Dec 15 11:47:08.967 GMT Z localhost INFO [$default.be.mt$.Thread.1] - [user] [inference-class] { "payload" : { "msg": "hello"}}
