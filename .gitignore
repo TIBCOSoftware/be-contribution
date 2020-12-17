@@ -1,9 +1,7 @@
 /target/*
-/logs/*
+/log/*
 .idea
 .project
 .classpath
 .DS_Store
-aws-sqs.eml
-aws-sqs.userlibraries
 dependency-reduced-pom.xml
