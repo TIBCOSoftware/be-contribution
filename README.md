@@ -62,7 +62,7 @@ Below are some modules where contributions are available and/or can be added,
     mvn clean install
 ```
   
-  * A new jar should be created under '/modules-name/contribution-name/target'. E.g. /metric/elasticsearch/target.
+  * A new jar should be created under '/modules-name/contribution-name/target'. E.g. /metric/elasticsearch/target. You can then copy this jar to 'BE_HOME/lib/tpcl/ext/contrib' to make it available for use in BusinessEvents.
 
 
 ## Contributing
