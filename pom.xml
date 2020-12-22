@@ -112,8 +112,9 @@
   <!-- sub modules -->
   <modules>
     <module>channel</module>
+    <!--module>catalog</module-->
     <module>metric</module>
     <module>store</module>
   </modules>
 
-  </project>
+</project>
