@@ -115,13 +115,32 @@ public class SqsDestination extends BaseDestination {
 
     }
 
+    private AwsCredentialsProvider createCredsProvider() throws ExecutionException, InterruptedException {
+
+        logger.log(Level.DEBUG,"Establishing AWS Credentials");
+
+        AwsCredentialsProvider credsProvider = StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(
+                        getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_ACCESS_KEY),
+                        getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SECRET_KEY)));
+
+        logger.log(Level.DEBUG,"Credentials established");
+
+        return credsProvider;
+
+    }
 
     public void connect() throws Exception {
 
 
         logger.log(Level.DEBUG,"Connecting to AWS SQS");
 
-        AwsCredentialsProvider awsCredentialsProvider = createCredsProviderWithRole();
+        AwsCredentialsProvider awsCredentialsProvider = null;
+        if (getChannel().getChannelProperties().getProperty(CONFIG_AWS_ROLE_ARN).length()>0) {
+            awsCredentialsProvider = createCredsProviderWithRole();
+        } else {
+            awsCredentialsProvider = createCredsProvider();
+        }
 
         sqsClient = SqsClient.builder().credentialsProvider(awsCredentialsProvider)
                 .region(Region.of(getChannel().getChannelProperties().getProperty(CONFIG_AWS_REGION)))
@@ -177,7 +196,7 @@ public class SqsDestination extends BaseDestination {
                 .messageBody(new String(event.getPayload()))
                 .build();
 
-        logger.log(Level.DEBUG, "Sending SQS msg %s", event.getPayload());
+        logger.log(Level.DEBUG, "Sending SQS msg %s", new String(event.getPayload()));
 
         try {
             sqsClient.sendMessage(sendMessageRequest);
@@ -186,7 +205,7 @@ public class SqsDestination extends BaseDestination {
             e.printStackTrace();
         }
 
-        logger.log(Level.DEBUG, "Sent SQS msg %s", event.getPayload());
+        logger.log(Level.DEBUG, "Sent SQS msg %s", new String(event.getPayload()));
 
     }
 
