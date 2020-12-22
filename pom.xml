@@ -19,6 +19,13 @@
   <dependencyManagement>
     <dependencies>
         <!-- Common TIBCO BusinessEvents dependencies -->
+	 <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-base</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-base.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-common</artifactId>
@@ -39,6 +46,13 @@
             <version>${be.version}</version>
             <scope>system</scope>
   		    <systemPath>${be.home}/lib/cep-channel-api.jar</systemPath>
+        </dependency>
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-store</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-store.jar</systemPath>
         </dependency>
 
         <!-- Other common dependencies like junit/testcontainers/etc-->

@@ -1,0 +1,20 @@
+<store>
+	<type>Redis</type>
+	<label>Redis</label>
+	<class>com.tibco.be.redis.RedisStoreProvider</class>
+	<schema-generation></schema-generation>
+	<description>Redis Store</description>
+	<version>1.0</version>
+    <backingstore>true</backingstore>
+    <cache>false</cache>
+    <ttl>true</ttl>
+    <properties>
+	    <property-group name="Connection" displayName="Connection">
+	        <property name="host" displayName="Redis Host" type="String" default="localhost" mandatory="true"/>
+			<property name="port" displayName="Redis Port" type="Integer" default="6379" mandatory="true"/>
+			<property name="database" displayName="Database" type="Integer" default="0" />
+			<!--<property name="userName" displayName="User Name" type="String" default="" />
+	      		<property name="password" displayName="Password" type="String" default="" mask="true" />-->
+	    </property-group>
+    </properties>
+</store>
