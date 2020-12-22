@@ -13,11 +13,16 @@ With this implementation, TIBCO BusinessEvents can be configured with Redis as a
 - Redis 6.0.8 with RediSearch 2.0
 
 #How to Build?
-1. Import this maven project.
-2. Build the project to generate redis-1.0.jar
+#How to Build?
+1. Open the command prompt, goto the the specific contribution folder('/store/redis') and run the maven command to build a new jar. 
+```
+    cd /store/redis
+    mvn clean install
+```
+2. A new jar redis-1.0.0.jar should be created under '/store/redis/target'.
 
 #How to configure?
-1. Copy the jar built above at $BE_HOME/lib/ext/tpcl/contrib location.
+1. Copy the jar built above to $BE_HOME/lib/ext/tpcl/contrib location.
 2. Copy Lettuce and LettuSearch dependencies at $BE_HOME/lib/ext/tpcl
 3. Import your BE project in Studio and open the corresponding CDD.
 4. Select Redis as a Store Provider
