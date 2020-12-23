@@ -52,8 +52,10 @@ import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * 
- * @author rakulkar
- *
+ * @author TIBCO Software
+ * 
+ * This is entry point for Redis store implementation.
+ * This class will help to perform write, read and aggregations on redis store data.
  */
 public class RedisStoreProvider extends BaseStoreProvider {
 	private static final String _IDX = "_idx";

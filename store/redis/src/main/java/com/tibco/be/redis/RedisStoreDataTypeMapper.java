@@ -7,8 +7,10 @@ package com.tibco.be.redis;
 import com.tibco.cep.store.custom.StoreDataTypeMapper;
 
 /**
- * @author kagrawal
- *
+ * @author TIBCO Software
+ * 
+ * This class maps BE data types to redis store data types.
+ * 
  */
 public class RedisStoreDataTypeMapper extends StoreDataTypeMapper {
 

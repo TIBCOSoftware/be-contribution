@@ -18,8 +18,9 @@ import com.redislabs.lettusearch.aggregate.reducer.Sum;
 
 /**
  * 
- * @author rakulkar
+ * @author TIBCO Software
  *
+ * This class builds AggregateOptions which will be used during execution of aggregation functions.
  */
 public class AggregateOptionsBuilder {
 	

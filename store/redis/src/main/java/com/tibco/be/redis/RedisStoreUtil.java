@@ -15,8 +15,9 @@ import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * 
- * @author rakulkar
+ * @author TIBCO Software
  *
+ * This is utility class for Redis Store.
  */
 public class RedisStoreUtil {
 
