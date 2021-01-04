@@ -18,8 +18,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import com.redislabs.lettusearch.RediSearchClient;
 import com.redislabs.lettusearch.RediSearchCommands;
@@ -48,22 +54,30 @@ import io.lettuce.core.RedisCommandExecutionException;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
-import org.apache.commons.lang3.SerializationUtils;
+import io.lettuce.core.support.ConnectionPoolSupport;
 
 /**
  * 
  * @author TIBCO Software
  * 
- * This is entry point for Redis store implementation.
- * This class will help to perform write, read and aggregations on redis store data.
+ *         This is entry point for Redis store implementation. This class will
+ *         help to perform write, read and aggregations on redis store data.
  */
 public class RedisStoreProvider extends BaseStoreProvider {
 	private static final String _IDX = "_idx";
 	private static final String PRIMARY = "PRIMARY";
-	private static StatefulRedisConnection<String, String> connection;
-	private static RedisCommands<String, String> syncCommands;
+	private static ThreadLocal<StatefulRedisConnection<String, String>> connection = new ThreadLocal<StatefulRedisConnection<String, String>>();
+	private static ThreadLocal<RedisCommands<String, String>> syncCommands = new ThreadLocal<RedisCommands<String, String>>();
+	private static ThreadLocal<Boolean> isTxExecution = new ThreadLocal<Boolean>() {
+		protected Boolean initialValue() {
+			return false;
+		}
+	};
 	private static RediSearchCommands<String, String> searchCommands;
+	private static GenericObjectPool<StatefulRedisConnection<String, String>> pool;
 	private static Map<String, Map<String, String>> dtCache = new HashMap<>();
+	private Lock lock = new ReentrantLock();
+
 	private static List<String> existingIndexNames = new ArrayList<>();
 
 	public RedisStoreProvider(Cluster cluster, StoreProviderConfig storeConfig) throws Exception {
@@ -72,6 +86,11 @@ public class RedisStoreProvider extends BaseStoreProvider {
 
 	@Override
 	public void commit() {
+		try {
+			syncCommands.get().exec();
+		} catch (Exception e) {
+
+		}
 	}
 
 	@Override
@@ -83,8 +102,15 @@ public class RedisStoreProvider extends BaseStoreProvider {
 
 	@Override
 	public void endTransaction() {
-		// NA
+		closeConnection();
+		isTxExecution.set(false);
+	}
 
+	private void closeConnection() {
+		if (connection.get() != null) {
+			connection.get().close();
+			connection.set(null);
+		}
 	}
 
 	@Override
@@ -102,20 +128,22 @@ public class RedisStoreProvider extends BaseStoreProvider {
 																									// 0?
 
 		RedisClient redisClient = RedisClient.create("redis://" + host + ":" + port + "/" + database);
-		connection = redisClient.connect();
+//		connection = redisClient.connect();
 		RediSearchClient redisSearchClient = RediSearchClient
 				.create(RedisURI.create("redis://" + host + ":" + port + "/" + database));
 		StatefulRediSearchConnection<String, String> sConnection = redisSearchClient.connect();
 
-		if (connection != null) {
-			syncCommands = connection.sync();
+		pool = ConnectionPoolSupport.createGenericObjectPool(() -> redisClient.connect(),
+				new GenericObjectPoolConfig());
+
+//		if (connection != null) {
+//			syncCommands = connection.sync();
+		if (sConnection != null) {
 			searchCommands = sConnection.sync();
-			getLogger().log(Level.INFO, "Connected to Redis Store ." + syncCommands.ping());
 			getLogger().log(Level.INFO, "Connected to Redis Search ." + searchCommands.ping());
 		} else {
 			getLogger().log(Level.ERROR, "Problem encountered while connecting to Redis.");
 		}
-
 	}
 
 	@Override
@@ -159,12 +187,22 @@ public class RedisStoreProvider extends BaseStoreProvider {
 
 	@Override
 	public void rollback() {
-		// Not applicable
+		try {
+			syncCommands.get().discard();
+		} catch (Exception e) {
+
+		}
 	}
 
 	@Override
 	public void startTransaction() {
-		// Not applicable
+		try {
+			isTxExecution.set(true);
+			borrowConnectionFromPool();
+			syncCommands.get().multi();
+		} catch (Exception e) {
+
+		}
 	}
 
 	@Override
@@ -174,96 +212,136 @@ public class RedisStoreProvider extends BaseStoreProvider {
 
 	@Override
 	public void write(List<StoreRowHolder> storeRowHolder) throws Exception {
-		// implementation for new ID
-		storeRowHolder.forEach((rowData) -> {
-			String tableName = rowData.getTableName();
-			Map<String, String> allValuesMap = new HashMap<String, String>();
-			Map<String, String> keyValueMap = new HashMap<String, String>();
-			Map<String, String> dataTypeMap = syncCommands.hgetall(tableName);
+		try {
+			if (!isTxExecution.get()) {
+				borrowConnectionFromPool();
+			}
+			// implementation for new ID
+			storeRowHolder.forEach((rowData) -> {
+				String tableName = rowData.getTableName();
+				Map<String, String> allValuesMap = new HashMap<String, String>();
+				Map<String, String> keyValueMap = new HashMap<String, String>();
+				Map<String, String> dataTypeMap = searchCommands.hgetall(tableName);
 
-			rowData.getColDataMap().forEach((colName, storeColData) -> {
-				int i = 0;
-				String colValueString = "";
-				String colDataType = (String) storeColData.getColumnType();
-				colDataType = colDataType == null ? "STRING" : colDataType;
-				dataTypeMap.put(colName, colDataType);
+				rowData.getColDataMap().forEach((colName, storeColData) -> {
+					int i = 0;
+					String colValueString = "";
+					String colDataType = (String) storeColData.getColumnType();
+					colDataType = colDataType == null ? "STRING" : colDataType;
+					dataTypeMap.put(colName, colDataType);
 
-				// handling columnType
-				if (colDataType != null && colDataType.equals("DATETIME")) {
-					Calendar cal = (Calendar) storeColData.getColumnValue();
-					SimpleDateFormat sdf;
-					sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-					sdf.setTimeZone(cal.getTimeZone());
-					colValueString = sdf.format(cal.getTime());
-				} else if (colDataType != null && "OBJECT".equalsIgnoreCase(colDataType.toString())) {
-					colValueString = DatatypeConverter
-							.printHexBinary(SerializationUtils.serialize((Serializable) storeColData.getColumnValue()));
-				} else {
-					colValueString = null == storeColData.getColumnValue() ? "null"
-							: storeColData.getColumnValue().toString();
-				}
-
-				// if primary key then set key as tablename:primarykey
-				if (storeColData.isPrimary()) {
-					keyValueMap.putIfAbsent(PRIMARY, "");
-					keyValueMap.put(PRIMARY, keyValueMap.get(PRIMARY) + ":" + colValueString);
-					keyValueMap.put(colName + ":" + "Indexed" + i++, colValueString);
-				}
-
-				if (storeColData.getIsIndexed()) {
-					keyValueMap.put(colName + ":" + "Indexed" + i++, colValueString);
-				}
-				allValuesMap.put(colName, RedisStoreUtil.sanitizeValue(colValueString)); // hset is case sensitive
-			});
-
-			// Record key is set as TableName:Primarykey
-			String recordName = tableName + keyValueMap.get(PRIMARY);
-
-			// if Primary key don't exist use UUID
-			final String finalRecordName = keyValueMap.get(PRIMARY) != null ? recordName : UUID.randomUUID().toString();
-
-			long ttl = rowData.getTtl();
-
-			dtCache.put(tableName, dataTypeMap);
-
-			syncCommands.hset(rowData.getTableName(), dataTypeMap);
-
-			// creating search index for indexed columns
-			String indexName = rowData.getTableName().toLowerCase() + _IDX;
-			if (!isIndexAlreadyExists(indexName)) {
-				CreateOptions createOptions = CreateOptions.builder().prefixes(rowData.getTableName() + ":").build();
-
-				SchemaBuilder<String> schemaBuilder = Schema.<String>builder();
-				for (Iterator<String> iterator = keyValueMap.keySet().iterator(); iterator.hasNext();) {
-					String key = iterator.next();
-					if (PRIMARY.equalsIgnoreCase(key)) {
-						continue;
-					}
-					String fieldName = key.split(":")[0];
-					if (RedisStoreUtil.isFieldNumeric(dataTypeMap.get(fieldName))) {
-						schemaBuilder = schemaBuilder
-								.field(NumericField.<String>builder().name(fieldName).sortable(true).build());
+					// handling columnType
+					if (colDataType != null && colDataType.equals("DATETIME")) {
+						Calendar cal = (Calendar) storeColData.getColumnValue();
+						SimpleDateFormat sdf;
+						sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+						sdf.setTimeZone(cal.getTimeZone());
+						colValueString = sdf.format(cal.getTime());
+					} else if (colDataType != null && "OBJECT".equalsIgnoreCase(colDataType.toString())) {
+						colValueString = DatatypeConverter.printHexBinary(
+								SerializationUtils.serialize((Serializable) storeColData.getColumnValue()));
 					} else {
-						schemaBuilder = schemaBuilder
-								.field(TextField.<String>builder().name(fieldName).sortable(true).build());
+						colValueString = null == storeColData.getColumnValue() ? "null"
+								: storeColData.getColumnValue().toString();
 					}
 
-				}
-				searchCommands.create(indexName, schemaBuilder.build(), createOptions);
-			}
+					// if primary key then set key as tablename:primarykey
+					if (storeColData.isPrimary()) {
+						keyValueMap.putIfAbsent(PRIMARY, "");
+						keyValueMap.put(PRIMARY, keyValueMap.get(PRIMARY) + ":" + colValueString);
+						keyValueMap.put(colName + ":" + "Indexed" + i++, colValueString);
+						getLogger().log(Level.INFO, colName + ":" + colValueString);
+					}
 
-			syncCommands.hset(finalRecordName, allValuesMap);
-			if (ttl > 0) {
-				syncCommands.expire(finalRecordName, rowData.getTtl());
+					if (storeColData.getIsIndexed()) {
+						keyValueMap.put(colName + ":" + "Indexed" + i++, colValueString);
+					}
+					allValuesMap.put(colName, RedisStoreUtil.sanitizeValue(colValueString)); // hset is case sensitive
+				});
+
+				// Record key is set as TableName:Primarykey
+				String recordName = tableName + keyValueMap.get(PRIMARY);
+
+				// if Primary key don't exist use UUID
+				final String finalRecordName = keyValueMap.get(PRIMARY) != null ? recordName
+						: UUID.randomUUID().toString();
+
+				long ttl = rowData.getTtl();
+
+				dtCache.put(tableName, dataTypeMap);
+
+				syncCommands.get().hset(rowData.getTableName(), dataTypeMap);
+
+				// creating search index for indexed columns
+				String indexName = rowData.getTableName().toLowerCase() + _IDX;
+				if (lock != null) {
+					lock.lock();
+				}
+				getLogger().log(Level.INFO, "Thread aquired lock::" + Thread.currentThread());
+				if (!isIndexAlreadyExists(indexName)) {
+					CreateOptions createOptions = CreateOptions.builder().prefixes(rowData.getTableName() + ":")
+							.build();
+
+					SchemaBuilder<String> schemaBuilder = Schema.<String>builder();
+					for (Iterator<String> iterator = keyValueMap.keySet().iterator(); iterator.hasNext();) {
+						String key = iterator.next();
+						if (PRIMARY.equalsIgnoreCase(key)) {
+							continue;
+						}
+						String fieldName = key.split(":")[0];
+						if (RedisStoreUtil.isFieldNumeric(dataTypeMap.get(fieldName))) {
+							schemaBuilder = schemaBuilder
+									.field(NumericField.<String>builder().name(fieldName).sortable(true).build());
+						} else {
+							schemaBuilder = schemaBuilder
+									.field(TextField.<String>builder().name(fieldName).sortable(true).build());
+						}
+
+					}
+					try {
+						searchCommands.create(indexName, schemaBuilder.build(), createOptions);
+					} catch (RedisCommandExecutionException re) {
+						getLogger().log(Level.INFO, "Index creation failed: " + Thread.currentThread());
+						throw re;
+					} finally {
+						if (lock != null) {
+							getLogger().log(Level.INFO, "Thread releasing lock::" + Thread.currentThread());
+							lock.unlock();
+						}
+					}
+				} else {
+					if (lock != null) {
+						getLogger().log(Level.INFO, "Thread releasing lock::" + Thread.currentThread());
+						lock.unlock();
+					}
+				}
+
+				syncCommands.get().hset(finalRecordName, allValuesMap);
+				if (ttl > 0) {
+					syncCommands.get().expire(finalRecordName, rowData.getTtl());
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if (!isTxExecution.get()) {
+				closeConnection();
 			}
-		});
+		}
 	}
 
 	@Override
 	protected boolean isConnectionAlive() {
-		if (syncCommands.isOpen() && searchCommands.isOpen()) {
-			return true;
+		try {
+			borrowConnectionFromPool();
+			if (syncCommands.get().isOpen() && searchCommands.isOpen()) {
+				return true;
+			}
+		} catch (Exception e) {
+
 		}
+
 		return false;
 	}
 
@@ -273,12 +351,31 @@ public class RedisStoreProvider extends BaseStoreProvider {
 	}
 
 	private void delete_(StoreRowHolder queryHolder) {
-		List<String> docIdsToBeRemoved = getDocIdsToRemove(queryHolder);
-		docIdsToBeRemoved.forEach((docId) -> {
-			List<String> keys = syncCommands.hkeys(docId);
-			syncCommands.hdel(docId, keys.toArray(new String[keys.size()]));
-			getLogger().log(Level.DEBUG, "Deleted : " + docId);
-		});
+		try {
+			if (!isTxExecution.get()) {
+				borrowConnectionFromPool();
+			}
+			List<String> docIdsToBeRemoved = getDocIdsToRemove(queryHolder);
+			docIdsToBeRemoved.forEach((docId) -> {
+				List<String> keys = searchCommands.hkeys(docId);
+				syncCommands.get().hdel(docId, keys.toArray(new String[keys.size()]));
+				getLogger().log(Level.DEBUG, "Deleted : " + docId);
+			});
+		} catch (Exception e) {
+			getLogger().log(Level.ERROR, "Problem while aquiring connection during transaction: " + e.getMessage());
+		} finally {
+			if (!isTxExecution.get()) {
+				closeConnection();
+			}
+		}
+	}
+
+	private void borrowConnectionFromPool() throws Exception {
+		if (connection.get() == null) {
+			StatefulRedisConnection<String, String> con = pool.borrowObject();
+			connection.set(con);
+			syncCommands.set(con.sync());
+		}
 	}
 
 	private List<StoreRowHolder> readFromDb(StoreRowHolder queryHolder) {
@@ -289,7 +386,7 @@ public class RedisStoreProvider extends BaseStoreProvider {
 
 		Map<String, String> dtMapping;
 		if (!dtCache.containsKey(tableName) || checkIfNullOrEmpty(dtCache.get(tableName))) {
-			dtMapping = syncCommands.hgetall(tableName);
+			dtMapping = searchCommands.hgetall(tableName);
 			dtCache.put(tableName, dtMapping);
 		} else {
 			dtMapping = dtCache.get(tableName);
@@ -328,7 +425,6 @@ public class RedisStoreProvider extends BaseStoreProvider {
 						colNameList.toArray(new String[colNameList.size()]), colValueList.toArray()));
 			}
 		}
-
 		return result;
 	}
 
@@ -433,7 +529,7 @@ public class RedisStoreProvider extends BaseStoreProvider {
 		List<String> groupByColSet = new LinkedList<String>();
 
 		if (!dtCache.containsKey(tableName)) {
-			dtMapping = syncCommands.hgetall(tableName);
+			dtMapping = searchCommands.hgetall(tableName);
 			dtCache.put(tableName, dtMapping);
 		} else {
 			dtMapping = dtCache.get(tableName);
@@ -495,7 +591,7 @@ public class RedisStoreProvider extends BaseStoreProvider {
 
 		Map<String, String> dtMapping;
 		if (!dtCache.containsKey(tableName)) {
-			dtMapping = syncCommands.hgetall(tableName);
+			dtMapping = searchCommands.hgetall(tableName);
 			dtCache.put(tableName, dtMapping);
 		} else {
 			dtMapping = dtCache.get(tableName);
