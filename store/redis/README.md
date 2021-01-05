@@ -21,6 +21,7 @@ Assuming you have gone through all the documentation and appropriate [steps](htt
 3. Import your BE project in Studio and open the corresponding CDD.
 4. Select Redis as a Store Provider
 5. Once 'Redis' is selected as the store provider, various input fields based on the ones configured in 'store.xml' are available to accept values.
-5. Provide configuration details as appropriate
-6. Update tibco.env.STD_EXT_CP variable in %BE_HOME%/bin/be-engine.tra such a way that lettusearch-2.4.4.jar will be first in order in comparison to lettuce-core-6.0.0.RELEASE.jar.
-7. Start the BE engine
+5. Provide configuration details as appropriate.
+6. Due to existing lettuce [issue](https://github.com/RediSearch/lettusearch/issues/33) uber.jar can not be used and the end user needs to handle this manually.
+   Update tibco.env.STD_EXT_CP variable in %BE_HOME%/bin/be-engine.tra such a way that lettusearch-2.4.4.jar will be first in order in comparison to lettuce-core-6.0.0.RELEASE.jar.
+7. Start the BE engine.
