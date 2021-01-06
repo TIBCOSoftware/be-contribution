@@ -89,7 +89,8 @@ public class RedisStoreProvider extends BaseStoreProvider {
 		try {
 			syncCommands.get().exec();
 		} catch (Exception e) {
-
+			getLogger().log(Level.ERROR, e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -135,6 +136,7 @@ public class RedisStoreProvider extends BaseStoreProvider {
 				
 		RedisClient redisClient = RedisClient.create(redisBuilder.build());
 //		connection = redisClient.connect();
+
 		RediSearchClient redisSearchClient = RediSearchClient
 				.create(RedisURI.create("redis://" + host + ":" + port + "/" + database));
 		StatefulRediSearchConnection<String, String> sConnection = redisSearchClient.connect();
@@ -196,7 +198,8 @@ public class RedisStoreProvider extends BaseStoreProvider {
 		try {
 			syncCommands.get().discard();
 		} catch (Exception e) {
-
+			getLogger().log(Level.ERROR, e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -207,7 +210,8 @@ public class RedisStoreProvider extends BaseStoreProvider {
 			borrowConnectionFromPool();
 			syncCommands.get().multi();
 		} catch (Exception e) {
-
+			getLogger().log(Level.ERROR, e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 
