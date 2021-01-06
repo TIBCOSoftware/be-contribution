@@ -126,7 +126,7 @@ public class RedisStoreProvider extends BaseStoreProvider {
 		Integer database = Integer.parseInt(storeConfigProperties.getProperty("database", "0")); // Lettusearch only
 		Boolean useSsl = Boolean.parseBoolean(storeConfigProperties.getProperty("isSecurityEnabled", "false"));
 		String dbName = storeConfigProperties.getProperty("dbName", "default");
-		String password = storeConfigProperties.getProperty(RedisConstants.REDIS_AUTH_PASSWORD,"");
+		String password = storeConfigProperties.getProperty(RedisConstants.PROPERTY_KEY_REDIS_AUTH_PASSWORD,"");
 		
 		Builder redisBuilder = RedisURI.Builder.redis(host, port).withSsl(useSsl);
 		
