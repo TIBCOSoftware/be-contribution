@@ -123,11 +123,17 @@ public class RedisStoreProvider extends BaseStoreProvider {
 		String host = storeConfigProperties.getProperty("host", "localhost");
 		Integer port = Integer.parseInt(storeConfigProperties.getProperty("port", "6379"));
 		Integer database = Integer.parseInt(storeConfigProperties.getProperty("database", "0")); // Lettusearch only
-																									// supports
-																									// connection to db
-																									// 0?
-
-		RedisClient redisClient = RedisClient.create("redis://" + host + ":" + port + "/" + database);
+		Boolean useSsl = Boolean.parseBoolean(storeConfigProperties.getProperty("isSecurityEnabled", "false"));
+		String dbName = storeConfigProperties.getProperty("dbName", "default");
+		String password = storeConfigProperties.getProperty(RedisConstants.REDIS_AUTH_PASSWORD,"");
+		
+		Builder redisBuilder = RedisURI.Builder.redis(host, port).withSsl(useSsl);
+		
+		if (password!=null || password!="") {
+			redisBuilder.withPassword(RedisStoreUtil.decrypt(password).toCharArray());
+		}
+				
+		RedisClient redisClient = RedisClient.create(redisBuilder.build());
 //		connection = redisClient.connect();
 		RediSearchClient redisSearchClient = RediSearchClient
 				.create(RedisURI.create("redis://" + host + ":" + port + "/" + database));

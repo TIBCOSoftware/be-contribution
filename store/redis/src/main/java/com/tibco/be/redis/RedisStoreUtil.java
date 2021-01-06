@@ -13,6 +13,9 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import com.tibco.security.AXSecurityException;
+import com.tibco.security.ObfuscationEngine;
+
 /**
  * 
  * @author TIBCO Software
@@ -102,6 +105,18 @@ public class RedisStoreUtil {
 		return false;
 	}
 
+	/**
+	 * @param encryptedString
+	 * @return
+	 * @throws AXSecurityException
+	 */
+	public static String decrypt(String encryptedString) throws AXSecurityException {
+		if (ObfuscationEngine.hasEncryptionPrefix(encryptedString)) {
+			return(new String(ObfuscationEngine.decrypt(encryptedString)));
+		}
+		return encryptedString;
+	}
+	
 	public static String sanitizeValue(String colValueString) {
 		String regex = "([\",\\.<>{}\\[\\]\\':;!@#$%^&*\\(\\)+\\-=~)])";
 //		String regex = "([$-:@\\(\\)])";
