@@ -54,7 +54,13 @@
             <scope>system</scope>
             <systemPath>${be.home}/lib/cep-store.jar</systemPath>
         </dependency>
-
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibco</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/TIBCrypt.jar</systemPath>
+        </dependency>
         <!-- Other common dependencies like junit/testcontainers/etc-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

@@ -32,6 +32,10 @@
 		<groupId>com.tibco.businessevents</groupId>
 		<artifactId>cep-store</artifactId>
 	</dependency>
+	<dependency>
+		<groupId>com.tibco.businessevents</groupId>
+		<artifactId>cep-external-tibco</artifactId>
+	</dependency>
 
 	<!-- Store implementation specific dependencies -->
 	<dependency>
