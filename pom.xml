@@ -56,7 +56,7 @@
         </dependency>
 	<dependency>
             <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibco</artifactId>
+            <artifactId>cep-external-tibcrypt</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
             <systemPath>${be.home}/lib/ext/tibco/TIBCrypt.jar</systemPath>
