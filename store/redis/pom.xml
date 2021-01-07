@@ -34,7 +34,7 @@
 	</dependency>
 	<dependency>
 		<groupId>com.tibco.businessevents</groupId>
-		<artifactId>cep-external-tibcrypt</artifactId>
+		<artifactId>cep-external-tibco-tibcrypt</artifactId>
 	</dependency>
 
 	<!-- Store implementation specific dependencies -->
