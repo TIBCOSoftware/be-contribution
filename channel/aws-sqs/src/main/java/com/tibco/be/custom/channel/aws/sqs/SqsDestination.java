@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,11 @@ public class SqsDestination extends BaseDestination {
     private int pollInterval;
     private int maxMessages = 1;
 
+    private String region = "";
+    private String accessKey = "";
+    private String secretKey = "";
+    private String roleArn = "";
+
     // keep a reference to the channel's executor service
     private ExecutorService executor;
 
@@ -46,6 +52,11 @@ public class SqsDestination extends BaseDestination {
 
 
         logger.log(Level.DEBUG,"Initialising SQS Destination");
+
+        region = getChannel().getChannelProperties().getProperty(CONFIG_AWS_REGION);
+        accessKey = getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_ACCESS_KEY);
+        secretKey = getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SECRET_KEY);
+        roleArn = getChannel().getChannelProperties().getProperty(CONFIG_AWS_ROLE_ARN);
 
         executor = ((SqsChannel) getChannel()).getJobPool();
 
@@ -82,16 +93,14 @@ public class SqsDestination extends BaseDestination {
         logger.log(Level.DEBUG,"Establishing AWS Credentials");
 
         AwsCredentialsProvider credsProvider = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                        getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_ACCESS_KEY),
-                        getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SECRET_KEY)));
+                AwsBasicCredentials.create(accessKey,secretKey));
 
 
         StsClient stsClient = StsClient.builder().credentialsProvider(credsProvider).build();
 
         AssumeRoleRequest request = AssumeRoleRequest.builder()
                 .durationSeconds(3600)
-                .roleArn(getChannel().getChannelProperties().getProperty(CONFIG_AWS_ROLE_ARN))
+                .roleArn(roleArn)
                 .roleSessionName("be")
                 .build();
 
@@ -120,9 +129,7 @@ public class SqsDestination extends BaseDestination {
         logger.log(Level.DEBUG,"Establishing AWS Credentials");
 
         AwsCredentialsProvider credsProvider = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                        getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_ACCESS_KEY),
-                        getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SECRET_KEY)));
+                AwsBasicCredentials.create(accessKey,secretKey));
 
         logger.log(Level.DEBUG,"Credentials established");
 
@@ -136,14 +143,14 @@ public class SqsDestination extends BaseDestination {
         logger.log(Level.DEBUG,"Connecting to AWS SQS");
 
         AwsCredentialsProvider awsCredentialsProvider = null;
-        if (getChannel().getChannelProperties().getProperty(CONFIG_AWS_ROLE_ARN).length()>0) {
+        if (roleArn.length()>0) {
             awsCredentialsProvider = createCredsProviderWithRole();
         } else {
             awsCredentialsProvider = createCredsProvider();
         }
 
         sqsClient = SqsClient.builder().credentialsProvider(awsCredentialsProvider)
-                .region(Region.of(getChannel().getChannelProperties().getProperty(CONFIG_AWS_REGION)))
+                .region(Region.of(region))
                 .build();
 
         logger.log(Level.DEBUG,"Successfully connected to AWS SQS");
@@ -189,23 +196,25 @@ public class SqsDestination extends BaseDestination {
     @Override
     public void send(EventWithId event, Map map) throws Exception {
 
-        final Message message = (Message) getSerializer().serializeUserEvent(event,null);
+        //final Message message = (Message) getSerializer().serializeUserEvent(event,null);
+        String payload = ((ExtendedDefaultEventImpl) event).getUnderlyingSimpleEvent().getPayloadAsString();
 
-        SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
-                .queueUrl(queueUrl)
-                .messageBody(new String(event.getPayload()))
-                .build();
+        logger.log(Level.DEBUG,"Payload %s", payload);
+        logger.log(Level.DEBUG,"QueueUrl %s", queueUrl);
 
-        logger.log(Level.DEBUG, "Sending SQS msg %s", new String(event.getPayload()));
 
         try {
-            sqsClient.sendMessage(sendMessageRequest);
+            sqsClient.sendMessage(SendMessageRequest.builder()
+                    .queueUrl(queueUrl)
+                    .messageBody(payload)
+                    .build());
+
+            logger.log(Level.DEBUG, "Sent SQS msg.");
+
         } catch(Exception e) {
             logger.log(Level.ERROR, e, "Unable to send message to SQS");
             e.printStackTrace();
         }
-
-        logger.log(Level.DEBUG, "Sent SQS msg %s", new String(event.getPayload()));
 
     }
 
