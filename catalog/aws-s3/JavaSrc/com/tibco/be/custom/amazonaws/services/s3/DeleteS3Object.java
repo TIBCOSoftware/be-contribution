@@ -25,7 +25,7 @@ public class DeleteS3Object{
 
     @BEFunction(
             name = "deleteS3Object",
-            signature = "String getS3Object (String bucketName, String objectName, String regionName, String awsAccessKey, String awsSecretKey)",
+            signature = "String deleteS3Object (String bucketName, String objectName, String regionName, String awsAccessKey, String awsSecretKey)",
             params = {
                     @FunctionParamDescriptor(name = "bucketName", type = "String", desc = "S3 Bucket Name" /*Add Description here*/),
                     @FunctionParamDescriptor(name = "objectName", type = "String", desc = "S3 Object Name" /*Add Description here*/),
@@ -53,7 +53,7 @@ public class DeleteS3Object{
             throw new RuntimeException("Unable to parse service endpoint: " + e.getMessage());
         }
 
-        // for a simple GET, we have no body so supply the precomputed 'empty' hash
+        // for a simple DELETE, we have no body so supply the precomputed 'empty' hash
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("x-amz-content-sha256", AWS4SignerBase.EMPTY_BODY_SHA256);
 
