@@ -4,7 +4,9 @@
  */
 package com.tibco.be.redis;
 
+import java.io.File;
 import java.io.Serializable;
+import java.security.KeyStore;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,11 +24,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-
 import com.redislabs.lettusearch.RediSearchClient;
 import com.redislabs.lettusearch.RediSearchCommands;
 import com.redislabs.lettusearch.StatefulRediSearchConnection;
@@ -40,18 +40,28 @@ import com.redislabs.lettusearch.index.field.TextField;
 import com.redislabs.lettusearch.search.Document;
 import com.redislabs.lettusearch.search.SearchOptions;
 import com.redislabs.lettusearch.search.SearchResults;
+
 import com.tibco.cep.kernel.service.logging.Level;
+import com.tibco.cep.repo.ArchiveResourceProvider;
+import com.tibco.cep.repo.BEProject;
+import com.tibco.cep.repo.GlobalVariables;
 import com.tibco.cep.runtime.service.cluster.Cluster;
+import com.tibco.cep.runtime.service.security.BEIdentity;
+import com.tibco.cep.runtime.service.security.BEIdentityUtilities;
+import com.tibco.cep.runtime.service.security.BEKeystoreIdentity;
 import com.tibco.cep.runtime.service.store.StoreProviderConfig;
 import com.tibco.cep.store.custom.BaseStoreProvider;
 import com.tibco.cep.store.custom.StoreColumnData;
 import com.tibco.cep.store.custom.StoreDataTypeMapper;
 import com.tibco.cep.store.custom.StoreHelper;
 import com.tibco.cep.store.custom.StoreRowHolder;
+import com.tibco.cep.store.custom.StoreSSLUtils;
 
+import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisCommandExecutionException;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.SslOptions;
 import io.lettuce.core.RedisURI.Builder;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
@@ -128,31 +138,91 @@ public class RedisStoreProvider extends BaseStoreProvider {
 		Boolean useSsl = Boolean.parseBoolean(storeConfigProperties.getProperty("isSecurityEnabled", "false"));
 		String dbName = storeConfigProperties.getProperty("dbName", "default");
 		String password = storeConfigProperties.getProperty(RedisConstants.PROPERTY_KEY_REDIS_AUTH_PASSWORD,"");
-		
+				
 		Builder redisBuilder = RedisURI.Builder.redis(host, port).withSsl(useSsl);
 		
-		if (password!=null || password!="") {
+		if (password!=null && password!="") {
 			redisBuilder.withPassword(RedisStoreUtil.decrypt(password).toCharArray());
 		}
-				
+		else
+		{ 
+			RedisStoreUtil.restoreProviders();
+		}
+		
 		RedisClient redisClient = RedisClient.create(redisBuilder.build());
-//		connection = redisClient.connect();
+		RediSearchClient redisSearchClient = RediSearchClient.create(redisBuilder.withDatabase(database).build());
+		if (useSsl) {
+			ClientOptions clientOptions = getClientOptions(storeConfigProperties);
+			redisClient.setOptions(clientOptions);
+			redisSearchClient.setOptions(clientOptions);
+		}
 
-		RediSearchClient redisSearchClient = RediSearchClient
-				.create(RedisURI.create("redis://" + host + ":" + port + "/" + database));
 		StatefulRediSearchConnection<String, String> sConnection = redisSearchClient.connect();
 
 		pool = ConnectionPoolSupport.createGenericObjectPool(() -> redisClient.connect(),
 				new GenericObjectPoolConfig());
 
-//		if (connection != null) {
-//			syncCommands = connection.sync();
 		if (sConnection != null) {
 			searchCommands = sConnection.sync();
 			getLogger().log(Level.INFO, "Connected to Redis Search ." + searchCommands.ping());
 		} else {
 			getLogger().log(Level.ERROR, "Problem encountered while connecting to Redis.");
 		}
+	}
+
+	/**
+	 * @param storeConfigProperties
+	 * @return
+	 */
+	private ClientOptions getClientOptions(Properties storeConfigProperties) {
+
+		String trustStoreFilePath = storeConfigProperties
+				.getProperty(RedisConstants.PROPERTY_KEY_SSL_TRUSTED_CERTIFICATE_FOLDER_PATH);
+		String identityFile = storeConfigProperties.getProperty(RedisConstants.PROPERTY_KEY_SSL_IDENTITY_FILE_PATH);
+		String trustStorePassword = storeConfigProperties
+				.getProperty(RedisConstants.PROPERTY_KEY_SSL_TRUSTED_STORE_PASSWORD);
+
+		SslOptions sslOptions = null;
+		ClientOptions clientOptions = ClientOptions.create();
+
+		if (null != trustStoreFilePath && null != identityFile && null != trustStorePassword
+				&& !trustStoreFilePath.trim().isEmpty() && !trustStorePassword.trim().isEmpty()
+				&& !identityFile.trim().isEmpty()) {
+
+			KeyStore keyStore;
+			try {
+				keyStore = StoreSSLUtils.createKeystore(trustStoreFilePath, trustStorePassword,
+						(BEProject) rsp.getProject(), rsp.getGlobalVariables(), true);
+
+				if (keyStore.size() == 0) {
+					throw new Exception("Trusted Certificates are incorrect.");
+				}
+
+				String trustStoreFile = StoreSSLUtils.storeKeystore(keyStore, trustStorePassword);
+				BEIdentity keyStoreIdentity = getIdentity(identityFile,
+						rsp.getProject().getSharedArchiveResourceProvider(), rsp.getGlobalVariables());
+
+				if (keyStoreIdentity != null && keyStoreIdentity instanceof BEKeystoreIdentity) {
+					String keyStorePath = ((BEKeystoreIdentity) keyStoreIdentity).getStrKeystoreURL();
+
+					sslOptions = SslOptions.builder().jdkSslProvider()
+							.truststore(new File(trustStoreFile), trustStorePassword)
+							.keystore(new File(keyStorePath),
+									((BEKeystoreIdentity) keyStoreIdentity).getStrStorePassword().toCharArray())
+							.keyStoreType(((BEKeystoreIdentity) keyStoreIdentity).getStrStoreType())
+							.build();
+
+					clientOptions = ClientOptions.builder().sslOptions(sslOptions).build();
+
+				}
+
+			} catch (Exception e) {
+				getLogger().log(Level.ERROR, e.getMessage());
+				throw new RuntimeException(e);
+			}
+		}
+
+		return clientOptions;
 	}
 
 	@Override
@@ -288,7 +358,6 @@ public class RedisStoreProvider extends BaseStoreProvider {
 				if (lock != null) {
 					lock.lock();
 				}
-				getLogger().log(Level.INFO, "Thread aquired lock::" + Thread.currentThread());
 				if (!isIndexAlreadyExists(indexName)) {
 					CreateOptions createOptions = CreateOptions.builder().prefixes(rowData.getTableName() + ":")
 							.build();
@@ -312,17 +381,14 @@ public class RedisStoreProvider extends BaseStoreProvider {
 					try {
 						searchCommands.create(indexName, schemaBuilder.build(), createOptions);
 					} catch (RedisCommandExecutionException re) {
-						getLogger().log(Level.INFO, "Index creation failed: " + Thread.currentThread());
 						throw re;
 					} finally {
 						if (lock != null) {
-							getLogger().log(Level.INFO, "Thread releasing lock::" + Thread.currentThread());
 							lock.unlock();
 						}
 					}
 				} else {
 					if (lock != null) {
-						getLogger().log(Level.INFO, "Thread releasing lock::" + Thread.currentThread());
 						lock.unlock();
 					}
 				}
@@ -594,6 +660,29 @@ public class RedisStoreProvider extends BaseStoreProvider {
 		return result;
 	}
 
+	
+	/**
+	 * Get the identity file path
+	 * 
+	 * @param idReference
+	 * @param provider
+	 * @param gv
+	 * @return
+	 * @throws Exception
+	 */
+	private static BEIdentity getIdentity(String idReference, ArchiveResourceProvider provider, GlobalVariables gv)
+			throws Exception {
+		BEIdentity beIdentity = null;
+		if ((idReference != null) && !idReference.trim().isEmpty()) {
+			if (idReference.startsWith("/")) {
+				beIdentity = BEIdentityUtilities.fetchIdentity(provider, gv, idReference);
+			} else {
+				throw new Exception("Incorrect Identitty : " + idReference);
+			}
+		}
+		return beIdentity;
+	}
+	
 	private List<String> getDocIdsToRemove(StoreRowHolder queryHolder) {
 		List<String> result = new ArrayList<>();
 		String tableName = queryHolder.getTableName();

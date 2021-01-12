@@ -15,6 +15,17 @@
 			<property name="database" displayName="Database" type="Integer" default="0" />
 			<!--<property name="userName" displayName="User Name" type="String" default="" /> -->
 	      		<property name="password" displayName="Password" type="String" default="" mask="true" />
-	    </property-group>
+	  	</property-group>
+	  	<security>
+	  	<property-group name="Connection-Security" displayName="Connection-Security">
+			<property name="ssl.trusted.certificate.folder.path"
+				displayName="Trusted Folder Path" type="File" directory="true" absolute="false" default="" />
+			<property name="ssl.identity.file.path"
+				displayName="Identity" type="File" default="" absolute="false" extensions="*.id"/>
+			<property name="ssl.trusted.store.password"
+				displayName="Trust Store Password" type="String" default=""
+				mask="true" />
+				</property-group>
+		</security>
     </properties>
 </store>

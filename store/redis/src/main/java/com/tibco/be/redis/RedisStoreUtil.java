@@ -5,6 +5,7 @@
 package com.tibco.be.redis;
 
 import java.nio.ByteBuffer;
+import java.security.Provider;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -105,24 +106,35 @@ public class RedisStoreUtil {
 		return false;
 	}
 
+	public static String sanitizeValue(String colValueString) {
+		String regex = "([\",\\.<>{}\\[\\]\\':;!@#$%^&*\\(\\)+\\-=~)])";
+		//String regex = "([$-:@\\(\\)])";
+		if (null == colValueString) {
+			return colValueString;
+		}
+		return colValueString.replaceAll(regex, "\\\\$1");
+	}
+	
 	/**
 	 * @param encryptedString
 	 * @return
 	 * @throws AXSecurityException
 	 */
 	public static String decrypt(String encryptedString) throws AXSecurityException {
+		try {
 		if (ObfuscationEngine.hasEncryptionPrefix(encryptedString)) {
 			return(new String(ObfuscationEngine.decrypt(encryptedString)));
 		}
+		}
+		finally {
+			 restoreProviders();
+		}
 		return encryptedString;
 	}
-	
-	public static String sanitizeValue(String colValueString) {
-		String regex = "([\",\\.<>{}\\[\\]\\':;!@#$%^&*\\(\\)+\\-=~)])";
-//		String regex = "([$-:@\\(\\)])";
-		if (null == colValueString) {
-			return colValueString;
-		}
-		return colValueString.replaceAll(regex, "\\\\$1");
+
+	public static void restoreProviders() {
+		java.security.Security.removeProvider("Entrust");
+		java.security.Security.removeProvider("ENTRUST");
+		java.security.Security.removeProvider("IAIK");
 	}
 }
