@@ -42,7 +42,7 @@ public class DeleteS3Object{
             fndomain = {ACTION, BUI},
             example = "String resultGet = S3.deleteS3Object(\"my-bucket\",\"data.xml\", \"eu-west-1\", \"...\", \"...\");\r\n"
     )
-    public static String deleteS3Object(String bucketName, String objectName, String regionName, String awsAccessKey, String awsSecretKey) {
+    public static String deleteS3Object(String bucketName, String objectName, String regionName, String awsAccessKey, String awsSecretKey) throws RuntimeException  {
 
         // the region-specific endpoint to the target object expressed in path style
         URL endpointUrl;
@@ -69,6 +69,9 @@ public class DeleteS3Object{
         // and call S3
         headers.put("Authorization", authorization);
         String response = HttpUtils.invokeHttpRequest(endpointUrl, "DELETE", headers, null);
+        if (response.contains("<Error><Code>")) {
+            throw new RuntimeException(response);
+        }
         return response;
     }
 }

@@ -43,7 +43,7 @@ public class PutS3Object{
 			fndomain = {ACTION, BUI},
 			example = "String resultPut = S3.putS3Object(\"my-bucket\",\"data.xml\", \"eu-west-1\", \"...\", \"...\",objectContent);\n"
 			)
-	public static String putS3Object(String bucketName, String objectName, String regionName, String awsAccessKey, String awsSecretKey, String objectContent) {
+	public static String putS3Object(String bucketName, String objectName, String regionName, String awsAccessKey, String awsSecretKey, String objectContent) throws RuntimeException {
 		
        URL endpointUrl;
        try {          
@@ -79,7 +79,9 @@ public class PutS3Object{
        
        // make the call to Amazon S3
        String response = HttpUtils.invokeHttpRequest(endpointUrl, "PUT", headers, objectContent);
-       
+	   if (response.contains("<Error><Code>")) {
+		   throw new RuntimeException(response);
+	   }
        return response;
 	}
 	

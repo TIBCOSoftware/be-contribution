@@ -41,7 +41,7 @@ public class GetS3Object{
 			fndomain = {ACTION, BUI},
 			example = "String resultGet = S3.getS3Object(\"my-bucket\",\"data.xml\", \"eu-west-1\", \"...\", \"...\");\r\n"
 			)
-	public static String getS3Object(String bucketName, String objectName, String regionName, String awsAccessKey, String awsSecretKey) {
+	public static String getS3Object(String bucketName, String objectName, String regionName, String awsAccessKey, String awsSecretKey) throws RuntimeException {
 		
        // the region-specific endpoint to the target object expressed in path style
        URL endpointUrl;
@@ -67,7 +67,10 @@ public class GetS3Object{
        // place the computed signature into a formatted 'Authorization' header
        // and call S3
        headers.put("Authorization", authorization);
-       String response = HttpUtils.invokeHttpRequest(endpointUrl, "GET", headers, null);  
+       String response = HttpUtils.invokeHttpRequest(endpointUrl, "GET", headers, null);
+	   if (response.contains("<Error><Code>")) {
+		   throw new RuntimeException(response);
+	   }
 	   return response;
 	}
 	
