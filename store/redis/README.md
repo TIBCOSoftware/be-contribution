@@ -4,7 +4,6 @@ Please refer to Configuration Guide of TIBCO BusinessEvents 6.1.0 for more detai
 With this implementation, TIBCO BusinessEvents can be configured with Redis as a direct or backing store.
 
 ## Limitations
-- SSL connection is not supported
 - BQL Queries not supported
 - This implementation only works with new ID implementation of BusinessEvents Application.
 
