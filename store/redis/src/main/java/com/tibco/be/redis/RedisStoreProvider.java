@@ -331,7 +331,6 @@ public class RedisStoreProvider extends BaseStoreProvider {
 						keyValueMap.putIfAbsent(PRIMARY, "");
 						keyValueMap.put(PRIMARY, keyValueMap.get(PRIMARY) + ":" + colValueString);
 						keyValueMap.put(colName + ":" + "Indexed" + i++, colValueString);
-						getLogger().log(Level.INFO, colName + ":" + colValueString);
 					}
 
 					if (storeColData.getIsIndexed()) {
@@ -562,7 +561,7 @@ public class RedisStoreProvider extends BaseStoreProvider {
 			List<Object> indexInfo = searchCommands.ftInfo(indexName);
 			existingIndexNames.add(indexName);
 		} catch (RedisCommandExecutionException redisCmdException) {
-			getLogger().log(Level.INFO, "####Index " + indexName + "not exists...");
+			getLogger().log(Level.DEBUG, "####Index " + indexName + "not exists...");
 			return false;
 		}
 		return true;
