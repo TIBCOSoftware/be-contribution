@@ -8,10 +8,10 @@
   <packaging>pom</packaging>
 
   <properties>
-    <be.home>//Path to point to the TIBCO BusinessEvents installation home</be.home>
+    <be.home>/home/rakulkar/newtibcohome/6.0/be/6.1</be.home>
     <be.version>6.1</be.version>
     <junit.verion>5.4.2</junit.verion>
-    <testcontainer.verion>1.15.0</testcontainer.verion>
+    <testcontainer.verion>1.15.1</testcontainer.verion>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
   </properties>
