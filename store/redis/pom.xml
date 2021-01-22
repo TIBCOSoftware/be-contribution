@@ -44,23 +44,23 @@
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>TIBCrypt</artifactId>
+			<artifactId>cep-external-tibcrypt</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>TIBCOrt</artifactId>
+			<artifactId>cep-external-tibcort</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>TIBCOxml_sdk_eclipse_5_60_100_2</artifactId>
+			<artifactId>cep-external-tibxml-sdk</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>TIBCOxml_util_eclipse_5_60_100_1</artifactId>
+			<artifactId>cep-external-tibxml-util</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>TIBCOxml_io_eclipse_5_60_100_1</artifactId>
+			<artifactId>cep-external-tibxml-io</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
@@ -68,19 +68,19 @@
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>emf-ecore</artifactId>
+			<artifactId>cep-external-emf-ecore</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>emf-common</artifactId>
+			<artifactId>cep-external-emf-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>emf-ecore-xmi</artifactId>
+			<artifactId>cep-external-emf-ecore-xmi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>tibcoxml-wsdl</artifactId>
+			<artifactId>cep-external-tibcoxml-wsdl</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>

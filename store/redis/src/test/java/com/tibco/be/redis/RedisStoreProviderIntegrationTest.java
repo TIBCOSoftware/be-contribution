@@ -104,7 +104,7 @@ public class RedisStoreProviderIntegrationTest {
 	}
 
 	@BeforeEach
-	void isTestElasticServerRunningAndHealthy() {
+	void isTestRedisServerRunningAndHealthy() {
 		if (redisStoreProvider==null) {
 			MockitoAnnotations.openMocks(this);
 			storeConfig = createStoreConfig();
