@@ -6,6 +6,7 @@ With this implementation, TIBCO BusinessEvents can be configured with Redis as a
 ## Limitations
 - BQL Queries not supported
 - This implementation only works with new ID implementation of BusinessEvents Application.
+- SSL CDD configuration : Only 'Identity File' type is supported 
 
 ## Pre-requisites
 - TIBCO BusinessEvents 6.1.0 and above
