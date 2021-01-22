@@ -8,24 +8,18 @@
   <packaging>pom</packaging>
 
   <properties>
-    <be.home>//Path to point to the TIBCO BusinessEvents installation home</be.home>
+    <be.home>/home/rakulkar/newtibcohome/6.0/be/6.1</be.home>
     <be.version>6.1</be.version>
     <junit.verion>5.4.2</junit.verion>
     <testcontainer.verion>1.15.1</testcontainer.verion>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
+    <mockito.version>3.7.0</mockito.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
         <!-- Common TIBCO BusinessEvents dependencies -->
-	 <dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-base</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/cep-base.jar</systemPath>
-        </dependency>
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-common</artifactId>
@@ -47,6 +41,90 @@
             <scope>system</scope>
   		    <systemPath>${be.home}/lib/cep-channel-api.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-base</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-base.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-drivers</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-drivers.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-ui-rt-common</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-ui-rt-common.jar</systemPath>
+        </dependency>
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcrypt</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/TIBCrypt.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcort</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/TIBCOrt.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-sdk</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.sdk.eclipse_5.60.100.002.jar</systemPath>
+        </dependency>
+	      <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-util</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.util.eclipse_5.60.100.001.jar</systemPath>
+        </dependency>
+	      <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-io</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.io.eclipse_5.60.100.001.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-ecore</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore_2.23.0.v20200630-0516.jar</systemPath>
+        </dependency>
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-common</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.common_2.20.0.v20200822-0801.jar</systemPath>
+        </dependency>
+	      <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-ecore-xmi</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar</systemPath>
+        </dependency>
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcoxml-wsdl</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ws.wsdl.eclipse_5.60.100.001.jar</systemPath>
+        </dependency>
 	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-store</artifactId>
@@ -63,87 +141,10 @@
         </dependency>
 	<dependency>
             <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-drivers</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/cep-drivers.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
             <artifactId>be-functions</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
             <systemPath>${be.home}/lib/be-functions.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>TIBCrypt</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/TIBCrypt.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>TIBCOrt</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/TIBCOrt.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>TIBCOxml_sdk_eclipse_5_60_100_2</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.sdk.eclipse_5.60.100.002.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>TIBCOxml_util_eclipse_5_60_100_1</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.util.eclipse_5.60.100.001.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>TIBCOxml_io_eclipse_5_60_100_1</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.io.eclipse_5.60.100.001.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>emf-ecore</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore_2.23.0.v20200630-0516.jar</systemPath>
-        </dependency>
-		<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>emf-common</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.common_2.20.0.v20200822-0801.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>emf-ecore-xmi</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar</systemPath>
-        </dependency>
-		<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>tibcoxml-wsdl</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ws.wsdl.eclipse_5.60.100.001.jar</systemPath>
-        </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-ui-rt-common</artifactId>
-            <version>${be.version}</version>
-            <scope>system</scope>
-            <systemPath>${be.home}/lib/cep-ui-rt-common.jar</systemPath>
         </dependency>
         <!-- Other common dependencies like junit/testcontainers/etc-->
         <dependency>
@@ -156,6 +157,18 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.verion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <version>${mockito.verion}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.verion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -190,15 +203,15 @@
                 <excludes>
                   <!-- Duplicate BE jars -->
                   <exclude>com.tibco.*:cep*</exclude>
-				  <!-- Duplicate/conflicting tpcl jars -->
-				  <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
-				  <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</exclude>
-				  <exclude>org.apache.logging.log4j:log4j-api</exclude>
-				  <exclude>org.apache.httpcomponents:httpclient</exclude>
-				  <exclude>org.apache.httpcomponents:httpcore</exclude>
-				  <exclude>org.apache.httpcomponents:httpcore-nio</exclude>
-				  <exclude>commons-codec:commons-codec</exclude>
-				  <exclude>commons-logging:commons-logging</exclude>
+                  <!-- Duplicate/conflicting tpcl jars -->
+                  <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+                  <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</exclude>
+                  <exclude>org.apache.logging.log4j:log4j-api</exclude>
+                  <exclude>org.apache.httpcomponents:httpclient</exclude>
+                  <exclude>org.apache.httpcomponents:httpcore</exclude>
+                  <exclude>org.apache.httpcomponents:httpcore-nio</exclude>
+                  <exclude>commons-codec:commons-codec</exclude>
+                  <exclude>commons-logging:commons-logging</exclude>
                 </excludes>
               </artifactSet>
             </configuration>
