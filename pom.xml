@@ -40,6 +40,76 @@
             <scope>system</scope>
   		    <systemPath>${be.home}/lib/cep-channel-api.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-base</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-base.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-drivers</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-drivers.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-ui-rt-common</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-ui-rt-common.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcort</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/TIBCOrt.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-sdk</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.sdk.eclipse_5.60.100.002.jar</systemPath>
+        </dependency>
+	      <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-util</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.util.eclipse_5.60.100.001.jar</systemPath>
+        </dependency>
+	      <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-io</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.io.eclipse_5.60.100.001.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-ecore</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore_2.23.0.v20200630-0516.jar</systemPath>
+        </dependency>
+		    <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-common</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.common_2.20.0.v20200822-0801.jar</systemPath>
+        </dependency>
+	      <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-ecore-xmi</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar</systemPath>
+        </dependency>
 
         <!-- Other common dependencies like junit/testcontainers/etc-->
         <dependency>
@@ -86,15 +156,15 @@
                 <excludes>
                   <!-- Duplicate BE jars -->
                   <exclude>com.tibco.*:cep*</exclude>
-				  <!-- Duplicate/conflicting tpcl jars -->
-				  <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
-				  <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</exclude>
-				  <exclude>org.apache.logging.log4j:log4j-api</exclude>
-				  <exclude>org.apache.httpcomponents:httpclient</exclude>
-				  <exclude>org.apache.httpcomponents:httpcore</exclude>
-				  <exclude>org.apache.httpcomponents:httpcore-nio</exclude>
-				  <exclude>commons-codec:commons-codec</exclude>
-				  <exclude>commons-logging:commons-logging</exclude>
+                  <!-- Duplicate/conflicting tpcl jars -->
+                  <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+                  <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</exclude>
+                  <exclude>org.apache.logging.log4j:log4j-api</exclude>
+                  <exclude>org.apache.httpcomponents:httpclient</exclude>
+                  <exclude>org.apache.httpcomponents:httpcore</exclude>
+                  <exclude>org.apache.httpcomponents:httpcore-nio</exclude>
+                  <exclude>commons-codec:commons-codec</exclude>
+                  <exclude>commons-logging:commons-logging</exclude>
                 </excludes>
               </artifactSet>
             </configuration>
