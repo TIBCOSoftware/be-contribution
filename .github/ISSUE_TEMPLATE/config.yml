@@ -1,0 +1,5 @@
+blank_issue_enabled: false
+contact_links:
+  - name: TIBCO BusinessEvents Docs
+    url: https://docs.tibco.com/products/tibco-businessevents-enterprise-edition
+    about: Detailed documentation convering all aspects i.e. architecture, help, usage, api, etc.
