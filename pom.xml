@@ -14,6 +14,7 @@
     <testcontainer.verion>1.15.0</testcontainer.verion>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
+    <mockito.version>3.7.0</mockito.version>
   </properties>
 
   <dependencyManagement>
@@ -122,6 +123,18 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.verion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <version>${mockito.verion}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.verion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

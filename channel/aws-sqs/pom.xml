@@ -95,6 +95,14 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
 		</dependency>
+		<dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
 		
         <!-- AWS-SQS Channel dependencies -->
         
@@ -120,25 +128,10 @@
             <scope>import</scope>
         </dependency>
 
-	    
         <dependency>
 		    <groupId>org.testcontainers</groupId>
 		    <artifactId>localstack</artifactId>
 		    <version>1.15.1</version>
-		    <scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>3.7.0</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-		    <groupId>org.mockito</groupId>
-		    <artifactId>mockito-junit-jupiter</artifactId>
-		    <version>3.7.0</version>
 		    <scope>test</scope>
 		</dependency>
 		
