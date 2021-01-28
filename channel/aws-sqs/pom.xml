@@ -12,20 +12,100 @@
         <relativePath>../</relativePath>
     </parent>
 
-    <groupId>com.tibco.businessevents</groupId>
     <artifactId>aws-sqs</artifactId>
     <name>aws-sqs</name>
-    <version>1.0</version>
+    <version>1.0.0</version>
+    
+    <properties>
+	   <aws.version>7.10.1</aws.version>
+	   <sqs.version>2.15.47</sqs.version>
+	</properties>
 
     <dependencies>
+    	<!-- Importing common dependencies -->
+    	
+    	<!-- TIBCO installed dependencies -->
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>bom</artifactId>
-            <version>2.15.15</version>
-            <type>pom</type>
-            <scope>import</scope>
+			<groupId>com.tibco.businessevents</groupId>
+			<artifactId>cep-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.tibco.businessevents</groupId>
+			<artifactId>cep-kernel</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.tibco.businessevents</groupId>
+			<artifactId>cep-base</artifactId>
+		</dependency>
+		<dependency>
+	        <groupId>com.tibco.businessevents</groupId>
+	        <artifactId>cep-channel-api</artifactId>
+	    </dependency>
+	    <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-drivers</artifactId>
         </dependency>
-
+	    <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-ui-rt-common</artifactId>
+        </dependency>
+		<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcort</artifactId>
+        </dependency>
+		<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-sdk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-ecore</artifactId>
+        </dependency>
+		<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-common</artifactId>
+        </dependency>
+	    <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-emf-ecore-xmi</artifactId>
+        </dependency>
+       
+        <!-- Other common dependencies -->
+        <dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+		</dependency>
+        <dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+		
+        <!-- AWS-SQS Channel dependencies -->
+        
         <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/sqs -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -39,20 +119,29 @@
             <artifactId>sts</artifactId>
             <version>2.15.45</version>
         </dependency>
+       
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>bom</artifactId>
+            <version>2.15.15</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
 
-        <!-- BusinessEvents System dependencies -->
         <dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-kernel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-channel-api</artifactId>
-        </dependency>
+		    <groupId>org.testcontainers</groupId>
+		    <artifactId>localstack</artifactId>
+		    <version>1.15.1</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+	        <groupId>com.amazonaws</groupId>
+	        <artifactId>aws-java-sdk-sqs</artifactId>
+	        <version>1.11.914</version>
+	        <scope>test</scope>
+	    </dependency>
+
     </dependencies>
 
 </project>
