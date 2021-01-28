@@ -87,7 +87,7 @@ public class RedisStoreProviderIntegrationTest {
 		String dockerPort = "6379";
 		rediSearchContainer.setPortBindings(ImmutableList.of("0.0.0.0:" + hostPort + ":" + dockerPort));
 		rediSearchContainer.start();
-		System.setProperty("tibco.env.BE_HOME", ".");
+		System.setProperty("tibco.env.BE_HOME", "..");
 	}
 	
 	private static StoreProviderConfig createStoreConfig() {
@@ -112,7 +112,7 @@ public class RedisStoreProviderIntegrationTest {
 			{
 				Mockito.when(cluster.getRuleServiceProvider()).thenReturn(rsp);
 				Properties props = new Properties();
-				props.putIfAbsent("tibco.repourl", "./Deployments/fdstore.ear");
+				props.putIfAbsent("tibco.repourl", "./../Deployments/fdstore.ear");
 				Mockito.when(rsp.getProperties()).thenReturn(props);
 				Mockito.when(cluster.getClusterConfig()).thenReturn(clusterConfig);
 				redisStoreProvider = new RedisStoreProvider(cluster, storeConfig);
