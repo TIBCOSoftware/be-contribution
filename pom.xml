@@ -11,7 +11,7 @@
     <be.home>//Path to point to the TIBCO BusinessEvents installation home</be.home>
     <be.version>6.1</be.version>
     <junit.verion>5.4.2</junit.verion>
-    <testcontainer.verion>1.15.0</testcontainer.verion>
+    <testcontainer.verion>1.15.1</testcontainer.verion>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
     <mockito.version>3.7.0</mockito.version>
@@ -62,6 +62,13 @@
             <scope>system</scope>
             <systemPath>${be.home}/lib/cep-ui-rt-common.jar</systemPath>
         </dependency>
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcrypt</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/TIBCrypt.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-tibcort</artifactId>
@@ -97,7 +104,7 @@
             <scope>system</scope>
             <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore_2.23.0.v20200630-0516.jar</systemPath>
         </dependency>
-		    <dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-emf-common</artifactId>
             <version>${be.version}</version>
@@ -111,7 +118,34 @@
             <scope>system</scope>
             <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar</systemPath>
         </dependency>
-
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcoxml-wsdl</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ws.wsdl.eclipse_5.60.100.001.jar</systemPath>
+        </dependency>
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-store</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-store.jar</systemPath>
+        </dependency>
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-backingstore</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-backingstore.jar</systemPath>
+        </dependency>
+	<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>be-functions</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/be-functions.jar</systemPath>
+        </dependency>
         <!-- Other common dependencies like junit/testcontainers/etc-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
