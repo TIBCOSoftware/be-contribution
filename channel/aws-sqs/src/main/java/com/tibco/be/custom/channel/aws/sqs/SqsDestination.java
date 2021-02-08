@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,13 +144,14 @@ public class SqsDestination extends BaseDestination {
         logger.log(Level.DEBUG,"Connecting to AWS SQS");
 
         AwsCredentialsProvider awsCredentialsProvider = null;
-        if (roleArn.length()>0) {
+        if (roleArn != null && roleArn.length() > 0) {
             awsCredentialsProvider = createCredsProviderWithRole();
         } else {
             awsCredentialsProvider = createCredsProvider();
         }
 
         sqsClient = SqsClient.builder().credentialsProvider(awsCredentialsProvider)
+        		.endpointOverride(new URI(queueUrl))
                 .region(Region.of(region))
                 .build();
 
@@ -223,5 +225,8 @@ public class SqsDestination extends BaseDestination {
     }
 
 
+    public SqsClient getSQSClient() {
+    	return sqsClient;
+    }
 
 }

@@ -23,7 +23,7 @@
 
     <!-- sub modules - Include module names here as they are added  -->
     <modules>
-       <!--module>redis</module-->
+       <module>redis</module>
     </modules>
     
 </project>

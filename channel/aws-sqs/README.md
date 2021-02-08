@@ -6,33 +6,18 @@ The implementation provides support for injesting, processing incoming SQS messa
 
 ## Pre-requisites
 
-* Have a AWS SQS service up and running and necessary access/secret keys available.
+* Install docker, since the bundled integration test's creates a light weight throw away container for all the tests. Existing tests were run again Docker v19.03.13.
+* Have a AWS SQS service up and running and necessary access/secret keys available. 
+
+Note - For integration tests, we use an embedded localstack instance that mocks/simulates the AWS SQS and other services.
 
 ## Getting Started
 
 * Assuming you have gone through all the documentation and appropriate [steps](https://github.com/tibco/be-contribution/tree/main/channel) are followed to setup the new channel.
 
+* Once 'AWS-SQS' channel is selected via the 'New Channel Wizard', various input fields based on the ones configured in 'drivers.xml' are available on the UI.
 
-## Using the SQS Channel
-
-### Adding a SQS Channel
-
-Add a channel to your project and configure it as follows:
-
-1. At the New Channel Channel Wizard, provide a name and description, and in the <b>Driver</b> field select AWS-SQS. Click <b>Finish</b>.
-
-2. In the Channel editor <b>Channel</b> tab, update the description as desired. The <b>Driver</b> field is set to AWS-SQS (as set in the wizard). The Method of Configuration must be set to Properties.
-
-3. In the [Properties](AWS-SQS Channel Configuration Properties) field, set values for AWS Region, AWS SQS Access Key, AQS SQS Secret Key, and AWS SQS Role ARN
-
-
-### Adding a Destination
-
-Add a destination to the channel in the usual way.
-
-The [Properties](AWS-SQS Destination Configuration Properties) for destinations, set values for Default Event, Queue URL, Consumer Threads, Poll Interval, and Maximum number message per poll interval.
-
-
+* In the Channel editor <b>Channel</b> tab, update the description as desired. The <b>Driver</b> field is set to AWS-SQS (as set in the wizard). The Method of Configuration must be set to Properties.
 
 ## AWS-SQS Channel Configuration Properties
 

@@ -90,48 +90,50 @@ public class ElasticSearchMetricsStoreProvider implements MetricsStoreProvider<E
 
 	@Override
 	public void connect() throws Exception {
-		RestClientBuilder restBuilder = null;
+		RestClientBuilder restBuilder = RestClient.builder(new HttpHost(host, port, "http"));
 		if (!userName.isBlank()) {
-			restBuilder = RestClient.builder(new HttpHost(host, port, "http"));
 			final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-			credentialsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials(userName, password));
-			restBuilder = restBuilder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
-		
+			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
+			restBuilder = restBuilder.setHttpClientConfigCallback(
+					httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+
 		} else if (!accessToken.isBlank()) {
-			restBuilder = RestClient.builder(new HttpHost(host, port, "http"));
-			Header[] defaultHeaders = new Header[]{new BasicHeader("Authorization", "Bearer " + accessToken)};
-			restBuilder.setDefaultHeaders(defaultHeaders);
-		
+			Header[] defaultHeaders = new Header[] { new BasicHeader("Authorization", "Bearer " + accessToken) };
+			restBuilder = restBuilder.setDefaultHeaders(defaultHeaders);
+
 		} else if (!apiKey.isBlank()) {
-			restBuilder = RestClient.builder(new HttpHost(host, port, "http"));
-			String apiKeyAuth = Base64.getEncoder().encodeToString((apiKey + ":" + apiSecret).getBytes(StandardCharsets.UTF_8));
-			Header[] defaultHeaders = new Header[]{new BasicHeader("Authorization", "ApiKey " + apiKeyAuth)};
-			restBuilder.setDefaultHeaders(defaultHeaders);
-		
-		} else if (!trustStorePath.isBlank() && !trustStorePwd.isBlank()) {
+			String apiKeyAuth = Base64.getEncoder()
+					.encodeToString((apiKey + ":" + apiSecret).getBytes(StandardCharsets.UTF_8));
+			Header[] defaultHeaders = new Header[] { new BasicHeader("Authorization", "ApiKey " + apiKeyAuth) };
+			restBuilder = restBuilder.setDefaultHeaders(defaultHeaders);
+
+		}
+
+		if (!trustStorePath.isBlank() && !trustStorePwd.isBlank()) {
 			Path tsPath = Paths.get(trustStorePath);
 			KeyStore truststore = KeyStore.getInstance("JKS");
+
 			try (InputStream is = Files.newInputStream(tsPath)) {
-			    truststore.load(is, trustStorePwd.toCharArray());
+				if (!trustStorePwd.isBlank()) {
+					truststore.load(is, trustStorePwd.toCharArray());
+				} else {
+					truststore.load(is, null);
+				}
 			}
-			
 			SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
 			final SSLContext sslContext = sslBuilder.build();
-			
-			restBuilder = RestClient.builder(new HttpHost(host, port, "https"));
-			restBuilder = restBuilder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setSSLContext(sslContext)
-					.setSSLHostnameVerifier(new HostnameVerifier() {
-				@Override
-				public boolean verify(String arg0, SSLSession arg1) {
-					return true;
-				}
-			}));
-		} else {
-			restBuilder = RestClient.builder(new HttpHost(host, port, "http"));
+
+			restBuilder = restBuilder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+					.setSSLContext(sslContext).setSSLHostnameVerifier(new HostnameVerifier() {
+						@Override
+						public boolean verify(String arg0, SSLSession arg1) {
+							return true;
+						}
+					}));
 		}
-		
+
 		elasticClient = new RestHighLevelClient(restBuilder);
-		
+
 		createIndexes();
 	}
 
