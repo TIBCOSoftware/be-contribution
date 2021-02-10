@@ -4,6 +4,7 @@ package com.tibco.be.custom.channel.aws.sqs.serializer;
 import com.tibco.be.custom.channel.BaseEventSerializer;
 import com.tibco.be.custom.channel.Event;
 import com.tibco.be.custom.channel.EventWithId;
+import com.tibco.be.custom.channel.ExtendedDefaultEventImpl;
 import com.tibco.be.custom.channel.framework.CustomEvent;
 import com.tibco.cep.kernel.service.logging.Level;
 import com.tibco.cep.kernel.service.logging.Logger;
@@ -64,9 +65,8 @@ public class SqsTextSerializer extends BaseEventSerializer {
 
         Message message = Message.builder()
                 .messageId(event.getExtId())
-                .body(new String(event.getPayload()))
+                .body(((ExtendedDefaultEventImpl) event).getUnderlyingSimpleEvent().getPayloadAsString())
                 .build();
-
         return message;
     }
 
