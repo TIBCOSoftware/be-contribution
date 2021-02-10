@@ -107,7 +107,7 @@ public class RedisStoreUtil {
 	}
 
 	public static String sanitizeValue(String colValueString) {
-		String regex = "([\",\\.<>{}\\[\\]\\':;!@#$%^&*\\(\\)+\\-=~)])";
+		String regex = "([\",\\.<>{}\\[\\]\\':;!@#$%^&*\\(\\)+\\-=~)|])";
 		//String regex = "([$-:@\\(\\)])";
 		if (null == colValueString) {
 			return colValueString;
