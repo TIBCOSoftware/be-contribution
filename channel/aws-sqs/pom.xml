@@ -15,45 +15,113 @@
     <artifactId>aws-sqs</artifactId>
     <name>aws-sqs</name>
     <version>1.0.0</version>
-    
+
     <properties>
-	   <aws.version>7.10.1</aws.version>
-	   <sqs.version>2.15.47</sqs.version>
-	</properties>
+        <aws.version>7.10.1</aws.version>
+        <sqs.version>2.15.47</sqs.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>*:cep-*</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-files-on-build</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${be.home}/lib/ext/tpcl</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <include>${project.build.finalName}.${project.packaging}</include>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
 
     <dependencies>
-    	<!-- Importing common dependencies -->
-    	
-    	<!-- TIBCO installed dependencies -->
+        <!-- Importing common dependencies -->
+
+        <!-- TIBCO installed dependencies -->
         <dependency>
-			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>cep-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>cep-kernel</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-			<artifactId>cep-base</artifactId>
-		</dependency>
-		<dependency>
-	        <groupId>com.tibco.businessevents</groupId>
-	        <artifactId>cep-channel-api</artifactId>
-	    </dependency>
-	    <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-kernel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-channel-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-drivers</artifactId>
         </dependency>
-	    <dependency>
+        <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-ui-rt-common</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-tibcort</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-tibxml-sdk</artifactId>
         </dependency>
@@ -69,33 +137,33 @@
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-emf-ecore</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-emf-common</artifactId>
         </dependency>
-	    <dependency>
+        <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-emf-ecore-xmi</artifactId>
         </dependency>
-       
+
         <!-- Other common dependencies -->
         <dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
-		</dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
         <dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>testcontainers</artifactId>
-		</dependency>
-		<dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
         </dependency>
@@ -103,9 +171,16 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
-		
+
         <!-- AWS-SQS Channel dependencies -->
-        
+
+        <!-- https://mvnrepository.com/artifact/org.opensaml/opensaml -->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml</artifactId>
+            <version>2.6.4</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/sqs -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -119,7 +194,28 @@
             <artifactId>sts</artifactId>
             <version>2.15.45</version>
         </dependency>
-       
+
+        <!-- https://mvnrepository.com/artifact/org.opensaml/opensaml -->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml</artifactId>
+            <version>2.6.4</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.13.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>bom</artifactId>
@@ -129,18 +225,35 @@
         </dependency>
 
         <dependency>
-		    <groupId>org.testcontainers</groupId>
-		    <artifactId>localstack</artifactId>
-		    <version>1.15.1</version>
-		    <scope>test</scope>
-		</dependency>
-		
-		<dependency>
-	        <groupId>com.amazonaws</groupId>
-	        <artifactId>aws-java-sdk-sqs</artifactId>
-	        <version>1.11.914</version>
-	        <scope>test</scope>
-	    </dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>localstack</artifactId>
+            <version>1.15.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>1.11.914</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sts</artifactId>
+            <version>1.11.774</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>1.11.914</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

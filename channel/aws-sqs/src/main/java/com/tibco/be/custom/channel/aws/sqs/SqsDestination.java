@@ -1,63 +1,104 @@
+/*
+ * Copyright © 2020. TIBCO Software Inc.
+ * This file is subject to the license terms contained
+ * in the license file that is distributed with this file.
+ */
 package com.tibco.be.custom.channel.aws.sqs;
 
-import com.tibco.be.custom.channel.*;
-import com.tibco.cep.kernel.service.logging.Level;
-import software.amazon.awssdk.auth.credentials.*;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.Message;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-import software.amazon.awssdk.services.sts.StsClient;
-import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
-import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.*;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.securitytoken.model.Credentials;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import com.tibco.be.custom.channel.*;
+import com.tibco.be.custom.channel.aws.sqs.basiccredentials.BasicContext;
+import com.tibco.be.custom.channel.aws.sqs.basiccredentials.BasicCredential;
+import com.tibco.be.custom.channel.aws.sqs.basiccredentials.BasicCredentialsManager;
+import com.tibco.be.custom.channel.aws.sqs.saml2.SAMLContext;
+import com.tibco.be.custom.channel.aws.sqs.saml2.SAMLCredentialsManager;
+import com.tibco.cep.kernel.service.logging.Level;
+
+import javax.net.ssl.SSLSocketFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 public class SqsDestination extends BaseDestination {
 
     private List<SqsListener> listeners = new ArrayList<SqsListener>();
 
-
-    private SqsClient sqsClient;
+    private AmazonSQS sqsClient;
 
     private String queueUrl = "";
     private int threads = 0;
     private int pollInterval;
     private int maxMessages = 1;
 
-    private String region = "";
-    private String accessKey = "";
-    private String secretKey = "";
-    private String roleArn = "";
+    private String authType = "";
+
+//    private String region = "";
+//    private String accessKey = "";
+//    private String secretKey = "";
+//    private String roleArn = "";
 
     // keep a reference to the channel's executor service
     private ExecutorService executor;
 
     // CONSTANTS
     public static final String CONFIG_AWS_REGION = "aws.region";
-    public static final String CONFIG_AWS_SQS_ACCESS_KEY = "aws.sqs.access.key";
-    public static final String CONFIG_AWS_SQS_SECRET_KEY = "aws.sqs.secret.key";
+    public static final String CONFIG_AWS_SQS_AUTH_TYPE = "aws.sqs.auth.type";
+
+    public static final String CONFIG_AWS_SQS_CREDENTIALS_ACCESS_KEY = "aws.sqs.credentials.access.key";
+    public static final String CONFIG_AWS_SQS_CREDENTIALS_SECRET_KEY = "aws.sqs.credentials.secret.key";
+    public static final String CONFIG_AWS_SQS_CREDENTIALS_ROLE_ARN = "aws.sqs.credentials.role.arn";
+    public static final String CONFIG_AWS_SQS_CREDENTIALS_SESSION_NAME = "aws.sqs.credentials.role.session.name";
+    public static final String CONFIG_AWS_SQS_CREDENTIALS_EXPIRATION = "aws.sqs.credentials.expiration";
+
+    public static final String CONFIG_AWS_SQS_SAML_IDP_PROVIDER_TYPE = "aws.sqs.saml.idp.provider.type";
+    public static final String CONFIG_AWS_SQS_SAML_IDP_PROVIDER_URL = "aws.sqs.saml.idp.provider.url";
+    public static final String CONFIG_AWS_SQS_SAML_IDP_USERNAME = "aws.sqs.saml.idp.username";
+    public static final String CONFIG_AWS_SQS_SAML_IDP_PASSWORD = "aws.sqs.saml.idp.password";
+    public static final String CONFIG_AWS_SQS_SAML_ROLE = "aws.sqs.saml.role";
+    public static final String CONFIG_AWS_SQS_SAML_TOKEN_EXPIRY_DURATION = "aws.sqs.saml.token.expiry.duration";
+
     public static final String CONFIG_QUEUE_URL = "queue.url";
     public static final String CONFIG_POLL_INTERVAL = "poll.interval";
     public static final String CONFIG_THREADS = "consumer.threads";
     public static final String CONFIG_MAX_MESSAGES = "max.messages";
-    public static final String CONFIG_AWS_ROLE_ARN = "aws.sqs.role.arn";
+
+    private BasicContext basicContext = null;
+    private SAMLContext samlContext = null;
 
     public void init() throws Exception {
 
 
         logger.log(Level.DEBUG,"Initialising SQS Destination");
 
-        region = getChannel().getChannelProperties().getProperty(CONFIG_AWS_REGION);
-        accessKey = getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_ACCESS_KEY);
-        secretKey = getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SECRET_KEY);
-        roleArn = getChannel().getChannelProperties().getProperty(CONFIG_AWS_ROLE_ARN);
+        authType = getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_AUTH_TYPE);
+
+        if (authType.equals("CREDENTIALS")) {
+            basicContext = new BasicContext();
+            basicContext.setAccessKey(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_CREDENTIALS_ACCESS_KEY));
+            basicContext.setSecretKey(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_CREDENTIALS_SECRET_KEY));
+            basicContext.setRegionName(getChannel().getChannelProperties().getProperty(CONFIG_AWS_REGION));
+            basicContext.setRoleArn(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_CREDENTIALS_ROLE_ARN));
+            basicContext.setSessionName(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_CREDENTIALS_SESSION_NAME));
+            basicContext.setTokenExpirationDuration(Integer.parseInt(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_CREDENTIALS_EXPIRATION)) * 60);
+        } else {
+            samlContext = new SAMLContext();
+            samlContext.setIdpUsername(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SAML_IDP_USERNAME));
+            samlContext.setIdpPassword(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SAML_IDP_PASSWORD));
+            samlContext.setRegionName(getChannel().getChannelProperties().getProperty(CONFIG_AWS_REGION));
+            samlContext.setIdProviderType(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SAML_IDP_PROVIDER_TYPE));
+            samlContext.setIdpUseProxy(false);
+            samlContext.setIdpEntryUrl(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SAML_IDP_PROVIDER_URL));
+            samlContext.setAwsRole(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SAML_ROLE));
+            samlContext.setTokenExpirationDuration(Integer.parseInt(getChannel().getChannelProperties().getProperty(CONFIG_AWS_SQS_SAML_TOKEN_EXPIRY_DURATION)));
+        }
 
         executor = ((SqsChannel) getChannel()).getJobPool();
 
@@ -88,72 +129,42 @@ public class SqsDestination extends BaseDestination {
 
     }
 
-    private AwsCredentialsProvider createCredsProviderWithRole() throws ExecutionException, InterruptedException {
-
-
-        logger.log(Level.DEBUG,"Establishing AWS Credentials");
-
-        AwsCredentialsProvider credsProvider = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(accessKey,secretKey));
-
-
-        StsClient stsClient = StsClient.builder().credentialsProvider(credsProvider).build();
-
-        AssumeRoleRequest request = AssumeRoleRequest.builder()
-                .durationSeconds(3600)
-                .roleArn(roleArn)
-                .roleSessionName("be")
-                .build();
-
-
-        StsAssumeRoleCredentialsProvider response = StsAssumeRoleCredentialsProvider
-                .builder()
-                .stsClient(stsClient)
-                .refreshRequest(request)
-                .build();
-
-        AwsSessionCredentials creds = (AwsSessionCredentials) response.resolveCredentials();
-
-
-        AwsSessionCredentials sessionCredentials = AwsSessionCredentials.create(creds.accessKeyId(), creds.secretAccessKey(), creds.sessionToken());
-
-        logger.log(Level.DEBUG,"Credentials established");
-
-        return AwsCredentialsProviderChain.builder()
-                .credentialsProviders(StaticCredentialsProvider.create(sessionCredentials))
-                .build();
-
-    }
-
-    private AwsCredentialsProvider createCredsProvider() throws ExecutionException, InterruptedException {
-
-        logger.log(Level.DEBUG,"Establishing AWS Credentials");
-
-        AwsCredentialsProvider credsProvider = StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(accessKey,secretKey));
-
-        logger.log(Level.DEBUG,"Credentials established");
-
-        return credsProvider;
-
-    }
 
     public void connect() throws Exception {
 
+        if (authType.equals("CREDENTIALS")) {
+            logger.log(Level.DEBUG, "Connecting to AWS SQS using Basic Credentials");
+            BasicCredential credentials = BasicCredentialsManager.getBasicCredential(basicContext);
 
-        logger.log(Level.DEBUG,"Connecting to AWS SQS");
+            AwsClientBuilder.EndpointConfiguration endpointConfiguration
+                    = new AwsClientBuilder.EndpointConfiguration(queueUrl, basicContext.getRegionName());
 
-        AwsCredentialsProvider awsCredentialsProvider = null;
-        if (roleArn != null && roleArn.length() > 0) {
-            awsCredentialsProvider = createCredsProviderWithRole();
+            sqsClient = AmazonSQSClientBuilder
+                    .standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials.getBasicSessionCredentials()))
+                    .withEndpointConfiguration(endpointConfiguration)
+                    .build();
+
         } else {
-            awsCredentialsProvider = createCredsProvider();
+            logger.log(Level.DEBUG, "Connecting to AWS SQS using SAML Authentication");
+            SSLSocketFactory sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            ClientConfiguration clientConfiguration = new ClientConfiguration();
+
+            Credentials credentials = SAMLCredentialsManager.getCredentials(samlContext, sslSocketFactory, clientConfiguration);
+
+            BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
+                    credentials.getAccessKeyId(),
+                    credentials.getSecretAccessKey(),
+                    credentials.getSessionToken());
+
+            sqsClient = AmazonSQSClientBuilder
+                    .standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(sessionCredentials))
+                    .withRegion(samlContext.getRegionName())
+                    .build();
+
         }
 
-        sqsClient = SqsClient.builder().credentialsProvider(awsCredentialsProvider)
-        		.endpointOverride(new URI(queueUrl))
-                .region(Region.of(region))
-                .build();
 
         logger.log(Level.DEBUG,"Successfully connected to AWS SQS");
 
@@ -191,7 +202,8 @@ public class SqsDestination extends BaseDestination {
     public void close() throws Exception {
 
         logger.log(Level.DEBUG,"Closing SQS Client Connection");
-        sqsClient.close();
+        sqsClient.shutdown();
+        //sqsClient.close();
         logger.log(Level.DEBUG,"SQS Client Connection closed");
     }
 
@@ -206,10 +218,11 @@ public class SqsDestination extends BaseDestination {
 
 
         try {
-            sqsClient.sendMessage(SendMessageRequest.builder()
-                    .queueUrl(queueUrl)
-                    .messageBody(payload)
-                    .build());
+            SendMessageRequest send_msg_request = new SendMessageRequest()
+                    .withQueueUrl(queueUrl)
+                    .withMessageBody("hello world")
+                    .withDelaySeconds(5);
+            sqsClient.sendMessage(send_msg_request);
 
             logger.log(Level.DEBUG, "Sent SQS msg.");
 
@@ -225,8 +238,10 @@ public class SqsDestination extends BaseDestination {
     }
 
 
-    public SqsClient getSQSClient() {
+    public AmazonSQS getSQSClient() {
     	return sqsClient;
     }
+
+    public String getQueueUrl() { return queueUrl;}
 
 }

@@ -7,10 +7,25 @@
         <description>AWS SQS Channel</description>
         <version>1.0.0.0</version>
         <properties>
+
             <property name="aws.region" displayName="AWS Region" type="String" default="eu-west-1" mandatory="true" gvToggle="true"/>
-            <property name="aws.sqs.access.key" displayName="AWS SQS Access Key" type="String" default="" mandatory="true" gvToggle="true"/>
-            <property name="aws.sqs.secret.key" displayName="AWS SQS Secret Key" type="String" default="" mandatory="true" gvToggle="true"/>
-            <property name="aws.sqs.role.arn" displayName="AWS SQS Role ARN" type="String" default="" mandatory="true" gvToggle="true"/>
+            <property name="aws.sqs.auth.type" displayName="Authentication Type" type="String" default="CREDENTIALS"/>
+
+            <!-- For AWS Credentials Authentication Use -->
+            <property name="aws.sqs.credentials.access.key" displayName="Credential AWS Key ID" type="String" default="" mandatory="true" gvToggle="true"/>
+            <property name="aws.sqs.credentials.secret.key" displayName="Credential AWS Secret" type="String" default="" mandatory="true" mask="true" gvToggle="true"/>
+            <property name="aws.sqs.credentials.role.arn" displayName="Credential Role ARN" type="String" default="" mandatory="true" gvToggle="true"/>
+            <property name="aws.sqs.credentials.role.session.name" displayName="Credential Role Session Name" type="String" default="" mandatory="true" gvToggle="true"/>
+            <property name="aws.sqs.credentials.expiration" displayName="Credential Token Expiration Duration (min)" type="Integer" default="60" mandatory="true" gvToggle="true"/>
+
+            <!-- For SAML Authentication Use -->
+            <property name="aws.sqs.saml.idp.provider.type" displayName="SAML IDP Provider"     type="String" default="ADFS"/>
+            <property name="aws.sqs.saml.idp.provider.url"  displayName="SAML IDP Provider URL" type="String" default="" mandatory="true" gvToggle="true"/>
+            <property name="aws.sqs.saml.idp.username" displayName="SAML IDP Username" type="String" default="" mandatory="true" gvToggle="true"/>
+            <property name="aws.sqs.saml.idp.password" displayName="SAML IDP Password" type="String" default="" mandatory="true" mask="true" gvToggle="true"/>
+            <property name="aws.sqs.saml.role" displayName="SAML AWS Role" type="String" default="" mandatory="true" gvToggle="true"/>
+            <property name="aws.sqs.saml.token.expiry.duration" displayName="SAML Token Expiration Duration (min)" type="Integer" default="60" mandatory="true" gvToggle="true"/>
+
         </properties>
         <destinations>
             <property name="queue.url" displayName="Queue URL" type="String" default="" mandatory="true" gvToggle="true"/>
@@ -21,6 +36,26 @@
         <serializers userdefined="true">
             <serializer type="String" class="com.tibco.be.custom.channel.aws.sqs.serializer.SqsTextSerializer"/>
         </serializers>
-
+        <configuration>
+            <property>
+                <name>aws.sqs.auth.type</name>
+                <parent></parent>
+                <type>combo-box</type>
+                <choices default="CREDENTIALS">
+                    <choice displayed="AWS Credentials" value="CREDENTIALS"/>
+                    <choice displayed="SAML" value="SAML"/>
+                </choices>
+            </property>
+            <property>
+                <name>aws.sqs.saml.idp.provider.type</name>
+                <parent></parent>
+                <type>combo-box</type>
+                <choices default="ADFS">
+                    <choice displayed="ADFS" value="ADFS"/>
+                    <choice displayed="Ping Federate" value="PingFederate"/>
+                    <choice displayed="Shibboleth" value="Shibboleth"/>
+                </choices>
+            </property>
+        </configuration>
     </driver>
 </drivers>

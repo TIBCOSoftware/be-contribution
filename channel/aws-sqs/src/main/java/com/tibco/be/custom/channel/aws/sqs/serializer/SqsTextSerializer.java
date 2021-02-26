@@ -1,6 +1,12 @@
+/*
+ * Copyright © 2020. TIBCO Software Inc.
+ * This file is subject to the license terms contained
+ * in the license file that is distributed with this file.
+ */
 package com.tibco.be.custom.channel.aws.sqs.serializer;
 
 
+import com.amazonaws.services.sqs.model.Message;
 import com.tibco.be.custom.channel.BaseEventSerializer;
 import com.tibco.be.custom.channel.Event;
 import com.tibco.be.custom.channel.EventWithId;
@@ -8,7 +14,6 @@ import com.tibco.be.custom.channel.ExtendedDefaultEventImpl;
 import com.tibco.be.custom.channel.framework.CustomEvent;
 import com.tibco.cep.kernel.service.logging.Level;
 import com.tibco.cep.kernel.service.logging.Logger;
-import software.amazon.awssdk.services.sqs.model.Message;
 
 import java.util.Map;
 import java.util.Properties;
@@ -39,8 +44,9 @@ public class SqsTextSerializer extends BaseEventSerializer {
         if(message instanceof Message) {
 
             Message m = (Message) message;
-            String payload = m.body();
-            String extId = m.messageId();
+            String payload = m.getBody();
+            logger.log(Level.DEBUG,payload);
+            String extId = m.getMessageId();
 
             event.setPayload((payload != null) ? payload.getBytes() : new byte[0]);
             event.setExtId(extId);
@@ -63,10 +69,9 @@ public class SqsTextSerializer extends BaseEventSerializer {
 
         logger.log(Level.DEBUG,"Serializing SQS Message");
 
-        Message message = Message.builder()
-                .messageId(event.getExtId())
-                .body(((ExtendedDefaultEventImpl) event).getUnderlyingSimpleEvent().getPayloadAsString())
-                .build();
+        Message message = new Message();
+        message.setMessageId(event.getExtId());
+        message.setBody(((ExtendedDefaultEventImpl) event).getUnderlyingSimpleEvent().getPayloadAsString());
         return message;
     }
 

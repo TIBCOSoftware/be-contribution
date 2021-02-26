@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.amazonaws.services.sqs.model.CreateQueueResult;
+import com.amazonaws.services.sqs.model.GetQueueUrlRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,12 +52,13 @@ import com.tibco.cep.runtime.model.event.impl.ObjectPayload;
 import com.tibco.cep.runtime.session.RuleServiceProvider;
 import com.tibco.cep.runtime.session.RuleServiceProviderManager;
 import com.tibco.cep.studio.common.util.Path;
-
 import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
-import software.amazon.awssdk.services.sqs.model.CreateQueueResponse;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
-import software.amazon.awssdk.services.sqs.model.QueueDoesNotExistException;
+
+//import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
+//import software.amazon.awssdk.services.sqs.model.CreateQueueResponse;
+//import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
+//import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
+//import software.amazon.awssdk.services.sqs.model.QueueDoesNotExistException;
 
 /**
  * Integration tests for validating AWS SQS Channel, BE system classes are mocked as well as AWS SQS service
@@ -115,10 +120,15 @@ public class SQSChannelIntegrationTest {
 			//create test queue
 			String queueUrl = getQueueUrl();
 			if (queueUrl == null) {
-				CreateQueueResponse createQueueResponse = sqsDestination.getSQSClient().createQueue(CreateQueueRequest.builder()
-						.queueName(queueName)
-						.build());
-				assertTrue(createQueueResponse.sdkHttpResponse().isSuccessful(), String.format("Queue[%s] created !!", queueName));
+
+					CreateQueueResult createQueueResult = sqsDestination.getSQSClient().createQueue(queueName);
+
+
+//				CreateQueueResponse createQueueResponse = sqsDestination.getSQSClient().createQueue( CreateQueueRequest.builder()
+//						.queueName(queueName)
+//						.build());
+
+				assertNotNull(createQueueResult , String.format("Queue[%s] created !!", queueName));
 				
 			}
 			
@@ -190,8 +200,8 @@ public class SQSChannelIntegrationTest {
 	private void mockObjects() {
 		final Properties channelProperties = new Properties();
 		channelProperties.put(SqsDestination.CONFIG_AWS_REGION, localStackContainer.getRegion());
-		channelProperties.put(SqsDestination.CONFIG_AWS_SQS_ACCESS_KEY, localStackContainer.getAccessKey());
-		channelProperties.put(SqsDestination.CONFIG_AWS_SQS_SECRET_KEY, localStackContainer.getSecretKey());
+		channelProperties.put(SqsDestination.CONFIG_AWS_SQS_CREDENTIALS_ACCESS_KEY, localStackContainer.getAccessKey());
+		channelProperties.put(SqsDestination.CONFIG_AWS_SQS_CREDENTIALS_SECRET_KEY, localStackContainer.getSecretKey());
 		
 		rspMgrInstance = Mockito.mock(RuleServiceProviderManager.class);
 		rsp = Mockito.mock(RuleServiceProvider.class);
@@ -242,18 +252,21 @@ public class SQSChannelIntegrationTest {
 		Mockito.when(destinationConfig.getProperties()).thenReturn(destinationProperties);
 		Mockito.when(channelConfig.getDestinations()).thenReturn(destinationConfigs);
 	}
-	
+
 	private String getQueueUrl() {
 		String queueUrl = null;
-		GetQueueUrlResponse queueUrlResponse = null;
+		//GetQueueUrlResponse queueUrlResponse = null;
 		try {
-			queueUrlResponse = sqsDestination.getSQSClient().getQueueUrl(GetQueueUrlRequest
-					.builder()
-					.queueName(queueName)
-					.build());
-			queueUrl = queueUrlResponse.queueUrl();
-		} catch (QueueDoesNotExistException queueDoesNotExist) {}
-		
+
+			AmazonSQS sqsClient = sqsDestination.getSQSClient();
+
+			GetQueueUrlRequest request = new GetQueueUrlRequest()
+					.withQueueName(getQueueUrl());
+
+			return sqsDestination.getSQSClient().getQueueUrl(queueName).getQueueUrl();
+
+		} catch (Exception e) {}
+
 		return queueUrl;
 	}
 }
