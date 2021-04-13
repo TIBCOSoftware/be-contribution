@@ -34,4 +34,4 @@ Refer to the [Documentation](https://tibcosoftware.github.io/be-contribution/) f
 
 If you have any questions, feel free to post an issue and tag it as a question, email be-contribution@tibco.com.
 
-Don't forget, if you build an awesome Channel or Store you can [share your work via the BE Showcase](https://tibcosoftware.github.io/be/contributing/)  your work via the BE Showcase rather than contributing to [be-contribution](https://github.com/TIBCOSoftware/be-contribution).
+Don't forget, if you build an awesome Channel or Store you can [share your work via the BE Showcase](https://tibcosoftware.github.io/be-contribution)  your work via the BE Showcase rather than contributing to [be-contribution](https://github.com/TIBCOSoftware/be-contribution).
