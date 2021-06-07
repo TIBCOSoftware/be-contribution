@@ -19,8 +19,7 @@
     <properties>
         <aws.version>1.11.977</aws.version>
     </properties>
-
-
+       
     <build>
         <plugins>
             <plugin>
@@ -113,6 +112,10 @@
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-drivers</artifactId>
         </dependency>
+        <dependency>
+			<groupId>com.tibco.businessevents</groupId>
+			<artifactId>cep-external-tibcrypt</artifactId>
+		</dependency>
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-ui-rt-common</artifactId>
