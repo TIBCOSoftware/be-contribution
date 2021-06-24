@@ -138,7 +138,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 				String mongoUrl = isSRV ? "mongodb+srv://%s:%s@%s/%s" : "mongodb://%s:%s@%s/%s";
 				
 				if (options != null && options != "") {
-						connString = new ConnectionString(String.format(mongoUrl, user,
+						connString = new ConnectionString(String.format(mongoUrl+"?%s", user,
 								password, URI, dbName, options));
 						if (useSsl) {
 							settings = getSSLClientSettings(storeConfigProperties, connString);					
