@@ -127,7 +127,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		Boolean isSRV = Boolean.parseBoolean(
 				storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_SRV_ENABLED, "false"));
 		String password = "";
-
+		
 		if (passwordEncrypted != null && passwordEncrypted != "") {
 			password = MongoDBUtils.decrypt(passwordEncrypted);
 		}
@@ -143,17 +143,27 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 						if (useSsl) {
 							settings = getSSLClientSettings(storeConfigProperties, connString);					
 							}
+						else	
+							settings = MongoClientSettings.builder().applyConnectionString(connString).build();
 				}else {
-						
 						connString = new ConnectionString(String.format(mongoUrl, user,
 							password, URI, dbName));
+						if (useSsl) {
+							settings = getSSLClientSettings(storeConfigProperties, connString);					
+							}
+						else
+							settings = MongoClientSettings.builder().applyConnectionString(connString).build();
 					}
 				
 			} else {
 				MongoDBUtils.restoreProviders();
 			}
 		}
-		settings = MongoClientSettings.builder().applyConnectionString(connString).build();
+		else
+		{	
+			settings = MongoClientSettings.builder().applyConnectionString(connString).build();
+		}
+		getLogger().log(Level.DEBUG, "SSl Settings Enabled?: " + settings.getSslSettings().isEnabled());
 		mongoclient = MongoClients.create(settings);
 		if (mongoclient != null) {
 			mongodatabase = mongoclient.getDatabase(dbName);
@@ -175,7 +185,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		String identityFile = storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_SSL_IDENTITY_FILE_PATH);
 		String trustStorePassword = storeConfigProperties
 				.getProperty(MongoDBConstants.PROPERTY_KEY_SSL_TRUSTED_STORE_PASSWORD);
-
+		
 		if (null != trustStoreFilePath && null != identityFile && null != trustStorePassword
 				&& !trustStoreFilePath.trim().isEmpty() && !trustStorePassword.trim().isEmpty()
 				&& !identityFile.trim().isEmpty()) {
@@ -212,8 +222,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 					settings = MongoClientSettings.builder().applyConnectionString(connString)
 							.applyToSslSettings(builder -> {
-								builder.enabled(true);
-								builder.context(sslContext);
+								builder.enabled(true).context(sslContext);
 							}).build();
 				}
 
@@ -238,7 +247,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 			// getLogger().log(Level.ERROR, "Problem occured with active transaction: " +
 			// e.getMessage());
 		}
-		getLogger().log(Level.INFO,"*********** Is connection alive=false");
+		//getLogger().log(Level.INFO,"*********** Is connection alive=false");
 		return false;
 	}
 
