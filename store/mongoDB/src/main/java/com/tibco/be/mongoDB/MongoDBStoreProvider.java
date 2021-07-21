@@ -64,12 +64,8 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	private static ConnectionString connString;
 	private static MongoDatabase mongodatabase;
 	private static ThreadLocal<ClientSession> clientsession = new ThreadLocal<ClientSession>();
-	private static ThreadLocal<Boolean> isTxExecution = new ThreadLocal<Boolean>() {
-		protected Boolean initialValue() {
-			return false;
-		}
-	};
-
+	private static ThreadLocal<Boolean> isTxExecution = ThreadLocal.withInitial(()->false);
+	
 	public MongoDBStoreProvider(Cluster cluster, StoreProviderConfig storeConfig) throws Exception {
 		super(cluster, storeConfig);
 
@@ -115,46 +111,38 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	protected void initConnection(Properties storeConfigProperties) throws Exception {
 
-		String URI = storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_URI,
-				"localhost:27017");
+		String URI = storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_URI,
+				"mongodb://localhost:27017");
 		Boolean useSsl = Boolean
 				.parseBoolean(storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_SSL_ENABLED, "false"));
-		String dbName = storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_DB_NAME, "admin");
-		String options = storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_OPTIONS, "");
+		String dbName = storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_DB_NAME, "test");
 		String user = storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_USER, "");
 		String passwordEncrypted = storeConfigProperties
 				.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_PASSWORD, "");
-		Boolean isSRV = Boolean.parseBoolean(
-				storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_SRV_ENABLED, "false"));
 		String password = "";
 		
 		if (passwordEncrypted != null && passwordEncrypted != "") {
 			password = MongoDBUtils.decrypt(passwordEncrypted);
 		}
-		connString = new ConnectionString(String.format("mongodb://%s/%s", URI, dbName));
+		//Following is a default connection string without any authentication mechanism
+		connString = new ConnectionString(URI);
 		
 		if (user != null && user != "") {
 			if (password != null && password != "") {
-				String mongoUrl = isSRV ? "mongodb+srv://%s:%s@%s/%s" : "mongodb://%s:%s@%s/%s";
-				
-				if (options != null && options != "") {
-						connString = new ConnectionString(String.format(mongoUrl+"?%s", user,
-								password, URI, dbName, options));
+
+						String userpass =  user+":"+password+"@";
+						StringBuilder connectionbuilder = new StringBuilder(URI);
+						connectionbuilder.insert(connectionbuilder.lastIndexOf("//")+2, userpass);
+						connString = new ConnectionString(connectionbuilder.toString());
 						if (useSsl) {
 							settings = getSSLClientSettings(storeConfigProperties, connString);					
 							}
-						else	
-							settings = MongoClientSettings.builder().applyConnectionString(connString).build();
-				}else {
-						connString = new ConnectionString(String.format(mongoUrl, user,
-							password, URI, dbName));
-						if (useSsl) {
-							settings = getSSLClientSettings(storeConfigProperties, connString);					
-							}
-						else
-							settings = MongoClientSettings.builder().applyConnectionString(connString).build();
-					}
-				
+						else {	
+							settings = MongoClientSettings.builder()
+									.applyConnectionString(connString)
+									.build();
+						}
+					
 			} else {
 				MongoDBUtils.restoreProviders();
 			}
@@ -163,11 +151,12 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		{	
 			settings = MongoClientSettings.builder().applyConnectionString(connString).build();
 		}
-		getLogger().log(Level.DEBUG, "SSl Settings Enabled?: " + settings.getSslSettings().isEnabled());
+		
+		getLogger().log(Level.DEBUG, "SSl Settings Enabled? " + settings.getSslSettings().isEnabled());
 		mongoclient = MongoClients.create(settings);
 		if (mongoclient != null) {
 			mongodatabase = mongoclient.getDatabase(dbName);
-			getLogger().log(Level.INFO, "Connecting to MongoDB with URI: " + URI + " To DB " + dbName);
+			getLogger().log(Level.INFO, "Connecting to MongoDB with URI: " + URI + " To Database " + dbName);
 
 		} else {
 			getLogger().log(Level.ERROR, "Problem encountered while connecting to MongoDB.");
@@ -464,7 +453,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 			Bson filter = createFilterToRetrieveData(queryHolder);
 
 			if (filter != null) {
-				getLogger().log(Level.DEBUG, " ******* Filter delete query :" + filter.toString());
+				getLogger().log(Level.DEBUG, " ****** Filter delete query :" + filter.toString());
 				collection.deleteOne(filter);
 				getLogger().log(Level.DEBUG, "Deleted Record: " + filter.toBsonDocument().toJson());
 

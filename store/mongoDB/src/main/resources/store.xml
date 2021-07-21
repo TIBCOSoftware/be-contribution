@@ -10,12 +10,10 @@
     <ttl>true</ttl>
     <properties>
 	    <property-group name="Connection" displayName="Connection">
-	        <property name="URI" displayName="MongoDB URI" type="String" default="localhost:27017" mandatory="true"/>
+	        <property name="URI" displayName="MongoDB URI" type="String" default="mongodb://localhost:27017/authDatabase?Options" mandatory="true"/>
 			<property name="dbName" displayName="Database" type="String" default="" />
 			<property name="user" displayName="User Name" type="String" default="" />
 	      	<property name="password" displayName="Password" type="String" default="" mask="true" />
-	      	<property name="options" displayName="Connection Options" type="String" default="" />
-	      	<property name="isSRV" displayName="Is SRV Enabled URI" type="Boolean" default="false" />
 	  	</property-group>
 	  	<security>
 	  	<property-group name="Connection-Security" displayName="Connection-Security">
