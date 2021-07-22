@@ -121,35 +121,34 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 				.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_PASSWORD, "");
 		String password = "";
 		
-		if (passwordEncrypted != null && passwordEncrypted != "") {
+		if (passwordEncrypted != null && passwordEncrypted != "") 
+		{
 			password = MongoDBUtils.decrypt(passwordEncrypted);
 		}
 		//Following is a default connection string without any authentication mechanism
 		connString = new ConnectionString(URI);
 		
-		if (user != null && user != "") {
-			if (password != null && password != "") {
-
-						String userpass =  user+":"+password+"@";
-						StringBuilder connectionbuilder = new StringBuilder(URI);
-						connectionbuilder.insert(connectionbuilder.lastIndexOf("//")+2, userpass);
-						connString = new ConnectionString(connectionbuilder.toString());
-						if (useSsl) {
-							settings = getSSLClientSettings(storeConfigProperties, connString);					
-							}
-						else {	
-							settings = MongoClientSettings.builder()
-									.applyConnectionString(connString)
-									.build();
-						}
-					
-			} else {
-				MongoDBUtils.restoreProviders();
-			}
-		}
+		if (user != null && user != "" && password != null && password != "") 
+		{
+				String userpass =  user+":"+password+"@";
+				StringBuilder connectionbuilder = new StringBuilder(URI);
+				connectionbuilder.insert(connectionbuilder.lastIndexOf("//")+2, userpass);
+				connString = new ConnectionString(connectionbuilder.toString());			
+		}	
 		else
 		{	
-			settings = MongoClientSettings.builder().applyConnectionString(connString).build();
+			MongoDBUtils.restoreProviders();
+		}	
+		
+		if (useSsl) 
+		{
+			settings = getSSLClientSettings(storeConfigProperties, connString);					
+		}
+		else 
+		{	
+			settings = MongoClientSettings.builder()
+					.applyConnectionString(connString)
+					.build();
 		}
 		
 		getLogger().log(Level.DEBUG, "SSl Settings Enabled? " + settings.getSslSettings().isEnabled());
@@ -229,14 +228,14 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		try {
 			getclientSession();
 			if (clientsession.get().hasActiveTransaction()) {
-				getLogger().log(Level.INFO,"*********** Is connection alive=true");
+				//getLogger().log(Level.INFO,"*********** Is connection alive=true");
 				return true;
 			}
 		} catch (Exception e) {
-			// getLogger().log(Level.ERROR, "Problem occured with active transaction: " +
-			// e.getMessage());
+			getLogger().log(Level.ERROR, e.getMessage());
+			throw new RuntimeException(e);
 		}
-		//getLogger().log(Level.INFO,"*********** Is connection alive=false");
+		
 		return false;
 	}
 
@@ -340,7 +339,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 						Calendar cal = (Calendar) storeColData.getColumnValue();
 						updateList.add(set(colName, cal.getTime()));
 					} else if (columntype != null && "OBJECT".equalsIgnoreCase(columntype.toString())) {
-
+						
 						byte[] barray = SerializationUtils.serialize((Serializable) storeColData.getColumnValue());
 						updateList.add(set(colName, barray));
 					} else if (columntype != null && "STRING".equalsIgnoreCase(columntype.toString())) {
