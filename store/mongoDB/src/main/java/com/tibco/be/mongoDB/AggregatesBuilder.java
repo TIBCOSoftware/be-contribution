@@ -20,8 +20,7 @@ import com.mongodb.client.model.BsonField;
 public class AggregatesBuilder {
 
 	
-	public static List<Bson> build(String aggFunction,List<String> groupByColSet,String aggCol,List<Bson> aggegationpipeline)
-	{
+	public static List<Bson> build(String aggFunction,List<String> groupByColSet,String aggCol,List<Bson> aggegationpipeline){
 		switch (aggFunction) {
 		case "SUM":
 			BsonField sum = sum(aggCol,"$"+aggCol);
@@ -58,8 +57,7 @@ public class AggregatesBuilder {
 	}
 	
 	//If groupby column has multiple values then those are merged in single document using following function
-	public static Bson formGroupByMultipleFields(List<String> groupByColSet)
-	{
+	public static Bson formGroupByMultipleFields(List<String> groupByColSet){
 		Document id = new Document();
 	    for (String s : groupByColSet) {
 	      id.append(s, "$" + s);
@@ -69,12 +67,10 @@ public class AggregatesBuilder {
 	}
 	
 	//This function returns multiple groupby computed fields for aggregation result
-	public static List<Bson> getComputedGroupByfields(List<String> groupByColSet)
-	{
+	public static List<Bson> getComputedGroupByfields(List<String> groupByColSet){
 		List<Bson> fieldList = new ArrayList<Bson>();
 		
-		for(String field:groupByColSet)
-		{
+		for(String field:groupByColSet){
 			fieldList.add(computed(field,"$_id."+field));
 		}
 		
@@ -82,10 +78,8 @@ public class AggregatesBuilder {
 	}	
 	
 	//This function builds aggregation pipeline based on groupby column,aggregation column and aggregation function
-	public static void buildAggregationPipeline(BsonField aggfunction,List<String> groupByColSet,List<Bson> aggegationpipeline)
-	{
-		if(groupByColSet.isEmpty())
-		{
+	public static void buildAggregationPipeline(BsonField aggfunction,List<String> groupByColSet,List<Bson> aggegationpipeline){
+		if(groupByColSet.isEmpty()){
 			aggegationpipeline.add(group(null,aggfunction));
 			if(aggfunction.getName().equalsIgnoreCase("count")) {
 				aggegationpipeline.add(project(fields(excludeId(),computed(aggfunction.getName(), "$"+aggfunction.getName()))));
