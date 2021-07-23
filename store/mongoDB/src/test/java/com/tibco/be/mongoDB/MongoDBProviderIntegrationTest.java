@@ -104,7 +104,7 @@ public class MongoDBProviderIntegrationTest {
 	}
 
 	@BeforeEach
-	void isTestRedisServerRunningAndHealthy() {
+	void isTestMongoDBServerRunningAndHealthy() {
 		if (mongoStoreProvider==null) {
 			MockitoAnnotations.openMocks(this);
 			storeConfig = createStoreConfig();

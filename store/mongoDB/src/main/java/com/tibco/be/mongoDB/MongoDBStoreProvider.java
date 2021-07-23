@@ -64,8 +64,8 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	private static ConnectionString connString;
 	private static MongoDatabase mongodatabase;
 	private static ThreadLocal<ClientSession> clientsession = new ThreadLocal<ClientSession>();
-	private static ThreadLocal<Boolean> isTxExecution = ThreadLocal.withInitial(()->false);
-	
+	private static ThreadLocal<Boolean> isTxExecution = ThreadLocal.withInitial(() -> false);
+
 	public MongoDBStoreProvider(Cluster cluster, StoreProviderConfig storeConfig) throws Exception {
 		super(cluster, storeConfig);
 
@@ -120,37 +120,29 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		String passwordEncrypted = storeConfigProperties
 				.getProperty(MongoDBConstants.PROPERTY_KEY_MONGODB_AUTH_PASSWORD, "");
 		String password = "";
-		
-		if (passwordEncrypted != null && passwordEncrypted != "") 
-		{
+
+		if (passwordEncrypted != null && passwordEncrypted != "") {
 			password = MongoDBUtils.decrypt(passwordEncrypted);
 		}
-		//Following is a default connection string without any authentication mechanism
+
+		// Following is a default connection string without any authentication mechanism
 		connString = new ConnectionString(URI);
-		
-		if (user != null && user != "" && password != null && password != "") 
-		{
-				String userpass =  user+":"+password+"@";
-				StringBuilder connectionbuilder = new StringBuilder(URI);
-				connectionbuilder.insert(connectionbuilder.lastIndexOf("//")+2, userpass);
-				connString = new ConnectionString(connectionbuilder.toString());			
-		}	
-		else
-		{	
+
+		if (user != null && user != "" && password != null && password != "") {
+			String userpass = user + ":" + password + "@";
+			StringBuilder connectionbuilder = new StringBuilder(URI);
+			connectionbuilder.insert(connectionbuilder.lastIndexOf("//") + 2, userpass);
+			connString = new ConnectionString(connectionbuilder.toString());
+		} else {
 			MongoDBUtils.restoreProviders();
-		}	
-		
-		if (useSsl) 
-		{
-			settings = getSSLClientSettings(storeConfigProperties, connString);					
 		}
-		else 
-		{	
-			settings = MongoClientSettings.builder()
-					.applyConnectionString(connString)
-					.build();
+
+		if (useSsl) {
+			settings = getSSLClientSettings(storeConfigProperties, connString);
+		} else {
+			settings = MongoClientSettings.builder().applyConnectionString(connString).build();
 		}
-		
+
 		getLogger().log(Level.DEBUG, "SSl Settings Enabled? " + settings.getSslSettings().isEnabled());
 		mongoclient = MongoClients.create(settings);
 		if (mongoclient != null) {
@@ -173,7 +165,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		String identityFile = storeConfigProperties.getProperty(MongoDBConstants.PROPERTY_KEY_SSL_IDENTITY_FILE_PATH);
 		String trustStorePassword = storeConfigProperties
 				.getProperty(MongoDBConstants.PROPERTY_KEY_SSL_TRUSTED_STORE_PASSWORD);
-		
+
 		if (null != trustStoreFilePath && null != identityFile && null != trustStorePassword
 				&& !trustStoreFilePath.trim().isEmpty() && !trustStorePassword.trim().isEmpty()
 				&& !identityFile.trim().isEmpty()) {
@@ -228,14 +220,14 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		try {
 			getclientSession();
 			if (clientsession.get().hasActiveTransaction()) {
-				//getLogger().log(Level.INFO,"*********** Is connection alive=true");
+				// getLogger().log(Level.INFO,"*********** Is connection alive=true");
 				return true;
 			}
 		} catch (Exception e) {
 			getLogger().log(Level.ERROR, e.getMessage());
 			throw new RuntimeException(e);
 		}
-		
+
 		return false;
 	}
 
@@ -339,13 +331,11 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 						Calendar cal = (Calendar) storeColData.getColumnValue();
 						updateList.add(set(colName, cal.getTime()));
 					} else if (columntype != null && "OBJECT".equalsIgnoreCase(columntype.toString())) {
-						
 						byte[] barray = SerializationUtils.serialize((Serializable) storeColData.getColumnValue());
 						updateList.add(set(colName, barray));
 					} else if (columntype != null && "STRING".equalsIgnoreCase(columntype.toString())) {
 						updateList.add(set(colName.toLowerCase(), storeColData.getColumnValue().toString()));
 					}
-
 					else {
 						updateList.add(set(colName, storeColData.getColumnValue()));
 					}
@@ -354,64 +344,53 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 						collection.createIndex(Indexes.ascending(colName));
 					}
+				
 					long ttl = rowData.getTtl();
-
 					if (ttl > 0) {
 
-						if (isUpdate) {
-							if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
-								if (!checkIfIndexExist(collection,
-										MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
-									if (checkIfIndexExist(collection,
-											MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-										String indexName = getIndexName(collection,
-												MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
-										collection.dropIndex(indexName);
-										collection.createIndex(
-												Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
-												new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-									}
-								} else {
+						  if (isUpdate) {
+						    
+							  if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
 
-									String indexName = getIndexName(collection,
-											MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED);
-									collection.dropIndex(indexName);
-									collection.createIndex(
-											Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
-											new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-								}
-							}
-						} else {
-							if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-								if (!checkIfIndexExist(collection,
-										MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-									collection.createIndex(
-											Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
-											new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-								} else {
-									String indexName = getIndexName(collection,
-											MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
-									collection.dropIndex(indexName);
-									collection.createIndex(
-											Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
-											new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-
-								}
-
-							}
-
+								  if (!checkIfIndexExist(collection, MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
+										  String indexName = getIndexName(collection,MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
+										  collection.dropIndex(indexName);
+										  collection.createIndex(
+												  Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
+												  new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+								  }
+								  else {
+									  	  String indexName = getIndexName(collection, MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED);
+									      collection.dropIndex(indexName);
+									      collection.createIndex(
+						                           Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
+						                           new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+								  }
+						      }
+						  } 
+						  else if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
+						      if (!checkIfIndexExist(collection,MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
+						    	  		collection.createIndex(
+						    	  				Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
+						    	  				new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+						      } else {
+						    	  	String indexName = getIndexName(collection,MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
+						    	  	collection.dropIndex(indexName);
+						    	  	collection.createIndex(
+						    	  			Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
+						    	  			new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+						      }
+						  }  
+					else {
+						  	if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED) ||
+						  			colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
+						  		if (checkIfIndexExist(collection, colName)) {
+						  			String indexName = getIndexName(collection, colName);
+						  			collection.dropIndex(indexName);
+						  		}
+						  	}
 						}
-					} else {
-						if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)
-								|| colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-							if (checkIfIndexExist(collection, colName)) {
-								String indexName = getIndexName(collection, colName);
-								collection.dropIndex(indexName);
-
-							}
-						}
-					}
-
+					}	  
 				});
 
 				UpdateOptions updateoptions = new UpdateOptions();
@@ -429,9 +408,8 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 			});
 		} catch (Exception e) {
-			e.printStackTrace();
-
-			throw e;
+			getLogger().log(Level.ERROR, e.getMessage());
+			throw new RuntimeException(e);
 		} finally {
 			if (!isTxExecution.get()) {
 				closeConnection();
@@ -504,8 +482,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 	}
 
-	private static BEIdentity getIdentity(String idReference, ArchiveResourceProvider provider, GlobalVariables gv)
-			throws Exception {
+	private static BEIdentity getIdentity(String idReference, ArchiveResourceProvider provider, GlobalVariables gv) throws Exception {
 		BEIdentity beIdentity = null;
 		if ((idReference != null) && !idReference.trim().isEmpty()) {
 			if (idReference.startsWith("/")) {
@@ -551,23 +528,22 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 				filter = and(filterlist);
 			} else
 				filter = filterlist.get(0);
-		} else {
-			if (!(filterData == null || filterData.isEmpty()) && filterData.containsKey("where")) // Make sure to mention filter condition in json format which is
-																									// compatible with MongoDB in case of direct store modes. For example format is
-																									// { <field1>: {<operator1> <value1> }, ... }for example :"{Age:{$eq:27}}".
-																									// For supported operators refer MongoDB documentation
-			{
+		} 
+		/** Make sure to mention filter condition in json format which is compatible with MongoDB in case of direct store modes. For
+		 example format is { <field1>:{<operator1><value1> }, ...} for example "{Age:{$eq:27}}".
+		 For supported operators refer MongoDB documentation
+		 **/
+		else if (!(filterData == null || filterData.isEmpty()) && filterData.containsKey("where")) { 
+			
 				if (filterData.containsKey("where")) {
 					if (null != filterData.get("where").getColumnValue()) {
-						getLogger().log(Level.DEBUG,
-								" ******* where query :" + filterData.get("where").getColumnValue());
+						getLogger().log(Level.DEBUG," ******* where query :" + filterData.get("where").getColumnValue());
 						filter = BsonDocument.parse(filterData.get("where").getColumnValue().toString());
 					}
 				}
 
 			}
 
-		}
 		return filter;
 
 	}
@@ -578,23 +554,23 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 			filter = eq(fieldName.toLowerCase(), fieldValue);
 			return filter;
 		}
-		if ("!=".equalsIgnoreCase(fieldOperator)) {
+		else if ("!=".equalsIgnoreCase(fieldOperator)) {
 			filter = ne(fieldName.toLowerCase(), fieldValue);
 			return filter;
 		}
-		if (">".equalsIgnoreCase(fieldOperator)) {
+		else if (">".equalsIgnoreCase(fieldOperator)) {
 			filter = gt(fieldName, fieldValue);
 			return filter;
 		}
-		if (">=".equalsIgnoreCase(fieldOperator)) {
+		else if (">=".equalsIgnoreCase(fieldOperator)) {
 			filter = gte(fieldName, fieldValue);
 			return filter;
 		}
-		if ("<".equalsIgnoreCase(fieldOperator)) {
+		else if ("<".equalsIgnoreCase(fieldOperator)) {
 			filter = lt(fieldName, fieldValue);
 			return filter;
 		}
-		if ("<=".equalsIgnoreCase(fieldOperator)) {
+		else if ("<=".equalsIgnoreCase(fieldOperator)) {
 			filter = lte(fieldName, fieldValue);
 			return filter;
 		}

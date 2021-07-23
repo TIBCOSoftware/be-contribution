@@ -25,27 +25,27 @@ public class AggregatesBuilder {
 		switch (aggFunction) {
 		case "SUM":
 			BsonField sum = sum(aggCol,"$"+aggCol);
-			buildAggregationPipeline(sum, groupByColSet, aggCol, aggegationpipeline);
+			buildAggregationPipeline(sum, groupByColSet, aggegationpipeline);
 			break;
 		
 		case "COUNT":
 			BsonField count = sum("count",1);
-			buildAggregationPipeline(count, groupByColSet, "count", aggegationpipeline);			
+			buildAggregationPipeline(count, groupByColSet, aggegationpipeline);			
 			break;
 		
 		case "AVG":
 			BsonField avg = avg(aggCol,"$"+aggCol);
-			buildAggregationPipeline(avg, groupByColSet, aggCol, aggegationpipeline);
+			buildAggregationPipeline(avg, groupByColSet, aggegationpipeline);
 			break;
 		
 		case "MAX":
 			BsonField max = max(aggCol,"$"+aggCol);
-			buildAggregationPipeline(max, groupByColSet, aggCol, aggegationpipeline);
+			buildAggregationPipeline(max, groupByColSet, aggegationpipeline);
 			break;
 		
 		case "MIN":
 			BsonField min = min(aggCol,"$"+aggCol);
-			buildAggregationPipeline(min, groupByColSet, aggCol, aggegationpipeline);
+			buildAggregationPipeline(min, groupByColSet, aggegationpipeline);
 			break;
 		
 		default:
@@ -82,18 +82,25 @@ public class AggregatesBuilder {
 	}	
 	
 	//This function builds aggregation pipeline based on groupby column,aggregation column and aggregation function
-	public static void buildAggregationPipeline(BsonField aggfunction,List<String> groupByColSet,String aggCol,List<Bson> aggegationpipeline)
+	public static void buildAggregationPipeline(BsonField aggfunction,List<String> groupByColSet,List<Bson> aggegationpipeline)
 	{
 		if(groupByColSet.isEmpty())
 		{
 			aggegationpipeline.add(group(null,aggfunction));
-			aggegationpipeline.add(project(fields(excludeId(),computed(aggCol, "$"+aggCol))));
+			if(aggfunction.getName().equalsIgnoreCase("count")) {
+				aggegationpipeline.add(project(fields(excludeId(),computed(aggfunction.getName(), "$"+aggfunction.getName()))));
+			}else
+				aggegationpipeline.add(project(fields(excludeId(),computed(aggfunction.getName(), aggfunction.getValue()))));
 		}
 		else {
 			aggegationpipeline.add(group(formGroupByMultipleFields(groupByColSet),aggfunction));
 			List<Bson> computedlist = getComputedGroupByfields(groupByColSet);
 			computedlist.add(excludeId());
-			computedlist.add(computed(aggCol, "$"+aggCol));
+			if(aggfunction.getName().equalsIgnoreCase("count")) {
+				computedlist.add(computed(aggfunction.getName(), "$"+aggfunction.getName()));
+			}
+			else
+				computedlist.add(computed(aggfunction.getName(), aggfunction.getValue()));
 			aggegationpipeline.add(project(fields(computedlist)));
 		}
 	}
