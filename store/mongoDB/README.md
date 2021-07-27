@@ -20,6 +20,6 @@ Assuming you have gone through all the documentation and appropriate [steps](htt
 2. Import your BE project in Studio and open the corresponding CDD.
 3. Select MongoDB as a Store Provider
 4. Once 'MongoDB' is selected as the store provider, various input fields based on the ones configured in 'store.xml' are available to accept values.
-5. Provide configuration details as appropriate.
-6. Make sure to select correct protocol for connection URL. For example, if your database is hosted on MongoDB Atlas, check the URL whether it has 'SRV'enabled or not. If SRV is mentioned in your connection URL then select the check box named 'Is SRV Enabled URI' otherwise keep the default settings.
+5. Provide configuration details appropriately.
+6. In case mongoDB user is present in different database than "admin" then same can be mentioned in URL. Additionally, options can be provided as a part of URL using key/value pair.
 7. Start the BE engine and make sure its connected to database which is mentioned in CDD configuration
