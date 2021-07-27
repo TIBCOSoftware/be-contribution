@@ -5,8 +5,8 @@
 package com.tibco.be.mongoDB;
 
 public interface MongoDBConstants {
-	
-	String PROPERTY_KEY_SSL_TRUSTED_CERTIFICATE_FOLDER_PATH="ssl.trusted.certificate.folder.path";
+
+	String PROPERTY_KEY_SSL_TRUSTED_CERTIFICATE_FOLDER_PATH = "ssl.trusted.certificate.folder.path";
 	String PROPERTY_KEY_SSL_IDENTITY_FILE_PATH = "ssl.identity.file.path";
 	String PROPERTY_KEY_SSL_TRUSTED_STORE_PASSWORD = "ssl.trusted.store.password";
 	String PROPERTY_KEY_SSL_ENABLED = "isSecurityEnabled";
@@ -17,5 +17,5 @@ public interface MongoDBConstants {
 	String PROPERTY_KEY_MONGODB_ID = "_id";
 	String PROPERTY_KEY_MONGODB_TIME_CREATED = "time_created_";
 	String PROPERTY_KEY_MONGODB_TIME_MODIFIED = "time_last_modified_";
-	
+
 }

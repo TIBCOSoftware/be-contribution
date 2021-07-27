@@ -7,8 +7,7 @@ import com.tibco.security.AXSecurityException;
 import com.tibco.security.ObfuscationEngine;
 
 public class MongoDBUtils {
-	
-	
+
 	/**
 	 * @param encryptedString
 	 * @return
@@ -16,28 +15,26 @@ public class MongoDBUtils {
 	 */
 	public static String decrypt(String encryptedString) throws AXSecurityException {
 		try {
-		if (ObfuscationEngine.hasEncryptionPrefix(encryptedString)) {
-			return(new String(ObfuscationEngine.decrypt(encryptedString)));
-		}
-		}
-		finally {
-			 restoreProviders();
+			if (ObfuscationEngine.hasEncryptionPrefix(encryptedString)) {
+				return (new String(ObfuscationEngine.decrypt(encryptedString)));
+			}
+		} finally {
+			restoreProviders();
 		}
 		return encryptedString;
 	}
-	
+
 	public static void restoreProviders() {
 		java.security.Security.removeProvider("Entrust");
 		java.security.Security.removeProvider("ENTRUST");
 		java.security.Security.removeProvider("IAIK");
 	}
-	
-	
+
 	public static Object getValue(String DataType, BsonValue value) {
-		if (value==null) {
+		if (value == null) {
 			return null;
 		}
-		
+
 		Object origValue = value;
 		switch (DataType) {
 		case "BOOLEAN":
@@ -45,7 +42,7 @@ public class MongoDBUtils {
 			break;
 		case "DATE_TIME":
 			Calendar cal = Calendar.getInstance();
-			//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"); 
+			// SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 			cal.setTimeInMillis(value.asDateTime().getValue());
 			origValue = cal;
 			break;
@@ -77,6 +74,5 @@ public class MongoDBUtils {
 			break;
 		}
 		return origValue;
-	}	
-
+	}
 }

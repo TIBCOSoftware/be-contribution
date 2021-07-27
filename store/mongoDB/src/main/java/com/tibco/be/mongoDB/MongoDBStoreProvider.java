@@ -74,7 +74,11 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void commit() {
 		try {
-			clientsession.get().commitTransaction();
+			if (clientsession.get() != null && clientsession.get().hasActiveTransaction())
+				clientsession.get().commitTransaction();
+			else
+				throw new RuntimeException("Failed to commit a transaction as there is no active session found");
+
 		} catch (Exception e) {
 			getLogger().log(Level.ERROR, e.getMessage());
 			throw new RuntimeException(e);
@@ -98,9 +102,11 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 	@Override
 	public void endTransaction() {
-		closeConnection();
-		isTxExecution.set(false);
-
+		if (clientsession.get() != null) {
+			closeConnection();
+			isTxExecution.set(false);
+		} else
+			throw new RuntimeException("Failed to terminate a transaction as there is no active session found");
 	}
 
 	@Override
@@ -219,16 +225,14 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	protected boolean isConnectionAlive() {
 		try {
 			getclientSession();
-			if (clientsession.get().hasActiveTransaction()) {
-				// getLogger().log(Level.INFO,"*********** Is connection alive=true");
+			if (clientsession.get() != null) {
 				return true;
-			}
+			} else
+				return false;
 		} catch (Exception e) {
 			getLogger().log(Level.ERROR, e.getMessage());
 			throw new RuntimeException(e);
 		}
-
-		return false;
 	}
 
 	@Override
@@ -273,7 +277,11 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void rollback() {
 		try {
-			clientsession.get().abortTransaction();
+			if (clientsession.get() != null && clientsession.get().hasActiveTransaction())
+				clientsession.get().abortTransaction();
+			else
+				throw new RuntimeException("Failed to rollback a transaction as there is no active session found");
+
 		} catch (Exception e) {
 			getLogger().log(Level.ERROR, e.getMessage());
 			throw new RuntimeException(e);
@@ -335,8 +343,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 						updateList.add(set(colName, barray));
 					} else if (columntype != null && "STRING".equalsIgnoreCase(columntype.toString())) {
 						updateList.add(set(colName.toLowerCase(), storeColData.getColumnValue().toString()));
-					}
-					else {
+					} else {
 						updateList.add(set(colName, storeColData.getColumnValue()));
 					}
 
@@ -344,53 +351,54 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 						collection.createIndex(Indexes.ascending(colName));
 					}
-				
+
 					long ttl = rowData.getTtl();
 					if (ttl > 0) {
 
-						  if (isUpdate) {
-						    
-							  if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
+						if (isUpdate) {
 
-								  if (!checkIfIndexExist(collection, MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
-										  String indexName = getIndexName(collection,MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
-										  collection.dropIndex(indexName);
-										  collection.createIndex(
-												  Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
-												  new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-								  }
-								  else {
-									  	  String indexName = getIndexName(collection, MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED);
-									      collection.dropIndex(indexName);
-									      collection.createIndex(
-						                           Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
-						                           new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-								  }
-						      }
-						  } 
-						  else if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-						      if (!checkIfIndexExist(collection,MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-						    	  		collection.createIndex(
-						    	  				Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
-						    	  				new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-						      } else {
-						    	  	String indexName = getIndexName(collection,MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
-						    	  	collection.dropIndex(indexName);
-						    	  	collection.createIndex(
-						    	  			Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
-						    	  			new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-						      }
-						  }  
-					else {
-						  	if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED) ||
-						  			colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-						  		if (checkIfIndexExist(collection, colName)) {
-						  			String indexName = getIndexName(collection, colName);
-						  			collection.dropIndex(indexName);
-						  		}
-						  	}
+							if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
+
+								if (!checkIfIndexExist(collection,
+										MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
+									String indexName = getIndexName(collection,
+											MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
+									collection.dropIndex(indexName);
+									collection.createIndex(
+											Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
+											new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+								} else {
+									String indexName = getIndexName(collection,
+											MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED);
+									collection.dropIndex(indexName);
+									collection.createIndex(
+											Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
+											new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+								}
+							}
+						} else if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
+							if (!checkIfIndexExist(collection, MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
+								collection.createIndex(
+										Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
+										new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+							} else {
+								String indexName = getIndexName(collection,
+										MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
+								collection.dropIndex(indexName);
+								collection.createIndex(
+										Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
+										new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+							}
+						} else {
+							if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)
+									|| colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
+								if (checkIfIndexExist(collection, colName)) {
+									String indexName = getIndexName(collection, colName);
+									collection.dropIndex(indexName);
+								}
+							}
 						}
-					}	  
+					}
 				});
 
 				UpdateOptions updateoptions = new UpdateOptions();
@@ -482,7 +490,8 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 	}
 
-	private static BEIdentity getIdentity(String idReference, ArchiveResourceProvider provider, GlobalVariables gv) throws Exception {
+	private static BEIdentity getIdentity(String idReference, ArchiveResourceProvider provider, GlobalVariables gv)
+			throws Exception {
 		BEIdentity beIdentity = null;
 		if ((idReference != null) && !idReference.trim().isEmpty()) {
 			if (idReference.startsWith("/")) {
@@ -528,21 +537,23 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 				filter = and(filterlist);
 			} else
 				filter = filterlist.get(0);
-		} 
-		/** Make sure to mention filter condition in json format which is compatible with MongoDB in case of direct store modes. For
-		 example format is { <field1>:{<operator1><value1> }, ...} for example "{Age:{$eq:27}}".
-		 For supported operators refer MongoDB documentation
+		}
+		/**
+		 * Make sure to mention filter condition in json format which is compatible with
+		 * MongoDB in case of direct store modes. For example format is {
+		 * <field1>:{<operator1><value1> }, ...} for example "{Age:{$eq:27}}". For
+		 * supported operators refer MongoDB documentation
 		 **/
-		else if (!(filterData == null || filterData.isEmpty()) && filterData.containsKey("where")) { 
-			
-				if (filterData.containsKey("where")) {
-					if (null != filterData.get("where").getColumnValue()) {
-						getLogger().log(Level.DEBUG," ******* where query :" + filterData.get("where").getColumnValue());
-						filter = BsonDocument.parse(filterData.get("where").getColumnValue().toString());
-					}
-				}
+		else if (!(filterData == null || filterData.isEmpty()) && filterData.containsKey("where")) {
 
+			if (filterData.containsKey("where")) {
+				if (null != filterData.get("where").getColumnValue()) {
+					getLogger().log(Level.DEBUG, " ******* where query :" + filterData.get("where").getColumnValue());
+					filter = BsonDocument.parse(filterData.get("where").getColumnValue().toString());
+				}
 			}
+
+		}
 
 		return filter;
 
@@ -553,24 +564,19 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		if ("=".equalsIgnoreCase(fieldOperator)) {
 			filter = eq(fieldName.toLowerCase(), fieldValue);
 			return filter;
-		}
-		else if ("!=".equalsIgnoreCase(fieldOperator)) {
+		} else if ("!=".equalsIgnoreCase(fieldOperator)) {
 			filter = ne(fieldName.toLowerCase(), fieldValue);
 			return filter;
-		}
-		else if (">".equalsIgnoreCase(fieldOperator)) {
+		} else if (">".equalsIgnoreCase(fieldOperator)) {
 			filter = gt(fieldName, fieldValue);
 			return filter;
-		}
-		else if (">=".equalsIgnoreCase(fieldOperator)) {
+		} else if (">=".equalsIgnoreCase(fieldOperator)) {
 			filter = gte(fieldName, fieldValue);
 			return filter;
-		}
-		else if ("<".equalsIgnoreCase(fieldOperator)) {
+		} else if ("<".equalsIgnoreCase(fieldOperator)) {
 			filter = lt(fieldName, fieldValue);
 			return filter;
-		}
-		else if ("<=".equalsIgnoreCase(fieldOperator)) {
+		} else if ("<=".equalsIgnoreCase(fieldOperator)) {
 			filter = lte(fieldName, fieldValue);
 			return filter;
 		}

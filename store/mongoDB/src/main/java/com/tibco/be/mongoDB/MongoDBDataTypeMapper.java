@@ -2,20 +2,19 @@ package com.tibco.be.mongoDB;
 
 import com.tibco.cep.store.custom.StoreDataTypeMapper;
 
-
 /**
  * @author TIBCO Software
  * 
- * This class maps BE data types to mongoDB store data types.
+ *         This class maps BE data types to mongoDB store data types.
  * 
  */
 
 public class MongoDBDataTypeMapper extends StoreDataTypeMapper {
-	
-private static MongoDBDataTypeMapper mongodbDataMapper = new MongoDBDataTypeMapper();
-	
+
+	private static MongoDBDataTypeMapper mongodbDataMapper = new MongoDBDataTypeMapper();
+
 	public MongoDBDataTypeMapper() {
-		
+
 	}
 
 	@Override
@@ -62,14 +61,10 @@ private static MongoDBDataTypeMapper mongodbDataMapper = new MongoDBDataTypeMapp
 	protected Object getStringType() {
 		return "STRING";
 	}
-	
+
 	public static MongoDBDataTypeMapper getInstance() {
 		return mongodbDataMapper;
-		
+
 	}
-	
-	
-	
-	
 
 }
