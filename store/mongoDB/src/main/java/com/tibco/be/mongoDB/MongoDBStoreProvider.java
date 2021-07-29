@@ -74,7 +74,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void commit() {
 		try {
-			if (clientsession.get() != null && clientsession.get().hasActiveTransaction())
+			if (clientsession.get() != null && isTxExecution.get() == true)
 				clientsession.get().commitTransaction();
 			else
 				throw new RuntimeException("Failed to commit a transaction as there is no active session found");
@@ -277,7 +277,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void rollback() {
 		try {
-			if (clientsession.get() != null && clientsession.get().hasActiveTransaction())
+			if (clientsession.get() != null && isTxExecution.get() == true)
 				clientsession.get().abortTransaction();
 			else
 				throw new RuntimeException("Failed to rollback a transaction as there is no active session found");
@@ -357,46 +357,38 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 						if (isUpdate) {
 
-							if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
-
-								if (!checkIfIndexExist(collection,
-										MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)) {
-									String indexName = getIndexName(collection,
-											MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
-									collection.dropIndex(indexName);
-									collection.createIndex(
-											Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
-											new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-								} else {
-									String indexName = getIndexName(collection,
-											MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED);
-									collection.dropIndex(indexName);
-									collection.createIndex(
-											Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
-											new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-								}
-							}
-						} else if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-							if (!checkIfIndexExist(collection, MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-								collection.createIndex(
-										Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
-										new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
-							} else {
-								String indexName = getIndexName(collection,
+							String indexName = getIndexName(collection,
+									MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED);
+							if (indexName == null)
+								indexName = getIndexName(collection,
 										MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
+							if (indexName != null) {
+								collection.dropIndex(indexName);
+								collection.createIndex(
+										Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED),
+										new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+							}
+						} else {
+							String indexName = getIndexName(collection,
+									MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
+							if (indexName != null) {
 								collection.dropIndex(indexName);
 								collection.createIndex(
 										Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
 										new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
+							} else {
+								collection.createIndex(
+										Indexes.ascending(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED),
+										new IndexOptions().expireAfter(Long.valueOf(ttl), TimeUnit.SECONDS));
 							}
-						} else {
-							if (colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED)
-									|| colName.equalsIgnoreCase(MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED)) {
-								if (checkIfIndexExist(collection, colName)) {
-									String indexName = getIndexName(collection, colName);
-									collection.dropIndex(indexName);
-								}
-							}
+						}
+					} else {
+						String indexName = getIndexName(collection,
+								MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_MODIFIED);
+						if (indexName == null)
+							indexName = getIndexName(collection, MongoDBConstants.PROPERTY_KEY_MONGODB_TIME_CREATED);
+						if (indexName != null) {
+							collection.dropIndex(indexName);
 						}
 					}
 				});
@@ -583,26 +575,14 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		return filter;
 	}
 
-	private boolean checkIfIndexExist(MongoCollection<Document> collection, String indexName) {
-
-		List<Document> indexlist = collection.listIndexes().into(new ArrayList<Document>());
-		for (Document indexdoc : indexlist) {
-			if (indexdoc.get("name").toString().equalsIgnoreCase(indexName + "_1")
-					|| indexdoc.get("name").toString().equalsIgnoreCase(indexName + "_-1")) {
-				return true;
-			}
-		}
-		return false;
-
-	}
-
 	private String getIndexName(MongoCollection<Document> collection, String columnName) {
 
 		List<Document> indexlist = collection.listIndexes().into(new ArrayList<Document>());
 		for (Document indexdoc : indexlist) {
-			if (indexdoc.get("name").toString().equalsIgnoreCase(columnName + "_1")
-					|| indexdoc.get("name").toString().equalsIgnoreCase(columnName + "_-1")) {
-				return (String) indexdoc.get("name");
+			String indexName = indexdoc.get("name").toString();
+			if (indexName != null && (indexName.equalsIgnoreCase(columnName + "_1")
+					|| indexName.equalsIgnoreCase(columnName + "_-1"))) {
+				return indexName;
 			}
 		}
 		return null;
