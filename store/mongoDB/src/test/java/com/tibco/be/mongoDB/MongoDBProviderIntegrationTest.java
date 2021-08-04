@@ -158,7 +158,7 @@ public class MongoDBProviderIntegrationTest {
 		// updating the book
 		origBook.setAuthor("Dan Brown Sr");
 		origBook.setTitle("The Da Vinci Code Vol1");
-		writeRecord(origBook);
+		updateRecord(origBook);
 
 		Book getUpdatedBook = getRecord(origBook.getId());
 		assertNotNull(getUpdatedBook);
@@ -286,6 +286,41 @@ public class MongoDBProviderIntegrationTest {
 
 		try {
 			mongoStoreProvider.write(storeRowHolderList);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void updateRecord(Book book) {
+		List<Object> dataTypeList = new ArrayList<Object>();
+		List<String> colNameList = new ArrayList<String>();
+		List<Object> colValueList = new ArrayList<Object>();
+
+		colNameList.add("extid");
+		dataTypeList.add("STRING");
+		colValueList.add(book.getId().getExtId());
+
+		colNameList.add("title");
+		dataTypeList.add("STRING");
+		colValueList.add(book.getTitle());
+
+		colNameList.add("author");
+		dataTypeList.add("STRING");
+		colValueList.add(book.getAuthor());
+
+		colNameList.add("price");
+		dataTypeList.add("double");
+		colValueList.add(book.getPrice());
+
+		StoreRowHolder storeRowHolder = StoreHelper.getRow(ENTITY_TABLE, null, dataTypeList.toArray(),
+				colNameList.toArray(new String[colNameList.size()]), colValueList.toArray(), null,
+				new String[] { "extid" }, null);
+
+		List<StoreRowHolder> storeRowHolderList = new ArrayList<StoreRowHolder>();
+		storeRowHolderList.add(storeRowHolder);
+
+		try {
+			mongoStoreProvider.update(storeRowHolderList);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

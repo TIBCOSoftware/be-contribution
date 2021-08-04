@@ -64,7 +64,6 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	private static ConnectionString connString;
 	private static MongoDatabase mongodatabase;
 	private static ThreadLocal<ClientSession> clientsession = new ThreadLocal<ClientSession>();
-	private static ThreadLocal<Boolean> isTxExecution = ThreadLocal.withInitial(() -> false);
 
 	public MongoDBStoreProvider(Cluster cluster, StoreProviderConfig storeConfig) throws Exception {
 		super(cluster, storeConfig);
@@ -74,7 +73,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void commit() {
 		try {
-			if (clientsession.get() != null && isTxExecution.get() == true)
+			if (clientsession.get() != null && clientsession.get().hasActiveTransaction() == true)
 				clientsession.get().commitTransaction();
 			else
 				throw new RuntimeException("Failed to commit a transaction as there is no active session found");
@@ -104,7 +103,6 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	public void endTransaction() {
 		if (clientsession.get() != null) {
 			closeConnection();
-			isTxExecution.set(false);
 		} else
 			throw new RuntimeException("Failed to terminate a transaction as there is no active session found");
 	}
@@ -277,7 +275,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void rollback() {
 		try {
-			if (clientsession.get() != null && isTxExecution.get() == true)
+			if (clientsession.get() != null && clientsession.get().hasActiveTransaction() == true)
 				clientsession.get().abortTransaction();
 			else
 				throw new RuntimeException("Failed to rollback a transaction as there is no active session found");
@@ -292,7 +290,6 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void startTransaction() {
 		try {
-			isTxExecution.set(true);
 			getclientSession();
 			clientsession.get().startTransaction();
 		} catch (Exception e) {
@@ -317,9 +314,8 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	public void write(List<StoreRowHolder> storeRowHolder, boolean isUpdate) throws Exception {
 
 		try {
-			if (!isTxExecution.get()) {
+			if (clientsession.get() == null)
 				getclientSession();
-			}
 			// implementation for new ID
 
 			storeRowHolder.forEach((rowData) -> {
@@ -411,19 +407,18 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 			getLogger().log(Level.ERROR, e.getMessage());
 			throw new RuntimeException(e);
 		} finally {
-			if (!isTxExecution.get()) {
+
+			if (!clientsession.get().hasActiveTransaction())
 				closeConnection();
-			}
 		}
 
 	}
 
 	private void delete_(StoreRowHolder queryHolder) {
 		try {
-			if (!isTxExecution.get()) {
-				getclientSession();
-			}
 
+			if (clientsession.get() == null)
+				getclientSession();
 			String tableName = queryHolder.getTableName();
 			MongoCollection<Document> collection = mongodatabase.getCollection(tableName);
 			Document query = new Document();
@@ -442,9 +437,8 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		} catch (Exception e) {
 			getLogger().log(Level.ERROR, "Problem while acquiring connection during transaction: " + e.getMessage());
 		} finally {
-			if (!isTxExecution.get()) {
+			if (!clientsession.get().hasActiveTransaction())
 				closeConnection();
-			}
 		}
 	}
 
