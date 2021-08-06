@@ -73,9 +73,9 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void commit() {
 		try {
-			if (clientsession.get() != null && clientsession.get().hasActiveTransaction() == true)
+			if (hasActiveTransaction()) {
 				clientsession.get().commitTransaction();
-			else
+			} else
 				throw new RuntimeException("Failed to commit a transaction as there is no active session found");
 
 		} catch (Exception e) {
@@ -275,7 +275,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	@Override
 	public void rollback() {
 		try {
-			if (clientsession.get() != null && clientsession.get().hasActiveTransaction() == true)
+			if (hasActiveTransaction())
 				clientsession.get().abortTransaction();
 			else
 				throw new RuntimeException("Failed to rollback a transaction as there is no active session found");
@@ -408,7 +408,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 			throw new RuntimeException(e);
 		} finally {
 
-			if (!clientsession.get().hasActiveTransaction())
+			if (!hasActiveTransaction())
 				closeConnection();
 		}
 
@@ -437,7 +437,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 		} catch (Exception e) {
 			getLogger().log(Level.ERROR, "Problem while acquiring connection during transaction: " + e.getMessage());
 		} finally {
-			if (!clientsession.get().hasActiveTransaction())
+			if (!hasActiveTransaction())
 				closeConnection();
 		}
 	}
@@ -502,6 +502,10 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 			ClientSession session = mongoclient.startSession();
 			clientsession.set(session);
 		}
+	}
+
+	private boolean hasActiveTransaction() {
+		return (clientsession.get() != null && clientsession.get().hasActiveTransaction());
 	}
 
 	private Bson createFilterToRetrieveData(StoreRowHolder queryHolder) {
