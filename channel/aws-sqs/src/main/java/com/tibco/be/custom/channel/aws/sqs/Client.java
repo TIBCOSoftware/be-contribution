@@ -9,6 +9,7 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.securitytoken.model.Credentials;
 import com.amazonaws.services.sqs.AmazonSQS;
@@ -17,6 +18,7 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.tibco.be.custom.channel.aws.sqs.basiccredentials.BasicContext;
 import com.tibco.be.custom.channel.aws.sqs.basiccredentials.BasicCredential;
 import com.tibco.be.custom.channel.aws.sqs.basiccredentials.BasicCredentialsManager;
+import com.tibco.be.custom.channel.aws.sqs.containercredentials.ContainerContext;
 import com.tibco.be.custom.channel.aws.sqs.defaultcredentials.DefaultContext;
 import com.tibco.be.custom.channel.aws.sqs.saml2.SAMLContext;
 import com.tibco.be.custom.channel.aws.sqs.saml2.SAMLCredentialsManager;
@@ -159,7 +161,21 @@ public class Client {
         logger.log(Level.DEBUG,"Re-using AmazonSQS client");
         return client;
       }
-    } else {
+    } else if(context instanceof ContainerContext){
+    	
+    	ContainerContext containerContext = (ContainerContext) context; 
+    	
+    	// Create our AWS endpoint configuration
+        AwsClientBuilder.EndpointConfiguration endpointConfiguration =
+            new AwsClientBuilder.EndpointConfiguration(
+            		containerContext.getQueueUrl(), containerContext.getRegionName());
+        
+    	client = AmazonSQSClientBuilder.standard()
+                .withCredentials(new EC2ContainerCredentialsProviderWrapper())
+                .withEndpointConfiguration(endpointConfiguration)
+                .build();
+    	return client;
+    }else {
       throw new RuntimeException("Unknown context");
     }
 
