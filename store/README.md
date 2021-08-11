@@ -3,6 +3,7 @@
 Covers all persistent store contributions that work with TIBCO BusinessEvents 6.1.0 and above. Below is the list of currently available persistent stores,
 
 * [Redis](https://github.com/TIBCOSoftware/be-contribution/tree/main/store/redis)
+* [MongoDB](https://github.com/TIBCOSoftware/be-contribution/tree/main/store/mongoDB)
 
 ## Pre-requisites
 
