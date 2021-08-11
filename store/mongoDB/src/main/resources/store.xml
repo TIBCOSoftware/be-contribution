@@ -1,0 +1,30 @@
+<store>
+	<type>MongoDB</type>
+	<label>MongoDB</label>
+	<class>com.tibco.be.mongoDB.MongoDBStoreProvider</class>
+	<schema-generation></schema-generation>
+	<description>MongoDB Store</description>
+	<version>1.0</version>
+    <backingstore>true</backingstore>
+    <cache>false</cache>
+    <ttl>true</ttl>
+    <properties>
+	    <property-group name="Connection" displayName="Connection">
+	        <property name="URI" displayName="MongoDB URI" type="String" default="mongodb://localhost:27017/authDatabase?Options" mandatory="true"/>
+			<property name="dbName" displayName="Database" type="String" default="" />
+			<property name="user" displayName="User Name" type="String" default="" />
+	      	<property name="password" displayName="Password" type="String" default="" mask="true" />
+	  	</property-group>
+	  	<security>
+	  	<property-group name="Connection-Security" displayName="Connection-Security">
+			<property name="ssl.trusted.certificate.folder.path"
+				displayName="Trusted Folder Path" type="File" directory="true" absolute="false" default="" />
+			<property name="ssl.identity.file.path"
+				displayName="Identity" type="File" default="" absolute="false" extensions="*.id"/>
+			<property name="ssl.trusted.store.password"
+				displayName="Trust Store Password" type="String" default=""
+				mask="true" />
+				</property-group>
+		</security>
+    </properties>
+</store>
