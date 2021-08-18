@@ -73,7 +73,7 @@ public class SqsListener implements Runnable {
             logger.log(Level.DEBUG,"Using Default Context");
             queueUrl = ((DefaultContext)context).getQueueUrl();
         } else if (context instanceof ContainerContext) {
-            logger.log(Level.DEBUG,"Using Contaimer Context");
+            logger.log(Level.DEBUG,"Using Container Context");
             queueUrl = ((ContainerContext)context).getQueueUrl();
         } else {
             throw new RuntimeException("Unknown context");

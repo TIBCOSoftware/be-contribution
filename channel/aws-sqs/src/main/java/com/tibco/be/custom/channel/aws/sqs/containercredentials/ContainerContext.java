@@ -1,5 +1,13 @@
 package com.tibco.be.custom.channel.aws.sqs.containercredentials;
 
+
+/*
+ * Container Credentials authentication type is loaded from the Amazon ECS when the environment variable AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is set. 
+ * For information on Amazon ECS container credentials, see AWS documentation.
+ * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
+ * 
+ */
+
 public class ContainerContext {
 	
 	private String regionName;
