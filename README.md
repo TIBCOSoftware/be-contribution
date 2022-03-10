@@ -52,7 +52,7 @@ Below are some modules where contributions are available and/or can be added,
   * Once all changes for existing ones or for any new contributions are done. Edit root `pom.xml` file located under 'be-contribution',
     - Set `<be.home>` path to point to the TIBCO BusinessEvents installation home.
     - Any common third-party dependency version changes if needed.
-    - Exclude any conflicting/duplicate jars off BusinessEvents and/or thirdparty dependencies from being packaged into the 'uber jar'. Some obvious ones are already excluded. Examples of conflicting/duplicate jars are BusinessEvents jars or common 3rd party ones like, jackson, httpclient, log4j, etc, these are already available under 'BE_HOME/lib/tpcl/ext', so it would be best to avoid packaging them again to prevent any class loading as well as jar size related issues.
+    - Exclude any conflicting/duplicate jars off BusinessEvents and/or thirdparty dependencies from being packaged into the 'uber jar'. Some obvious ones are already excluded. Examples of conflicting/duplicate jars are BusinessEvents jars or common 3rd party ones like, jackson, httpclient, log4j, etc, these are already available under 'BE_HOME/lib/ext/tpcl', so it would be best to avoid packaging them again to prevent any class loading as well as jar size related issues.
 
   * Any contribution specific dependencies go in contribution specific `pom.xml` file.
 
