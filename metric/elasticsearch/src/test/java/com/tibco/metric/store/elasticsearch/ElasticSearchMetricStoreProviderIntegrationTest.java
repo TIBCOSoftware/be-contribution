@@ -57,15 +57,12 @@ public class ElasticSearchMetricStoreProviderIntegrationTest {
 	
 	private static ElasticSearchMetricsStoreProvider elasticSearchMetricStoreProvider;
 	private static AppMetricsConfig appMetricsConfig;
-	
-	public static boolean isLegacyID;
-	
+		
 	private static final String ENTITY_URI = "/Book";
 	private static final String DOCUMENT_ID_NAME = "_id";
 	
 	@BeforeAll
 	static void setup() {
-		isLegacyID = Boolean.parseBoolean(System.getProperty(Id.USE_LEGACY_ID_PROPERTY, "true"));
 		elasticSearchContainer.start();
 		
 		appMetricsConfig = createAppMetricsConfig();
@@ -167,7 +164,7 @@ public class ElasticSearchMetricStoreProviderIntegrationTest {
 		
 		SearchRequest searchRequest = new SearchRequest(getIndexName(entityUri));
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder(); 
-		if (isLegacyID) searchSourceBuilder.query(QueryBuilders.termQuery(DOCUMENT_ID_NAME, ((Id)id).getLongValue()));
+		if (Id.useLegacyID) searchSourceBuilder.query(QueryBuilders.termQuery(DOCUMENT_ID_NAME, ((Id)id).getLongValue()));
 		else searchSourceBuilder.query(QueryBuilders.termQuery(DOCUMENT_ID_NAME, id.toString())); 
 		searchRequest.source(searchSourceBuilder);
 		

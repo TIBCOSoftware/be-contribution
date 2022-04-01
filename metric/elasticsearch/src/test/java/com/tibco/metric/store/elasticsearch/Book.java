@@ -19,11 +19,13 @@ public class Book {
 	private String author;
 	
 	public Book(Object id) {
-		this.id = (ElasticSearchMetricStoreProviderIntegrationTest.isLegacyID) ? Id.createId(Long.valueOf((String)id), null, 0) : Id.createId(0,(String)id, 0);
+		String idStr = (String) id;
+		this.id = (Id.useLegacyID) ? Id.createId(Long.valueOf(idStr), null, 0) : 
+			Id.createId(0, idStr.substring(idStr.indexOf("=")+1, idStr.length()-1), 0);
 	}
 	
 	public Book() {
-		id = (ElasticSearchMetricStoreProviderIntegrationTest.isLegacyID) ? Id.createId(RECORD_ID, null, 0) : Id.createId(0, RECORD_ID+"", 0);
+		id = (Id.useLegacyID) ? Id.createId(RECORD_ID, null, 0) : Id.createId(0, RECORD_ID+"", 0);
 	}
 	
 	public Id getId() {
