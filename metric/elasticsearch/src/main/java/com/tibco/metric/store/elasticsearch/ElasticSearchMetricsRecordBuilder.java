@@ -108,7 +108,9 @@ public class ElasticSearchMetricsRecordBuilder implements MetricsRecordBuilder<E
 
 		DocWriteRequest<?> request = null;
 		switch(opType) {
-		case ADD: request = new IndexRequest(indexName).id(idValue).opType(OpType.CREATE).source(properties); break;
+		case ADD: 
+		case INFO: 
+			request = new IndexRequest(indexName).id(idValue).opType(OpType.CREATE).source(properties); break;
 		case MODIFY: request = new UpdateRequest(indexName, idValue).doc(properties); break;
 		case DELETE: request = new DeleteRequest(indexName, idValue); break;
 		default: throw new RuntimeException(String.format("Invalid/null operation type[%s]", opType));
