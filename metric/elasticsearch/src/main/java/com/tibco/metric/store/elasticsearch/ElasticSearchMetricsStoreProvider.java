@@ -211,7 +211,8 @@ public class ElasticSearchMetricsStoreProvider implements MetricsStoreProvider<E
 	}
 	
 	private String getIndexName(String entityUri) {
-		return entityUri.substring(1).replace("/", "_").concat("_index").toLowerCase();
+		String idxName = (entityUri.startsWith("/")) ? entityUri.substring(1) : entityUri;
+		return idxName.replace("/", "_").concat("_index").toLowerCase();
 	}
 
 	@Override
