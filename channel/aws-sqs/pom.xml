@@ -17,7 +17,7 @@
     <version>1.0.0</version>
 
     <properties>
-        <aws.version>1.11.977</aws.version>
+        <aws.version>1.12.261</aws.version>
     </properties>
        
     <build>
