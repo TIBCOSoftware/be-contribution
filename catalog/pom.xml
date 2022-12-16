@@ -24,6 +24,7 @@
     <!-- sub modules - Include module names here as they are added  -->
     <modules>
        <module>aws-catalog-fn</module>
+       <module>cassandra-catalog-fn</module>
     </modules>
     
 </project>

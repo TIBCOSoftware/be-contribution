@@ -8,8 +8,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <be.home>/opt/tibco/be61/be/6.1</be.home>
-    <be.version>6.1</be.version>
+    <be.home>/home/rakulkar/C/tibcohome/be/6.3</be.home>
+    <be.version>6.3</be.version>
     <junit.verion>5.7.0</junit.verion>
     <testcontainer.verion>1.15.1</testcontainer.verion>
     <maven.compiler.target>11</maven.compiler.target>
