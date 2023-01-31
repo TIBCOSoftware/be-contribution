@@ -303,7 +303,8 @@ public class CassandraConnection extends StoreConnection{
 				.withAuthProvider(new PlainTextAuthProvider(casStoreConnectionInfo.getUserName(), dbPswd))
 				.withSocketOptions(new SocketOptions().setConnectTimeoutMillis(connectTimeoutMillis));
 
-		if (casStoreConnectionInfo.getUseSsl()) {
+		this.useSsl = (casStoreConnectionInfo.getTrustStore()!=null)? true : false;
+		if (this.useSsl) {
 			SSLOptions sslOptions = createSSLOptions(casStoreConnectionInfo.getTrustStore(),
 					casStoreConnectionInfo.getTrustStorePassword(), "JKS", casStoreConnectionInfo.getKeyStore(),
 					casStoreConnectionInfo.getKeyStorePassword(), casStoreConnectionInfo.getKeyStoreType());

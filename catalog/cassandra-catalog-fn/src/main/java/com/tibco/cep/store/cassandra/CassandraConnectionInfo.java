@@ -34,11 +34,6 @@ public class CassandraConnectionInfo extends StoreConnectionInfo {
         }
 	}
 	
-	public void setUseSsl(boolean useSsl)
-	{
-		this.connectionProperties.put("useSsl", useSsl);
-	}
-	
 	public void setKeySpace(String keyspaceName)
 	{
 		if (keyspaceName != null) {
@@ -58,14 +53,6 @@ public class CassandraConnectionInfo extends StoreConnectionInfo {
 	public String getUserName()
 	{
 		return this.connectionProperties.getProperty("user");
-	}
-	
-	public boolean getUseSsl()
-	{
-		if(this.connectionProperties.containsKey("useSsl") && this.connectionProperties.get("useSsl")!=null)
-			return (boolean) this.connectionProperties.get("useSsl");
-		else
-			return false;
 	}
 	
 	public void setTrustStoreProps(String trustStore, String trustStorePassword, String trustStoreType) {

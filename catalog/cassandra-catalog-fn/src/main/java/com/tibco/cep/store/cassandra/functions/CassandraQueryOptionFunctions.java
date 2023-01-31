@@ -16,7 +16,7 @@ import com.tibco.cep.store.cassandra.CassandraQueryOptions;
  */
 @BEPackage(
 		catalog = "CEP Store",
-        category = "CStore.QueryOptions.Cassandra",
+        category = "Store.QueryOptions.Cassandra",
         synopsis = "Cassandra Query Option functions")
 public class CassandraQueryOptionFunctions {
 	
@@ -106,7 +106,7 @@ public class CassandraQueryOptionFunctions {
 			version = "6.3.0",
 			see = "",
 			mapper = @com.tibco.be.model.functions.BEMapper(),
-			description = "Sets whether this statement is idempotent.",
+			description = "Sets consistency level for query.",
 			cautions = "none",
 			fndomain = {ACTION},
 			example = ""

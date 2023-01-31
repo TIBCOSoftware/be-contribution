@@ -20,8 +20,6 @@ The ConnectionInfo catalog functions allow you to manipulate S3 objects and buck
   * [Store.ConnectionInfo.Cassandra.setKeyStore](#setKeyStore)
 * Set KeySpace
   * [Store.ConnectionInfo.Cassandra.setKeySpace](#setKeySpace)
-* Set UseSsl
-  * [Store.ConnectionInfo.Cassandra.setUseSsl ](#setUseSsl)
 
 # QueryOptions
 
@@ -116,25 +114,6 @@ Returns:
 
 N/A
 
-### Store.ConnectionInfo.Cassandra.setUseSsl
-
-Purpose: Sets whether security(ssl) is enabled or not.
-The user should set useSsl to true in case keystore/truststore usage.
-
-```java
-void setUseSsl (Object storeConnectionInfo, boolean useSsl)
-```
-Args:
-
-| Arguments   | Purpose                                                                                             |
-|:------------|:----------------------------------------------------------------------------------------------------|
-| storeConnectionInfo     | Store Connection Info object  |
-| useSsl  |security(ssl) is enabled or not. By default it is set to false.|        
-
-Returns:
-
-N/A
-
 ### Store.QueryOptions.Cassandra.readTimeoutMillis
 
 Purpose: Set the read timeout for the query.
@@ -207,4 +186,8 @@ Returns:
 
 N/A
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cffe1b1 (Updated implementation to remove explicit useSsl method.)
 

@@ -50,7 +50,6 @@ public class CassandraCatalogIntegrationTest {
 		CassandraConnectionInfo connectionInfo = new CassandraConnectionInfo("Cassandra", "localhost:9042");
 		connectionInfo.setKeySpace("storefunctions");
 		connectionInfo.setPoolSize(1);
-		connectionInfo.setUseSsl(false);
 		connectionInfo.setUserCredentials("be_user", "BE_USER");
 		connectionInfo.setTrustStoreProps(
 				"/home/rakulkar/C/Project_Related/certs/resources/opt/cassandra/conf/certs/cassandra_trust.jks",
