@@ -185,9 +185,3 @@ Args:
 Returns:
 
 N/A
-
-<<<<<<< HEAD
-=======
-
->>>>>>> cffe1b1 (Updated implementation to remove explicit useSsl method.)
-
