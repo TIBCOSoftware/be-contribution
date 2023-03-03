@@ -22,7 +22,12 @@ public class CassandraConnectionInfo extends StoreConnectionInfo {
 	}
 	
 	public void setConnectionTimeout(double timeout) {
-		connectionProperties.setProperty("DEFAULT_CONNECT_TIMEOUT_MILLIS", String.valueOf(timeout));
+		throw new UnsupportedOperationException("SetConnectionTimeout method is not supported for Cassandra");
+	}
+	
+	@Override
+	public void setPoolSize(int poolSize) {
+		throw new UnsupportedOperationException("setConnectionPoolSize method is not supported for Cassandra");
 	}
 	
 	public void setUserCredentials(String userName, String password) {

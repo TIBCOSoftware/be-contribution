@@ -2,7 +2,7 @@ package com.tibco.cep.store.cassandra;
 
 import java.util.Properties;
 
-import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.tibco.cep.store.StoreQueryOptions;
 
 public class CassandraQueryOptions extends StoreQueryOptions{

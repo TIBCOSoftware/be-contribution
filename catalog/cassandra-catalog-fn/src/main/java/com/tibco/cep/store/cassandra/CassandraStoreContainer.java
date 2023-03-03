@@ -1,5 +1,7 @@
 package com.tibco.cep.store.cassandra;
 
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
+
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -11,22 +13,26 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.SerializationUtils;
 
-import com.datastax.driver.core.BatchStatement;
-import com.datastax.driver.core.ColumnDefinitions;
-import com.datastax.driver.core.ColumnDefinitions.Definition;
-import com.datastax.driver.core.ColumnMetadata;
-import com.datastax.driver.core.DataType;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.TableMetadata;
-import com.datastax.driver.core.querybuilder.Delete;
-import com.datastax.driver.core.querybuilder.Insert;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
-import com.datastax.driver.core.querybuilder.Using;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.BatchStatement;
+import com.datastax.oss.driver.api.core.cql.BatchType;
+import com.datastax.oss.driver.api.core.cql.ColumnDefinition;
+import com.datastax.oss.driver.api.core.cql.ColumnDefinitions;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.metadata.schema.ColumnMetadata;
+import com.datastax.oss.driver.api.core.metadata.schema.TableMetadata;
+import com.datastax.oss.driver.api.core.session.Session;
+import com.datastax.oss.driver.api.core.type.DataType;
+import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
+import com.datastax.oss.driver.api.querybuilder.delete.Delete;
+import com.datastax.oss.driver.api.querybuilder.delete.DeleteSelection;
+import com.datastax.oss.driver.api.querybuilder.insert.Insert;
+import com.datastax.oss.driver.api.querybuilder.insert.InsertInto;
+import com.datastax.oss.driver.api.querybuilder.insert.RegularInsert;
+import com.datastax.oss.driver.api.querybuilder.relation.Relation;
+import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.tibco.cep.kernel.service.logging.LogManagerFactory;
-import com.tibco.cep.kernel.service.logging.Logger;
 import com.tibco.cep.store.StoreContainer;
 import com.tibco.cep.store.cassandra.serializer.CassandraRowCodec;
 
@@ -35,8 +41,7 @@ import com.tibco.cep.store.cassandra.serializer.CassandraRowCodec;
  */
 public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> {
 
-	private Logger logger;
-	private Session session;
+	private CqlSession session;
 	private TableMetadata tableMetadata;
 	private static ThreadLocal<BatchStatement> txBatchStatement = new ThreadLocal<BatchStatement>()
 	{
@@ -49,7 +54,7 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 	
 	public CassandraStoreContainer(String containerName) {
 		super(containerName);
-		logger = LogManagerFactory.getLogManager().getLogger(CassandraRowCodec.class);
+		LogManagerFactory.getLogManager().getLogger(CassandraRowCodec.class);
 	}
 
 	@Override
@@ -64,34 +69,39 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 
 	private void insertOrUpdate(CassandraStoreItem item) {
 		if (!isTxExecution.get()) {
-			txBatchStatement.set(new BatchStatement(BatchStatement.Type.LOGGED));
+			txBatchStatement.set(BatchStatement.builder(BatchType.LOGGED).build());
 		}
 		
 		Map<String,Object> colNamesVals = item.getKeyValueMap();
-		
-		Insert insertQuery = QueryBuilder.insertInto(name);
+		InsertInto insertQuery = QueryBuilder.insertInto(name);
+		RegularInsert rInsert = null;
 		for (String colName : colNamesVals.keySet()) {
 			Object value = colNamesVals.get(colName);
-			insertQuery.value(colName, value);
+				if (rInsert==null) {
+					rInsert = insertQuery.value(colName, literal(value, session.getContext().getCodecRegistry()));
+				}
+				else
+				{
+					rInsert = rInsert.value(colName, literal(value, session.getContext().getCodecRegistry()));
+				}
 		}
 		
-		updateQueryWithTtl(item, insertQuery);
+		Insert finalInsert = updateQueryWithTtl(item, rInsert);
 		
-		
-		txBatchStatement.get().add(insertQuery);
+		txBatchStatement.set(txBatchStatement.get().add(finalInsert.build()));
 		if (!isTxExecution.get()) {
 			executeTxBatchStatement();
 		}
 	}
 
-	private void updateQueryWithTtl(CassandraStoreItem item, Insert insertQuery) {
+	private Insert updateQueryWithTtl(CassandraStoreItem item, RegularInsert insertQuery) {
 		try {
 			long ttl;
 			ttl = item.getExpiration();
 			if (ttl<0) {
 				ttl=0;
 			}
-			insertQuery.using(QueryBuilder.ttl((int) ttl));
+			return insertQuery.usingTtl((int) ttl);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -110,20 +120,21 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 		CassandraStoreItem returnItem = null;
 		Map keyValueMap = null;
 		String[] primaryKeys = getPrimaryKeyNames();
-		Select selectQuery = QueryBuilder.select().from(name);
+		Select selectQuery = QueryBuilder.selectFrom(name).all();
 		for (String primaryKey : primaryKeys) {
 			Object itemValue = item.getFieldValue(primaryKey);
-			selectQuery.where(QueryBuilder.eq(primaryKey, itemValue));
+			selectQuery = selectQuery.where(Relation.column(primaryKey).isEqualTo(literal(itemValue)));
+			
 		}
-		ResultSet rs = session.execute(selectQuery);
+		ResultSet rs = session.execute(selectQuery.build());
 		if (rs != null && rs.iterator().hasNext()) {
 			returnItem = new CassandraStoreItem(this);
 			keyValueMap = returnItem.getKeyValueMap();
 			for (Row next : rs) {
 				ColumnDefinitions colDefns = next.getColumnDefinitions();
 				
-				for (Definition col : colDefns) {
-					String colName = col.getName();
+				for (ColumnDefinition col : colDefns) {
+					String colName = col.getName().asCql(true);
 						DataType type = col.getType();
 						Object value = getValue(next, colName, type);
 						keyValueMap.put(colName.toLowerCase(), value);
@@ -136,26 +147,29 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 	}
 
 	private Object getValue(Row next, String colName, DataType type) {
-			switch(type.getName()){
-			case VARCHAR: 
+			String cqlType = type.asCql(false, true).toUpperCase();
+			cqlType = cqlType.startsWith("TUPLE") ? "TUPLE" : cqlType; 
+			switch(cqlType){
+			case "VARCHAR": 
+			case "TEXT": 
 				return next.getString(colName);
-			case UUID: 
-				return next.getUUID(colName);
-			case VARINT: 
-				return next.getVarint(colName);
-			case BIGINT: 
-				return next.getLong(colName);
-			case INT: 
+			case "UUID": 
+				return next.getUuid(colName);
+			case "VARINT": 
 				return next.getInt(colName);
-			case FLOAT: 
+			case "BIGINT": 
+				return next.getLong(colName);
+			case "INT": 
+				return next.getInt(colName);
+			case "FLOAT": 
 				return next.getFloat(colName);	
-			case DOUBLE: 
+			case "DOUBLE": 
 				return next.getDouble(colName);
-			case BOOLEAN: 
-				return next.getBool(colName);
-			case MAP: 
+			case "BOOLEAN": 
+				return next.getBoolean(colName);
+			case "MAP": 
 				return next.getMap(colName, String.class, String.class);
-			case TUPLE:
+			case "TUPLE":
 				ZonedDateTime time = (java.time.ZonedDateTime) next.getObject(colName);
 				if (time==null) {
 					return null;
@@ -164,10 +178,10 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 				TimeZone tz = TimeZone.getTimeZone(time.getOffset().getId());
 				value.setTimeZone(tz);
 				return value;
-			case TIMESTAMP:
-				return next.getTimestamp(colName);
-			case BLOB:
-				ByteBuffer bytes = next.getBytes(colName);
+			case "TIMESTAMP":
+				return next.getLocalTime(colName);
+			case "BLOB":
+				ByteBuffer bytes = next.getByteBuffer(colName);
 				if (bytes==null) {
 					return null;
 				}
@@ -180,15 +194,16 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 	@Override
 	protected void deleteItem(CassandraStoreItem item) throws Exception {
 		if (!isTxExecution.get()) {
-			txBatchStatement.set(new BatchStatement(BatchStatement.Type.LOGGED));
+			txBatchStatement.set(BatchStatement.builder(BatchType.LOGGED).build());
 		}
 		String[] primaryKeys = getPrimaryKeyNames();
-		Delete deleteQuery = QueryBuilder.delete().from(name);
+		DeleteSelection deleteQuery = QueryBuilder.deleteFrom(name);
+		Delete delete = null;
 		for (String primaryKey : primaryKeys) {
 			Object itemValue = item.getFieldValue(primaryKey);
-			deleteQuery.where(QueryBuilder.eq(primaryKey, itemValue));
+			delete = deleteQuery.where(Relation.column(primaryKey).isEqualTo(literal(itemValue)));
 		}
-		txBatchStatement.get().add(deleteQuery);
+		if(delete!=null) txBatchStatement.set(txBatchStatement.get().add(delete.build()));
 		if (!isTxExecution.get()) {
 			executeTxBatchStatement();
 		}
@@ -210,13 +225,13 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 		List<ColumnMetadata> primaryKeyMetaData = tableMetadata.getPrimaryKey();
 		for (Iterator iterator = primaryKeyMetaData.iterator(); iterator.hasNext();) {
 			ColumnMetadata columnMetadata = (ColumnMetadata) iterator.next();
-			primaryIndexNames.add(columnMetadata.getName());
+			primaryIndexNames.add(columnMetadata.getName().asCql(true));
 		}
 		return primaryIndexNames.toArray(new String[0]);
 	}
 
 	public void init(Session session, ThreadLocal<BatchStatement> txBatchStatement, ThreadLocal<Boolean> isTxExecution) {
-		this.session = session;
+		this.session = (CqlSession) session;
 		this.txBatchStatement = txBatchStatement;
 		this.isTxExecution = isTxExecution;
 	}

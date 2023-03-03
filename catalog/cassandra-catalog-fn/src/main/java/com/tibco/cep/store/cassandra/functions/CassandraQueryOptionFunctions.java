@@ -5,7 +5,6 @@ package com.tibco.cep.store.cassandra.functions;
 
 import static com.tibco.be.model.functions.FunctionDomain.ACTION;
 
-import com.datastax.driver.core.ConsistencyLevel;
 import com.tibco.be.model.functions.BEPackage;
 import com.tibco.be.model.functions.FunctionParamDescriptor;
 import com.tibco.cep.store.cassandra.CassandraQueryOptions;
@@ -20,31 +19,31 @@ import com.tibco.cep.store.cassandra.CassandraQueryOptions;
         synopsis = "Cassandra Query Option functions")
 public class CassandraQueryOptionFunctions {
 	
-	@com.tibco.be.model.functions.BEFunction(
-		name = "setReadTimeoutMillis",
-		signature = "void readTimeoutMillis (Object queryOptions, int readTimeoutMillis)",
-		params = {
-				@FunctionParamDescriptor(name = "queryOptions", type = "Object", desc = "Query option object"),
-				@FunctionParamDescriptor(name = "readTimeoutMillis", type = "int", desc = "readTimeoutMillis"),
-		},
-		freturn = @FunctionParamDescriptor(name = "", type = "void", desc = ""),
-		version = "6.3.0",
-		see = "",
-		mapper = @com.tibco.be.model.functions.BEMapper(),
-		description = "Set the read timeout.",
-		cautions = "none",
-		fndomain = {ACTION},
-		example = ""
-	)
-	public static void setReadTimeoutMillis(Object queryOptions, int readTimeoutMillis) {
-		if (queryOptions instanceof CassandraQueryOptions) {
-			CassandraQueryOptions cassandraQueryOptions = (CassandraQueryOptions) queryOptions;
-			cassandraQueryOptions.setReadTimeoutMillis(readTimeoutMillis);
-		} else {
-			throw new IllegalArgumentException("Invalid object type. Expected type Query Options object.");
-		}
-	}
-	
+//	@com.tibco.be.model.functions.BEFunction(
+//		name = "setReadTimeoutMillis",
+//		signature = "void readTimeoutMillis (Object queryOptions, int readTimeoutMillis)",
+//		params = {
+//				@FunctionParamDescriptor(name = "queryOptions", type = "Object", desc = "Query option object"),
+//				@FunctionParamDescriptor(name = "readTimeoutMillis", type = "int", desc = "readTimeoutMillis"),
+//		},
+//		freturn = @FunctionParamDescriptor(name = "", type = "void", desc = ""),
+//		version = "6.3.0",
+//		see = "",
+//		mapper = @com.tibco.be.model.functions.BEMapper(),
+//		description = "Set the read timeout.",
+//		cautions = "none",
+//		fndomain = {ACTION},
+//		example = ""
+//	)
+//	public static void setReadTimeoutMillis(Object queryOptions, int readTimeoutMillis) {
+//		if (queryOptions instanceof CassandraQueryOptions) {
+//			CassandraQueryOptions cassandraQueryOptions = (CassandraQueryOptions) queryOptions;
+//			cassandraQueryOptions.setReadTimeoutMillis(readTimeoutMillis);
+//		} else {
+//			throw new IllegalArgumentException("Invalid object type. Expected type Query Options object.");
+//		}
+//	}
+
 	@com.tibco.be.model.functions.BEFunction(
 			name = "setFetchSize",
 			signature = "void fetchSize (Object queryOptions, int fetchSize)",
@@ -95,33 +94,34 @@ public class CassandraQueryOptionFunctions {
 			}
 		}
 	
-	@com.tibco.be.model.functions.BEFunction(
-			name = "setConsistency",
-			signature = "void setConsistency (Object queryOptions, String consistencyLevel)",
-			params = {
-					@FunctionParamDescriptor(name = "queryOptions", type = "Object", desc = "Query option object"),
-					@FunctionParamDescriptor(name = "consistencyLevel", type = "String", desc = "Consistency Level"),
-			},
-			freturn = @FunctionParamDescriptor(name = "", type = "void", desc = ""),
-			version = "6.3.0",
-			see = "",
-			mapper = @com.tibco.be.model.functions.BEMapper(),
-			description = "Sets consistency level for query.",
-			cautions = "none",
-			fndomain = {ACTION},
-			example = ""
-		)
-		public static void setConsistency(Object queryOptions, String consistencyLevel) {
-			if (queryOptions instanceof CassandraQueryOptions) {
-				CassandraQueryOptions cassandraQueryOptions = (CassandraQueryOptions) queryOptions;
-				ConsistencyLevel conLevel = ConsistencyLevel.LOCAL_ONE;
-				if (!(consistencyLevel==null || consistencyLevel.isBlank())) {
-					conLevel = ConsistencyLevel.valueOf(consistencyLevel);
-				}
-				
-				cassandraQueryOptions.setConsistency(conLevel);
-			} else {
-				throw new IllegalArgumentException("Invalid object type. Expected type Query Options object.");
-			}
-		}
+//	@com.tibco.be.model.functions.BEFunction(
+//			name = "setConsistency",
+//			signature = "void setConsistency (Object queryOptions, String consistencyLevel)",
+//			params = {
+//					@FunctionParamDescriptor(name = "queryOptions", type = "Object", desc = "Query option object"),
+//					@FunctionParamDescriptor(name = "consistencyLevel", type = "String", desc = "Consistency Level"),
+//			},
+//			freturn = @FunctionParamDescriptor(name = "", type = "void", desc = ""),
+//			version = "6.3.0",
+//			see = "",
+//			mapper = @com.tibco.be.model.functions.BEMapper(),
+//			description = "Sets consistency level for query.",
+//			cautions = "none",
+//			fndomain = {ACTION},
+//			example = ""
+//		)
+//		public static void setConsistency(Object queryOptions, String consistencyLevel) {
+//			if (queryOptions instanceof CassandraQueryOptions) {
+//				CassandraQueryOptions cassandraQueryOptions = (CassandraQueryOptions) queryOptions;
+//				ConsistencyLevel conLevel = ConsistencyLevel.LOCAL_ONE;
+//				if (!(consistencyLevel==null || consistencyLevel.isBlank())) {
+//					ConsistencyLevel.
+//					conLevel = ConsistencyLevel.valueOf(consistencyLevel);
+//				}
+//				
+//				cassandraQueryOptions.setConsistency(conLevel);
+//			} else {
+//				throw new IllegalArgumentException("Invalid object type. Expected type Query Options object.");
+//			}
+//		}
 }

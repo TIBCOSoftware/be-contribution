@@ -3,9 +3,11 @@
  */
 package com.tibco.cep.store.cassandra;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,33 +25,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
-import com.datastax.driver.core.BatchStatement;
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Cluster.Builder;
-import com.datastax.driver.core.ConsistencyLevel;
-import com.datastax.driver.core.DataType;
-import com.datastax.driver.core.Host;
-import com.datastax.driver.core.Host.StateListener;
-import com.datastax.driver.core.JdkSSLOptions;
-import com.datastax.driver.core.PlainTextAuthProvider;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.QueryOptions;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.SSLOptions;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.SocketOptions;
-import com.datastax.driver.core.Statement;
-import com.datastax.driver.core.TupleType;
-import com.datastax.driver.core.policies.IdentityTranslator;
-import com.datastax.driver.extras.codecs.jdk8.ZonedDateTimeCodec;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
+import com.datastax.oss.driver.api.core.cql.BatchStatement;
+import com.datastax.oss.driver.api.core.cql.BatchType;
+import com.datastax.oss.driver.api.core.cql.BoundStatement;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Statement;
+import com.datastax.oss.driver.api.core.metadata.Node;
+import com.datastax.oss.driver.api.core.metadata.NodeState;
+import com.datastax.oss.driver.api.core.metadata.NodeStateListener;
+import com.datastax.oss.driver.api.core.session.Session;
+import com.datastax.oss.driver.api.core.type.codec.ExtraTypeCodecs;
+import com.datastax.oss.protocol.internal.request.query.QueryOptions;
 import com.tibco.be.jdbcstore.CryptoUtil;
 import com.tibco.cep.kernel.service.logging.Level;
 import com.tibco.cep.kernel.service.logging.LogManagerFactory;
@@ -69,7 +65,7 @@ public class CassandraConnection extends StoreConnection{
 
 	private final static Logger logger = LogManagerFactory.getLogManager().getLogger(CassandraConnection.class);
 
-	private Session session;
+	private CqlSession session;
 	private ConcurrentHashMap<String, Statement> statementMap;
 	
 	private static ThreadLocal<BatchStatement> txBatchStatement = new ThreadLocal<BatchStatement>() {
@@ -99,11 +95,11 @@ public class CassandraConnection extends StoreConnection{
 
 	@Override
 	public void connect() throws Exception {
-		Cluster cassandraCluster = null;
+		CqlSessionBuilder cqlSessionBuilder = null;
+		
 		try {
-			cassandraCluster = getCluster();
+			cqlSessionBuilder = getCqlSessionBuilder();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 
@@ -113,19 +109,20 @@ public class CassandraConnection extends StoreConnection{
 			throw new RuntimeException("Keyspace name not specified.");
 		} // Not possible using store API
 
-		session = cassandraCluster.connect(keyspaceName);
+		session = cqlSessionBuilder.withKeyspace(keyspaceName).build();
 
-		Set<Host> hosts = cassandraCluster.getMetadata().getAllHosts();
+		Map<UUID, Node> hosts = session.getMetadata().getNodes();
 		StringBuffer casConnectionNodeInfo = new StringBuffer();
-		for (Host host : hosts) {
-			casConnectionNodeInfo.append(host.getSocketAddress().toString()).append(",");
+		for (Node host : hosts.values()) {
+			if (host.getState()==NodeState.UP) {
+				casConnectionNodeInfo.append(host.getEndPoint().toString()).append(",");
+			}
 		}
-
-		getLogger().log(Level.INFO, "Successfully connected to Cassandra using Contact Points: " + casConnectionNodeInfo
-				+ (this.useSsl ? " with security enabled." : ""));
+		getLogger().log(Level.INFO, "Successfully connected to Cassandra using Contact Points: "
+				+ casConnectionNodeInfo + (this.useSsl ? " with security enabled." : ""));
 
 		if (session != null)
-			storeMetadata = new CassandraStoreMetadata(session.getCluster().getMetadata().getKeyspace(keyspaceName));
+			storeMetadata = new CassandraStoreMetadata(session.getMetadata().getKeyspace(keyspaceName).get());
 	}
 
 	@Override
@@ -166,11 +163,10 @@ public class CassandraConnection extends StoreConnection{
 
 		if (cassandraQueryOptions != null) {
 			queryProperties = cassandraQueryOptions.getProperties();
-			bs.setConsistencyLevel((ConsistencyLevel) queryProperties.getOrDefault("consistency",
-					QueryOptions.DEFAULT_CONSISTENCY_LEVEL));
-			bs.setReadTimeoutMillis(
-					(int) queryProperties.getOrDefault("readTimeoutMillis", SocketOptions.DEFAULT_READ_TIMEOUT_MILLIS));
-			bs.setFetchSize((int) queryProperties.getOrDefault("fetchSize", QueryOptions.DEFAULT_FETCH_SIZE));
+//			bs.setConsistencyLevel((ConsistencyLevel) queryProperties.getOrDefault("consistency",
+//					QueryOptions.DEFAULT.consistency));
+//			bs.setTimeout(Duration.ofMillis((long) queryProperties.getOrDefault("readTimeoutMillis", 1000)));
+			bs.setFetchSize((int) queryProperties.getOrDefault("fetchSize", QueryOptions.DEFAULT.pageSize));
 			bs.setIdempotent((boolean) queryProperties.getOrDefault("idempotent", false));
 		}
 
@@ -194,7 +190,7 @@ public class CassandraConnection extends StoreConnection{
 	@Override
 	public void enableTransactions() throws Exception {
 		isTxExecution.set(true);
-		txBatchStatement.set(new BatchStatement(BatchStatement.Type.LOGGED));
+		txBatchStatement.set(BatchStatement.builder(BatchType.LOGGED).build());
 	}
 
 	@Override
@@ -268,7 +264,7 @@ public class CassandraConnection extends StoreConnection{
 	public long executeUpdate(String query) throws Exception {
 
 		if (!isTxExecution.get()) {
-			txBatchStatement.set(new BatchStatement(BatchStatement.Type.LOGGED));
+			txBatchStatement.set(BatchStatement.builder(BatchType.LOGGED).build());
 		}
 
 		PreparedStatement psStmt = session.prepare(query);
@@ -283,74 +279,65 @@ public class CassandraConnection extends StoreConnection{
 		return -1;
 	}
 
-	private Cluster getCluster() throws Exception {
-		Cluster cluster;
+	private CqlSessionBuilder getCqlSessionBuilder() throws Exception {
+		CqlSessionBuilder cqlSessionBuilder;
 
 		CassandraConnectionInfo casStoreConnectionInfo = (CassandraConnectionInfo) storeConnectionInfo;
-		Properties casConnectionInfoProps = casStoreConnectionInfo.getConnectionProperties();
-		Builder clusterBuilder = Cluster.builder().withAddressTranslator(new IdentityTranslator())
-				.addContactPointsWithPorts(getContactPointsWithPorts(storeConnectionInfo.getUrl()));
 
+		cqlSessionBuilder = CqlSession.builder();
+		cqlSessionBuilder.withApplicationVersion(storeConnectionInfo.getName());
+		cqlSessionBuilder.withLocalDatacenter("datacenter1");
+		cqlSessionBuilder.addContactPoints(getContactPointsWithPorts(storeConnectionInfo.getUrl()));
+		
 		String dbPswd = casStoreConnectionInfo.getPassword();
 		if (dbPswd != null) {
 			dbPswd = CryptoUtil.decryptIfEncrypted(dbPswd.trim());
 		}
 
-		int connectTimeoutMillis = SocketOptions.DEFAULT_CONNECT_TIMEOUT_MILLIS;
-		if (casConnectionInfoProps.contains("DEFAULT_CONNECT_TIMEOUT_MILLIS"))
-			connectTimeoutMillis = (int) casConnectionInfoProps.get("DEFAULT_CONNECT_TIMEOUT_MILLIS");
-		clusterBuilder = clusterBuilder
-				.withAuthProvider(new PlainTextAuthProvider(casStoreConnectionInfo.getUserName(), dbPswd))
-				.withSocketOptions(new SocketOptions().setConnectTimeoutMillis(connectTimeoutMillis));
+		cqlSessionBuilder.withAuthCredentials(casStoreConnectionInfo.getUserName(), dbPswd);
 
 		this.useSsl = (casStoreConnectionInfo.getTrustStore()!=null)? true : false;
 		if (this.useSsl) {
-			SSLOptions sslOptions = createSSLOptions(casStoreConnectionInfo.getTrustStore(),
+			SSLContext sslContext = createSSLContext(casStoreConnectionInfo.getTrustStore(),
 					casStoreConnectionInfo.getTrustStorePassword(), "JKS", casStoreConnectionInfo.getKeyStore(),
 					casStoreConnectionInfo.getKeyStorePassword(), casStoreConnectionInfo.getKeyStoreType());
-			clusterBuilder = clusterBuilder.withSSL(sslOptions);
+			cqlSessionBuilder.withSslContext(sslContext);
 		}
 
-		cluster = clusterBuilder.build();
-
-		TupleType tupleType = cluster.getMetadata().newTupleType(DataType.timestamp(), DataType.varchar());
-		cluster.getConfiguration().getCodecRegistry().register(new ZonedDateTimeCodec(tupleType));
-		cluster.register(new StateListener() {
-
+		cqlSessionBuilder.addTypeCodecs(ExtraTypeCodecs.ZONED_TIMESTAMP_PERSISTED);
+		cqlSessionBuilder.addNodeStateListener(new NodeStateListener() {
+			
 			@Override
-			public void onUp(Host host) {
-				getLogger().log(Level.INFO, ":::: Cassandra host " + host.getAddress() + " is UP now::::");
-			}
-
-			@Override
-			public void onUnregister(Cluster cluster) {
+			public void close() throws Exception {
 				// TODO Auto-generated method stub
-
+				
 			}
-
+			
 			@Override
-			public void onRemove(Host host) {
+			public void onUp(Node node) {
+				getLogger().log(Level.INFO, ":::: Cassandra host " + node.getEndPoint() + " is UP now::::");
+				
+			}
+			
+			@Override
+			public void onRemove(Node node) {
 				// TODO Auto-generated method stub
-
+				
 			}
-
+			
 			@Override
-			public void onRegister(Cluster cluster) {
+			public void onDown(Node node) {
+				getLogger().log(Level.INFO, ":::: Cassandra host " +  node.getEndPoint()  + " is DOWN now::::");
+				
+			}
+			
+			@Override
+			public void onAdd(Node node) {
 				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onDown(Host host) {
-				getLogger().log(Level.INFO, ":::: Cassandra host " + host.getAddress() + " is DOWN now::::");
-			}
-
-			@Override
-			public void onAdd(Host host) {
-
+				
 			}
 		});
-		return cluster;
+		return cqlSessionBuilder;
 	}
 
 	public Logger getLogger() {
@@ -419,33 +406,29 @@ public class CassandraConnection extends StoreConnection{
 		}
 	}
 
-	public static SSLOptions createSSLOptions(String trustStorePath, String truststorePwd, String trustStoreType,
-			String keyStorePath, String keystorePwd, String keyStoreType)
+	private SSLContext createSSLContext(String truststorePath, String truststorePwd, String trustStoreType,
+			String keystorePath, String keystorePwd, String keyStoreType)
 			throws KeyStoreException, FileNotFoundException, IOException, NoSuchAlgorithmException,
 			KeyManagementException, CertificateException, UnrecoverableKeyException {
+		TrustManagerFactory tmf = null;
+		KeyStore tks = KeyStore.getInstance(trustStoreType);
+		tks.load((InputStream) new FileInputStream(new File(truststorePath)), truststorePwd.toCharArray());
+		tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		tmf.init(tks);
 
-		 TrustManagerFactory tmf = null;
-	        if(trustStorePath!=null) {
-	            KeyStore tks = KeyStore.getInstance("JKS");
-	            tks.load(new FileInputStream(trustStorePath), truststorePwd.toCharArray());
-	            tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-	            tmf.init(tks);
-	            tks.aliases();
-	        }
-	        
-	        KeyManagerFactory kmf = null;
-	        if(keyStorePath!=null) {
-	            KeyStore ks = KeyStore.getInstance("JKS");
-	            ks.load(new FileInputStream(keyStorePath), keystorePwd.toCharArray());
+		KeyManagerFactory kmf = null;
+		if (null != keystorePath) {
+			KeyStore kks = KeyStore.getInstance(keyStoreType);
+			kks.load((InputStream) new FileInputStream(new File(keystorePath)), keystorePwd.toCharArray());
+			kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			kmf.init(kks, keystorePwd.toCharArray());
+		}
 
-	            kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-	            kmf.init(ks, keystorePwd.toCharArray());
-	        }
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(kmf != null ? kmf.getKeyManagers() : null, tmf != null ? tmf.getTrustManagers() : null,
+				new SecureRandom());
 
-	        SSLContext sslContext = SSLContext.getInstance("TLS");
-	        sslContext.init(kmf != null ? kmf.getKeyManagers() : null, tmf != null ? tmf.getTrustManagers() : null, new SecureRandom());
-
-	        return JdkSSLOptions.builder().withSSLContext(sslContext).build();
+		return sslContext;
 	}
 	
 	class SessionHolder {

@@ -11,12 +11,12 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.SerializationUtils;
 
-import com.datastax.driver.core.ColumnDefinitions;
-import com.datastax.driver.core.ColumnDefinitions.Definition;
-import com.datastax.driver.core.DataType;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.TableMetadata;
+import com.datastax.oss.driver.api.core.cql.ColumnDefinition;
+import com.datastax.oss.driver.api.core.cql.ColumnDefinitions;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.metadata.schema.TableMetadata;
+import com.datastax.oss.driver.api.core.type.DataType;
 import com.tibco.cep.store.Item;
 import com.tibco.cep.store.StoreIterator;
 
@@ -43,8 +43,8 @@ public class CassandraIterator extends StoreIterator {
 		}
 		ColumnDefinitions colDefns = next.getColumnDefinitions();
 
-		for (Definition col : colDefns) {
-			String colName = col.getName();
+		for (ColumnDefinition col : colDefns) {
+			String colName = col.getName().asCql(true);
 			DataType type = col.getType();
 			Object value = getValue(next, colName, type);
 			keyValueMap.put(colName.toLowerCase(), value);
@@ -65,44 +65,47 @@ public class CassandraIterator extends StoreIterator {
 	}
 
 	private Object getValue(Row next, String colName, DataType type) {
-		switch (type.getName()) {
-		case VARCHAR:
+		String cqlType = type.asCql(false, true).toUpperCase();
+		cqlType = cqlType.startsWith("TUPLE") ? "TUPLE" : cqlType; 
+		switch(cqlType){
+		case "VARCHAR": 
+		case "TEXT": 
 			return next.getString(colName);
-		case UUID:
-			return next.getUUID(colName);
-		case VARINT:
-			return next.getVarint(colName);
-		case BIGINT:
-			return next.getLong(colName);
-		case INT:
+		case "UUID": 
+			return next.getUuid(colName);
+		case "VARINT": 
 			return next.getInt(colName);
-		case FLOAT:
-			return next.getFloat(colName);
-		case DOUBLE:
+		case "BIGINT": 
+			return next.getLong(colName);
+		case "INT": 
+			return next.getInt(colName);
+		case "FLOAT": 
+			return next.getFloat(colName);	
+		case "DOUBLE": 
 			return next.getDouble(colName);
-		case BOOLEAN:
-			return next.getBool(colName);
-		case MAP:
+		case "BOOLEAN": 
+			return next.getBoolean(colName);
+		case "MAP": 
 			return next.getMap(colName, String.class, String.class);
-		case TUPLE:
+		case "TUPLE":
 			ZonedDateTime time = (java.time.ZonedDateTime) next.getObject(colName);
-			if (time == null) {
+			if (time==null) {
 				return null;
 			}
 			Calendar value = java.util.GregorianCalendar.from(time);
 			TimeZone tz = TimeZone.getTimeZone(time.getOffset().getId());
 			value.setTimeZone(tz);
 			return value;
-		case TIMESTAMP:
-			return next.getTimestamp(colName);
-		case BLOB:
-			ByteBuffer bytes = next.getBytes(colName);
-			if (bytes == null) {
+		case "TIMESTAMP":
+			return next.getLocalTime(colName);
+		case "BLOB":
+			ByteBuffer bytes = next.getByteBuffer(colName);
+			if (bytes==null) {
 				return null;
 			}
 			return SerializationUtils.deserialize(bytes.array());
-		default:
+		default: 
 			return null;
 		}
-	}
+}
 }
