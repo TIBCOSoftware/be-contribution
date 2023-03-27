@@ -26,8 +26,7 @@ public class CassandraStoreMetadata implements StoreMetadata {
 
 	@Override
 	public String getVersion() throws Exception {
-		return "1";
-		//throw new UnsupportedOperationException("Method not supported.");
+		throw new UnsupportedOperationException("Method not supported.");
 	}
 
 	@Override
