@@ -294,7 +294,8 @@ public class CassandraConnection extends StoreConnection{
 			dbPswd = CryptoUtil.decryptIfEncrypted(dbPswd.trim());
 		}
 
-		cqlSessionBuilder.withAuthCredentials(casStoreConnectionInfo.getUserName(), dbPswd);
+		if(casStoreConnectionInfo.getUserName()!=null)
+			cqlSessionBuilder.withAuthCredentials(casStoreConnectionInfo.getUserName(), dbPswd);
 
 		this.useSsl = (casStoreConnectionInfo.getTrustStore()!=null)? true : false;
 		if (this.useSsl) {
