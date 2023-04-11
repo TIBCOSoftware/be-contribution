@@ -270,7 +270,7 @@ public class CassandraConnection extends StoreConnection{
 		PreparedStatement psStmt = session.prepare(query);
 		BoundStatement bs = psStmt.bind();
 
-		txBatchStatement.get().add(bs);
+		txBatchStatement.set(txBatchStatement.get().add(bs));
 
 		if (!isTxExecution.get()) {
 			executeTxBatchStatement();
