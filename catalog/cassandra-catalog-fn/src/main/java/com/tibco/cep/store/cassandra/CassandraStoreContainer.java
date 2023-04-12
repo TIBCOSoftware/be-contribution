@@ -97,7 +97,7 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 	private Insert updateQueryWithTtl(CassandraStoreItem item, RegularInsert insertQuery) {
 		try {
 			long ttl;
-			ttl = item.getExpiration();
+			ttl = item.getTtl();
 			if (ttl<0) {
 				ttl=0;
 			}

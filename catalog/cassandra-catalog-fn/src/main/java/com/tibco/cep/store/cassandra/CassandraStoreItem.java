@@ -65,4 +65,8 @@ public class CassandraStoreItem extends Item {
 			value = this.keyValueMap.get(fieldName.toUpperCase());
 		return value;
 	}
+
+	public int getTtl() {
+		return ttl;
+	}
 }
