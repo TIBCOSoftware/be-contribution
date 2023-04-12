@@ -56,7 +56,7 @@ public class CassandraStoreItem extends Item {
 
 	@Override
 	public long getExpiration() throws Exception {
-		return this.ttl;
+		throw new UnsupportedOperationException("Method not supported.");
 	}
 
 	public Object getFieldValue(String fieldName) {
