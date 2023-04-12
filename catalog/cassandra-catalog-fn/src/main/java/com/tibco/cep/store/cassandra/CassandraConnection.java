@@ -262,20 +262,7 @@ public class CassandraConnection extends StoreConnection{
 
 	@Override
 	public long executeUpdate(String query) throws Exception {
-
-		if (!isTxExecution.get()) {
-			txBatchStatement.set(BatchStatement.builder(BatchType.LOGGED).build());
-		}
-
-		PreparedStatement psStmt = session.prepare(query);
-		BoundStatement bs = psStmt.bind();
-
-		txBatchStatement.set(txBatchStatement.get().add(bs));
-
-		if (!isTxExecution.get()) {
-			executeTxBatchStatement();
-		}
-
+		session.execute(query);
 		return -1;
 	}
 
