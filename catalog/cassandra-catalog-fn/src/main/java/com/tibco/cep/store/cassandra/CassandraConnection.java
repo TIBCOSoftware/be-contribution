@@ -86,6 +86,7 @@ public class CassandraConnection extends StoreConnection{
 
 	public CassandraConnection(StoreConnectionInfo dgProperties) {
 		super(dgProperties);
+		System.out.println("CassandraConnection.CassandraConnection()");
 		statementMap = Optional.ofNullable(statementMap).orElse(new ConcurrentHashMap<String, Statement>());
 	}
 	
@@ -95,6 +96,7 @@ public class CassandraConnection extends StoreConnection{
 
 	@Override
 	public void connect() throws Exception {
+		System.out.println("CassandraConnection.connect()");
 		CqlSessionBuilder cqlSessionBuilder = null;
 		
 		try {
@@ -166,6 +168,10 @@ public class CassandraConnection extends StoreConnection{
 //			bs.setConsistencyLevel((ConsistencyLevel) queryProperties.getOrDefault("consistency",
 //					QueryOptions.DEFAULT.consistency));
 //			bs.setTimeout(Duration.ofMillis((long) queryProperties.getOrDefault("readTimeoutMillis", 1000)));
+			
+			getLogger().log(Level.INFO,"Queryoptions fetchsize :: " +(int) queryProperties.getOrDefault("fetchSize", QueryOptions.DEFAULT.pageSize)); 
+			getLogger().log(Level.INFO,"Queryoptions is query idempotent :: " +(boolean) queryProperties.getOrDefault("idempotent", false)); 
+					
 			bs.setFetchSize((int) queryProperties.getOrDefault("fetchSize", QueryOptions.DEFAULT.pageSize));
 			bs.setIdempotent((boolean) queryProperties.getOrDefault("idempotent", false));
 		}

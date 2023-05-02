@@ -6,7 +6,7 @@ import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.tibco.cep.store.StoreQueryOptions;
 
 public class CassandraQueryOptions extends StoreQueryOptions{
-	private Properties queryProperties;
+	private Properties queryProperties = new Properties();
 	
 	public void setPrefetchSize(long prefetchSize) {
 		throw new UnsupportedOperationException("Method not supported.");
