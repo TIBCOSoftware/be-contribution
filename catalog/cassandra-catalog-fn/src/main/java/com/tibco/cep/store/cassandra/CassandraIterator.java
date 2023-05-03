@@ -27,9 +27,11 @@ import com.tibco.cep.store.StoreIterator;
 public class CassandraIterator extends StoreIterator {
 
 	private CassandraStoreContainer cassandraStoreContainer;
+	private ResultSet resultSet;
 
 	public CassandraIterator(ResultSet resultSet, String returnEntityPath) {
 		super(resultSet.iterator(), returnEntityPath);
+		this.resultSet = resultSet; 
 	}
 
 	@Override
@@ -52,6 +54,18 @@ public class CassandraIterator extends StoreIterator {
 		returnItem.setKeyValueMap(keyValueMap);
 
 		return returnItem;
+	}
+	
+	@Override
+	public boolean hasNext() {
+		boolean isAvailable = false;
+		try {
+			isAvailable = resultSet.getAvailableWithoutFetching()>0;
+			if (!isAvailable) cleanup();
+		} catch (Exception e) {
+			throw new RuntimeException("Error traversing the store iterator", e);
+		}
+		return isAvailable;
 	}
 
 	public void setContainer(String containerName, TableMetadata tableMetadata) {

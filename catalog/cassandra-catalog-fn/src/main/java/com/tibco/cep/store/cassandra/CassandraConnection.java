@@ -169,16 +169,15 @@ public class CassandraConnection extends StoreConnection{
 //					QueryOptions.DEFAULT.consistency));
 //			bs.setTimeout(Duration.ofMillis((long) queryProperties.getOrDefault("readTimeoutMillis", 1000)));
 			
-			getLogger().log(Level.INFO,"Queryoptions fetchsize :: " +(int) queryProperties.getOrDefault("fetchSize", QueryOptions.DEFAULT.pageSize)); 
-			getLogger().log(Level.INFO,"Queryoptions is query idempotent :: " +(boolean) queryProperties.getOrDefault("idempotent", false)); 
-					
-			bs.setFetchSize((int) queryProperties.getOrDefault("fetchSize", QueryOptions.DEFAULT.pageSize));
-			bs.setIdempotent((boolean) queryProperties.getOrDefault("idempotent", false));
+			bs = bs.setPageSize((int) queryProperties.getOrDefault("fetchSize", QueryOptions.DEFAULT.pageSize));
+			bs = bs.setIdempotent((boolean) queryProperties.getOrDefault("idempotent", false));
+			
+			getLogger().log(Level.INFO,"Queryoptions fetchsize :: " +bs.getPageSize()); 
+			getLogger().log(Level.INFO,"Queryoptions is query idempotent :: " +bs.isIdempotent()); 
 		}
 
 		ResultSet resultSet = null;
 		resultSet = session.execute(bs);
-
 		CassandraIterator cassandraIterator = new CassandraIterator(resultSet, returnEntityPath);
 		String containerName = getContainerNameFromQuery(query);
 		cassandraIterator.setContainer(containerName,
