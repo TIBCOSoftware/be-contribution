@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drivers>
+	<driver>
+        <type>Kinesis</type>
+        <label>Kinesis</label>
+        <class>com.tibco.cep.driver.kinesis.KinesisDriver</class>
+        <description>Amazon Kinesis makes it easy to collect, process, and analyze real-time, streaming data so you can get timely insights and react quickly to new information.</description>
+        <version>1.0.0.0</version>
+        <properties>
+			<property name="access_key" displayName="Access Key" type="String" default="" mandatory="true" />
+			<property name="secret_key" displayName="Secret Key" type="String" default="" mandatory="true" />
+			<property name="profile_name" displayName="Profile Name" type="String" default="" />
+		</properties>
+        <destinations>
+        	<property name="IncludeEventType" displayName="Include Event Type" type="String" default="ALWAYS" mandatory="true" gvToggle="true" />
+	        <property name="stream.name" displayName="Stream Name" type="String" default="" mandatory="true" gvToggle="true" />
+        	<property name="application.name" displayName="Application Name" type="String" default="" mandatory="true" gvToggle="true" />
+        	<property name="max.records" displayName="Max Records" type="Integer" default="" mandatory="true" gvToggle="true" />
+        	<property name="region.name" displayName="Region Name" type="String" default="" mandatory="true" gvToggle="true" />
+        	<property name="EventProperty" displayName="Event Property" type="String" default="" />
+        </destinations>
+        <serializers userdefined="true">
+            <serializer type="String" class="com.tibco.cep.driver.kinesis.serializer.KinesisJsonSerializer"/>
+            <serializer type="String" class="com.tibco.cep.driver.kinesis.serializer.KinesisXmlSerializer"/>
+        </serializers>
+        
+        <configuration>
+            <property>
+               <name>EventProperty</name>
+               <parent>destination</parent>
+               <type>combo-box</type>
+               <choices default="">
+                   <choice displayed="" value="" />
+               </choices>
+           </property>
+        	<property>
+                <name>IncludeEventType</name>
+                <parent>destination</parent>
+                <type>combo-box</type>
+                <choices default="ALWAYS">
+                    <choice displayed="When Serializing and Deserializing" value="ALWAYS" />
+                    <choice displayed="Only when Serializing" value="ON_SERIALIZE" />
+                    <choice displayed="Only when Deserializing" value="ON_DESERIALIZE" />
+                    <choice displayed="Never" value="NEVER" />
+                </choices>
+            </property>
+        </configuration>
+    </driver>
+</drivers>
