@@ -31,7 +31,6 @@
     <!-- sub modules - Include module names here as they are added  -->
     <modules>
        <module>aws-sqs</module>
-       <module>kinesis</module>
     </modules>
     
 </project>
