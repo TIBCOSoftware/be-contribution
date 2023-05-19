@@ -23,14 +23,10 @@ The ConnectionInfo catalog functions allow you to manipulate S3 objects and buck
 
 # QueryOptions
 
-* Set read TimeoutMillis
-  * [Store.QueryOptions.Cassandra.readTimeoutMillis](#readTimeoutMillis)
 * Set fetch size
   * [Store.QueryOptions.Cassandra.fetchSize](#fetchSize)
 * Set if query is idempotent
   * [Store.QueryOptions.Cassandra.setIdempotent](#setIdempotent)
-* Set consistency
-  * [Store.QueryOptions.Cassandra.setConsistency](#setConsistency)
 
 # Store.ConnectionInfo.Cassandra.setUserCredentials
 Purpose: Sets the user credentials if using an authenticated Cassandra setup.
@@ -114,24 +110,6 @@ Returns:
 
 N/A
 
-### Store.QueryOptions.Cassandra.readTimeoutMillis
-
-Purpose: Set the read timeout for the query.
-
-```java
-void readTimeoutMillis (Object queryOptions, int readTimeoutMillis)
-```
-Args:
-
-| Arguments   | Purpose                                                                                             |
-|:------------|:----------------------------------------------------------------------------------------------------|
-| queryOptions     | Query option object   |
-| readTimeoutMillis  |read timeout in ms|        
-
-Returns:
-
-N/A
-
 ### Store.QueryOptions.Cassandra.fetchSize
 
 Purpose: Sets the query fetch size.
@@ -163,24 +141,6 @@ Args:
 |:------------|:----------------------------------------------------------------------------------------------------|
 | queryOptions     | Query option object   |
 | idempotent  | sets whether this query is idempotent or not|  
-
-Returns:
-
-N/A
-
-### Store.QueryOptions.Cassandra.setConsistency
-
-Purpose: Sets consistency level for query.
-
-```java
-void setConsistency (Object queryOptions, String consistencyLevel)
-```
-Args:
-
-| Arguments   | Purpose                                                                                             |
-|:------------|:----------------------------------------------------------------------------------------------------|
-| queryOptions     | Query option object   |
-| consistencyLevel  | Sets consistency level. The default is local.|  
 
 Returns:
 
