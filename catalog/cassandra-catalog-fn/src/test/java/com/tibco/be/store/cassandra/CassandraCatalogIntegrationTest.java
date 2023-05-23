@@ -8,6 +8,7 @@ package com.tibco.be.store.cassandra;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,8 +23,13 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.MockitoAnnotations;
+import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
+import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
 import com.tibco.cep.store.Item;
 import com.tibco.cep.store.cassandra.CassandraConnection;
 import com.tibco.cep.store.cassandra.CassandraConnectionInfo;
@@ -37,6 +43,12 @@ import com.tibco.cep.store.cassandra.CassandraStoreItem;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CassandraCatalogIntegrationTest {
 
+	private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("cassandra");
+    private static final String DEFAULT_TAG = "4.1";
+    @Deprecated
+    public static final String IMAGE = DEFAULT_IMAGE_NAME.getUnversionedPart();
+    public static CassandraContainer cassandraContainer ;
+    
 	private static CassandraConnection cassandraConnection;
 
 	private CassandraConnectionInfo storeConnInfo;
@@ -44,19 +56,30 @@ public class CassandraCatalogIntegrationTest {
 	@BeforeAll
 	static void setup() {
 		System.setProperty("tibco.env.BE_HOME", "..");
-	}
+		cassandraContainer = new CassandraContainer<>(IMAGE);
+		cassandraContainer.start();
+		
+		try (
+	            CqlSession session = CqlSession
+	                .builder()
+	                .addContactPoint(cassandraContainer.getContactPoint())
+	                .withLocalDatacenter(cassandraContainer.getLocalDatacenter())
+	                .build()
+	        ) {
+	            session.execute(
+	                "CREATE KEYSPACE IF NOT EXISTS test WITH replication = \n" +
+	                "{'class':'SimpleStrategy','replication_factor':'1'};"
+	            );
 
+	            KeyspaceMetadata keyspace = session.getMetadata().getKeyspaces().get(CqlIdentifier.fromCql("test"));
+
+	            session.execute("CREATE TABLE test.book(bid int PRIMARY KEY,title text,author text);");
+	        }
+	}
+	
 	private static CassandraConnectionInfo createConnectionInfo() {
-		CassandraConnectionInfo connectionInfo = new CassandraConnectionInfo("Cassandra", "localhost:9042");
-		connectionInfo.setKeySpace("storefunctions");
-		connectionInfo.setPoolSize(1);
-		connectionInfo.setUserCredentials("be_user", "BE_USER");
-		connectionInfo.setTrustStoreProps(
-				"/home/rakulkar/C/Project_Related/certs/resources/opt/cassandra/conf/certs/cassandra_trust.jks",
-				"cassandra", "JKS");
-		connectionInfo.setKeyStoreProps(
-				"/home/rakulkar/C/Project_Related/certs/resources/opt/cassandra/conf/certs/cassandra_key.jks", "JKS",
-				"cassandra");
+		CassandraConnectionInfo connectionInfo = new CassandraConnectionInfo("Cassandra", cassandraContainer.getContactPoint().toString().split("/")[1]);
+		connectionInfo.setKeySpace("test");
 		return connectionInfo;
 	}
 
