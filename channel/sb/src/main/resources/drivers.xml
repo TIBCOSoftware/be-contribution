@@ -1,0 +1,47 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<drivers>
+
+	<driver>
+		<type>StreamBase</type>
+		<label>TIBCO StreamBase</label>
+		<class>com.tibco.cep.driver.sb.internal.SBDriver</class>
+		<description>TIBCO's StreamBase</description>
+		<version>1.0.1</version>
+		<properties>
+			<property name="StreamBaseServerURI" displayName="StreamBase Server URI" type="String" default="sb://localhost:10000/" />
+            <property name="UserName" type="String" default="" />
+            <property name="Password" type="String" default="" mask="true"/>
+            <property name="TrustStore" displayName="SSL Trust Store File" type="String" default=""/>
+            <property name="TrustStorePassword" displayName="SSL Trust Store Password" type="String" default="" mask="true"/>
+            <property name="KeyStore" displayName="SSL Key Store File" type="String" default=""/>
+            <property name="KeyStorePassword" displayName="SSL Key Store Password" type="String" default="" mask="true"/>
+            <property name="KeyPassword" displayName="SSL Key Password" type="String" default="" mask="true"/>
+		</properties>
+		<destinations>
+			<property name="StreamName" displayName="Stream Name" type="String" default="" />
+			<property name="ClientType" displayName="Client Type" type="String" default="DEQUEUER"/>
+			<property name="EnableBuffering" displayName="Enable Buffering" type="Boolean" default="false" />
+			<property name="BufferSize" displayName="Buffer Size" type="Long" />
+			<property name="FlushInterval" displayName="Flush Interval (ms)" type="Long" default="250" />
+			<property name="Predicate" displayName="Filter Predicate" type="String"/>
+		</destinations>
+		<serializers userdefined="true">
+			<serializer type="sbSerializer"
+				class="com.tibco.cep.driver.sb.serializers.StreamBaseSerializer" default="true" />
+		</serializers>
+		<configuration>
+			<property>
+				<name>ClientType</name>
+				<parent>destination</parent>
+				<type>combo-box</type>
+				<choices default="DEQUEUER">
+					<choice displayed="Dequeuer" value="DEQUEUER" />
+					<choice displayed="Enqueuer" value="ENQUEUER" />
+				</choices>
+			</property>
+		</configuration>
+	</driver>
+
+</drivers>
