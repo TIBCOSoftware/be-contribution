@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drivers>
+	<driver>
+        <type>MQTT</type>
+        <label>MQTT</label>
+        <class>com.tibco.cep.driver.mqtt.MqttDriver</class>
+        <description>MQTT is a machine-to-machine (M2M)/"Internet of Things" connectivity protocol. It is designed as an extremely lightweight publish/subscribe messaging transport.</description>
+        <version>1.0.0.0</version>
+        <properties>
+            <property name="mqtt.broker.urls" displayName="MQTT Broker URLs" type="String" default="tcp://localhost:1883" mandatory="true" gvToggle="true" />
+            <property name="UserName" displayName="User Name" type="String" default="" />
+			<property name="Password" displayName="Password" type="String" default=""  mask="true" />
+        </properties>
+        <destinations>
+        	<property name="IncludeEventType" displayName="Include Event Type" type="String" default="ALWAYS" mandatory="true" gvToggle="true" />
+	        <property name="publish.topic.name" displayName="Publish Topic Name" type="String" default="be_mqtt_publish_topic" mandatory="true" gvToggle="true" />
+        	<property name="subscribe.topic.name" displayName="Subscribe Topic Name" type="String" default="/#" mandatory="true" gvToggle="true" />
+        	<property name="clientId" displayName="Client Id" type="String" default="" mandatory="true" gvToggle="true" />
+        	<property name="asynsClient" displayName="Async Client" type="boolean" default="true" mandatory="false" gvToggle="true" />
+        	<property name="cleanSession" displayName="Clean Session" type="boolean" default="false" mandatory="false" gvToggle="true" />
+        	<property name="maxInflight" displayName="MaxInflight" type="Integer" default="10" mandatory="true" gvToggle="true" />
+        	<property name="qos" displayName="Quality of Service" type="Integer" default="1" mandatory="false" gvToggle="true" />
+        	<property name="retain" displayName="Retain" type="boolean" default="false" mandatory="false" gvToggle="true" />
+        	<property name="willAndTestament" displayName="Will and Testament" type="boolean" default="false" mandatory="false" gvToggle="true" />
+        	<property name="disconnectOnSuspend" displayName="Disconnect on suspend" type="boolean" default="false" mandatory="false" gvToggle="true" />
+        </destinations>
+        <serializers userdefined="true">
+            <serializer type="String" class="com.tibco.cep.driver.mqtt.serializer.MqttMapSerializer"/>
+            <serializer type="String" class="com.tibco.cep.driver.mqtt.serializer.MqttJsonSerializer"/>
+        </serializers>
+        
+        <!-- Define combo-boxes etc that are referred to in destination properties. -->
+        <configuration>
+        	<property>
+                <name>IncludeEventType</name>
+                <parent>destination</parent>
+                <type>combo-box</type>
+                <choices default="ALWAYS">
+                    <choice displayed="When Serializing and Deserializing" value="ALWAYS" />
+                    <choice displayed="Only when Serializing" value="ON_SERIALIZE" />
+                    <choice displayed="Only when Deserializing" value="ON_DESERIALIZE" />
+                    <choice displayed="Never" value="NEVER" />
+                </choices>
+            </property>
+            <property>
+                <name>qos</name>
+                <parent>destination</parent>
+                <type>combo-box</type>
+                <choices default="1">
+                    <choice displayed="At most once" value="0" />
+                    <choice displayed="At least once" value="1" />
+                    <choice displayed="Exactly once " value="2" />
+                </choices>
+            </property>
+        </configuration>
+    </driver>
+</drivers>
