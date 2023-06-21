@@ -83,11 +83,15 @@
 			<artifactId>cep-external-tibcoxml-wsdl</artifactId>
 		</dependency>
 		<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
 			<artifactId>tpcl-antlr</artifactId>
 			<version>${be.version}</version>
 			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tpcl/antlr-3.2.jar</systemPath>
+			<systemPath>${be.home}/lib/ext/tpcl/antlr.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
