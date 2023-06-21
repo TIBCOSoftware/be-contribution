@@ -8,8 +8,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <be.home>/opt/tibco/be61/be/6.1</be.home>
-    <be.version>6.1</be.version>
+    <be.home>/home/rakulkar/C/tibcohome/be/6.3</be.home>
+    <be.version>6.3</be.version>
     <junit.verion>5.7.0</junit.verion>
     <testcontainer.verion>1.15.1</testcontainer.verion>
     <maven.compiler.target>11</maven.compiler.target>
@@ -81,21 +81,21 @@
             <artifactId>cep-external-tibxml-sdk</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.sdk.eclipse_5.60.100.002.jar</systemPath>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.sdk.eclipse.jar</systemPath>
         </dependency>
 	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-tibxml-util</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.util.eclipse_5.60.100.001.jar</systemPath>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.util.eclipse.jar</systemPath>
         </dependency>
 	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-tibxml-io</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.io.eclipse_5.60.100.001.jar</systemPath>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.io.eclipse.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
@@ -123,7 +123,7 @@
             <artifactId>cep-external-tibcoxml-wsdl</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ws.wsdl.eclipse_5.60.100.001.jar</systemPath>
+            <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ws.wsdl.eclipse.jar</systemPath>
         </dependency>
 	<dependency>
             <groupId>com.tibco.businessevents</groupId>
@@ -146,8 +146,14 @@
             <scope>system</scope>
             <systemPath>${be.home}/lib/be-functions.jar</systemPath>
         </dependency>
-
-
+		<dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>api</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/org.genxdm.api.jar</systemPath>
+        </dependency>
+		
         <!-- Other common dependencies like junit/testcontainers/etc-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
