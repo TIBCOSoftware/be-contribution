@@ -153,11 +153,6 @@
 			<version>2.15.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco.akd</groupId>
-			<artifactId>tibftl-kafka-avro</artifactId>
-			<version>1.4.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20230227</version>
@@ -165,18 +160,8 @@
 		
 		<dependency>
 			<groupId>io.confluent</groupId>
-			<artifactId>kafka-avro-serializer</artifactId>
-			<version>5.4.3</version>
-		</dependency>
-		<dependency>
-			<groupId>io.confluent</groupId>
 			<artifactId>kafka-schema-registry-client</artifactId>
 			<version>5.4.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.avro</groupId>
-			<artifactId>avro</artifactId>
-			<version>1.11.1</version>
 		</dependency>
 		<dependency>
 			<groupId>io.confluent</groupId>
@@ -196,12 +181,16 @@
 		<dependency>
 			<groupId>com.tibco.tra</groupId>
 			<artifactId>Deployment</artifactId>
-			<version>5.12.1</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tra</groupId>
 			<artifactId>TIBCOtsm</artifactId>
-			<version>5.12.1</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/TIBCOtsm.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
@@ -210,7 +199,9 @@
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>net.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.net.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
@@ -219,12 +210,16 @@
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>lex.yap.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.lex.yap.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>xml.ae2xsd.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ae2xsd.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
@@ -233,12 +228,16 @@
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>xml.soap.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.soap.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>xml.transform.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.transform.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.businessevents</groupId>
@@ -247,7 +246,9 @@
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>xml.xdata.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.xdata.eclipse.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>
