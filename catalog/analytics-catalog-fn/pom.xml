@@ -140,18 +140,6 @@
 			<version>2.9.9</version>
 		</dependency>
 		
-		<!--dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
-		</dependency-->
-		
-		<!--dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>javax.activation-api</artifactId>
-			<version>1.2.0</version>
-		</dependency-->
-		
 		<dependency>
 			<groupId>jakarta.xml.soap</groupId>
 			<artifactId>jakarta.xml.soap-api</artifactId>
@@ -175,23 +163,21 @@
 		
 		<dependency>
 			<groupId>com.tibco.tra</groupId>
-			<artifactId>TIBCrypt</artifactId>
-			<version>5.12.1</version>
+			<artifactId>cep-external-tibcrypt</artifactId>
 		</dependency>
-		<!--dependency>
-			<groupId>com.tibco.tra</groupId>
-			<artifactId>TIBCOrt</artifactId>
-			<version>5.12.1</version>
-		</dependency-->
 		<dependency>
 			<groupId>com.tibco.tra</groupId>
 			<artifactId>Deployment</artifactId>
-			<version>5.12.1</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tra</groupId>
 			<artifactId>TIBCOtsm</artifactId>
-			<version>5.12.1</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/TIBCOtsm.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco</groupId>
@@ -204,130 +190,168 @@
 			<version>2.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>io.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-io</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>net.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.net.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>util.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-util</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>lex.yap.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.lex.yap.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>xml.ae2xsd.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ae2xsd.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.sdk.eclipse</artifactId>
-			<version>5.60.100.002</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-sdk</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>xml.soap.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.soap.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>xml.transform.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.transform.eclipse.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.ws.wsdl.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcoxml-wsdl</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
 			<artifactId>xml.xdata.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.xdata.eclipse.jar</systemPath>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.tibco.genxdm.bridge</groupId>
 			<artifactId>xinode</artifactId>
-			<version>1.4.1.002</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.genxdm.bridge.xinode.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.genxdm</groupId>
 			<artifactId>extras</artifactId>
-			<version>1.4.400.002</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.genxdm.extras.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.genxdm.processor.xslt</groupId>
 			<artifactId>functions</artifactId>
-			<version>1.4.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.genxdm.processor.xslt.functions.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.genxdm.processor.xslt</groupId>
 			<artifactId>processor</artifactId>
-			<version>1.4.100.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.genxdm.processor.xslt.processor.jar</systemPath>
 		</dependency>		
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>cxf.common</artifactId>
-			<version>1.3.500.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.cxf.common.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>cxf.ootb</artifactId>
-			<version>1.3.500.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.cxf.ootb.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>cxf.ootb.runtime</artifactId>
-			<version>1.3.900.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.cxf.ootb.runtime.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>cxf.runtime</artifactId>
-			<version>1.3.900.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.cxf.runtime.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>cxf.wizard</artifactId>
-			<version>1.3.500.001</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.cxf.wizard.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>dictionaryapi</artifactId>
-			<version>1.0.0.003</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.dictionaryapi.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>mappermodel.emfapi</artifactId>
-			<version>1.0.1600.002</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.mapperui.emfapi.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>mappermodel</artifactId>
-			<version>1.0.1600.002</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.mappermodel.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>mapperui.emfapi</artifactId>
-			<version>1.0.1400.002</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.mapperui.emfapi.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>mapperui</artifactId>
-			<version>1.0.1400.002</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.mapperui.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.xml</groupId>
 			<artifactId>xmodel</artifactId>
-			<version>1.0.1800.002</version>
+			<version>${be.version}</version>
+			<scope>system</scope>
+			<systemPath>${be.home}/lib/ext/tibco/com.tibco.xml.xmodel.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.genxdm</groupId>
