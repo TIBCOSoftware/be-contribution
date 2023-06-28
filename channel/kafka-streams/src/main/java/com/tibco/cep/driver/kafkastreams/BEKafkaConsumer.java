@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.avro.generic.GenericRecord;
+//import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -132,8 +132,8 @@ public class BEKafkaConsumer implements Runnable {
 		KafkaPropertiesHelper.putValueIfNotEmpty(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,
 				destinationProps.getProperty(KafkaProperties.KEY_DESTINATION_MAX_POLL_INTERVAL), consumerProperties);
 		
-		if(serializer instanceof com.tibco.cep.driver.kafka.serializer.KafkaAvroSerializer)
-			loadSchemaRegistrationProperties(destinationProps,beProperties);
+		//if(serializer instanceof com.tibco.cep.driver.kafka.serializer.KafkaAvroSerializer)
+		//	loadSchemaRegistrationProperties(destinationProps,beProperties);
 		
 		KafkaPropertiesHelper.initSslProperties(destinationProps, consumerProperties);
 		
