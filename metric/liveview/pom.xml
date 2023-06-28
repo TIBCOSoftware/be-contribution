@@ -22,99 +22,24 @@
 	<dependency>
 		<groupId>com.tibco.str</groupId>
 		<artifactId>sbclient</artifactId>
-		<version>11.0.1</version>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${be.home}/lib/ext/tibco/sbclient.jar</systemPath>
 	</dependency>
 	<dependency>
 		<groupId>com.tibco.str</groupId>
 		<artifactId>lv-client</artifactId>
-		<version>11.0.1</version>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${be.home}/lib/ext/tibco/lv-client.jar</systemPath>
 	</dependency>
-	<!--dependency>
-		<groupId>com.tibco.str</groupId>
-		<artifactId>sb-java-tools</artifactId>
-		<version>11.0.1</version>
-	</dependency-->
-	
-	<!--dependency>
-		<groupId>com.tibco.tra</groupId>
-		<artifactId>TIBCrypt</artifactId>
-		<version>5.12.1</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tra</groupId>
-		<artifactId>TIBCOrt</artifactId>
-		<version>5.12.1</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tra</groupId>
-		<artifactId>Deployment</artifactId>
-		<version>5.12.1</version>
-	</dependency-->
 	<dependency>
 		<groupId>com.tibco.tra</groupId>
 		<artifactId>TIBCOtsm</artifactId>
-		<version>5.12.1</version>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${be.home}/lib/ext/tibco/TIBCOtsm.jar</systemPath>
 	</dependency>
-	<!--dependency>
-		<groupId>com.tibco</groupId>
-		<artifactId>tibjms</artifactId>
-		<version>10.2.1</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>javax</groupId>
-		<artifactId>jms</artifactId>
-		<version>2.0</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>io.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>net.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>util.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>lex.yap.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>xml.ae2xsd.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>xml.sdk.eclipse</artifactId>
-		<version>5.60.100.002</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>xml.soap.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>xml.transform.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>xml.ws.wsdl.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
-	<!--dependency>
-		<groupId>com.tibco.tibcoxml</groupId>
-		<artifactId>xml.xdata.eclipse</artifactId>
-		<version>5.60.100.001</version>
-	</dependency-->
 	<dependency>
         <groupId>com.tibco.businessevents</groupId>
         <artifactId>cep-kernel</artifactId>
