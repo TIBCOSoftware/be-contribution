@@ -17,7 +17,7 @@
 	<version>1.0.0</version>
 	
 	<properties>
-        <mqtt.version></mqtt.version>
+        <mqtt.version>1.2.5</mqtt.version>
     </properties>
 	
 	<build>
@@ -120,32 +120,16 @@
             <artifactId>jackson-annotations</artifactId>
 			<version>2.15.0</version>
         </dependency>
-		<!--dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-			<version>2.15.0</version>
-        </dependency-->
 		<dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
 			<version>2.15.0</version>
         </dependency>
-		<!--dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-			<version>2.15.0</version>
-        </dependency-->
 		
 		<dependency>
-			<groupId>com.tibco.tra</groupId>
-			<artifactId>TIBCrypt</artifactId>
-			<version>5.12.1</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcrypt</artifactId>
 		</dependency>
-		<!--dependency>
-			<groupId>com.tibco.tra</groupId>
-			<artifactId>TIBCOrt</artifactId>
-			<version>5.12.1</version>
-		</dependency-->
 		<dependency>
 			<groupId>com.tibco.tra</groupId>
 			<artifactId>Deployment</artifactId>
@@ -157,24 +141,12 @@
 			<version>5.12.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco</groupId>
-			<artifactId>tibjms</artifactId>
-			<version>10.2.1</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-io</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>jms</artifactId>
-			<version>2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>io.eclipse</artifactId>
-			<version>5.60.100.001</version>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>util.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-util</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
@@ -192,9 +164,8 @@
 			<version>5.60.100.001</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.sdk.eclipse</artifactId>
-			<version>5.60.100.002</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibxml-sdk</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
@@ -207,9 +178,8 @@
 			<version>5.60.100.001</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.ws.wsdl.eclipse</artifactId>
-			<version>5.60.100.001</version>
+			<groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcoxml-wsdl</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tibco.tibcoxml</groupId>
