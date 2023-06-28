@@ -75,9 +75,9 @@ public class BEKafkaProducer {
 
 		KafkaPropertiesHelper.initSslProperties(destinationProps, producerProperties);
 		
-	    if(serializer instanceof com.tibco.cep.driver.kafka.serializer.KafkaAvroSerializer) {
-		   loadSchemaRegistrationProperties(destinationProps,beProperties);
-	    }
+	    //if(serializer instanceof com.tibco.cep.driver.kafka.serializer.KafkaAvroSerializer) {
+		//   loadSchemaRegistrationProperties(destinationProps,beProperties);
+	    //}
 		
 		String channelUri = destinationProps.getProperty(KafkaProperties.INTERNAL_PROP_KEY_CHANNEL_URI);
 		String destinationUri = destinationProps.getProperty(KafkaProperties.INTERNAL_PROP_KEY_DESTINATION_URI);
