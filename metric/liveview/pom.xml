@@ -16,6 +16,7 @@
 
   <properties>
 	<liveview.version>1.0.0</liveview.version>
+	<sb.home>C:/dev_env/tsi-root/tibco/str/11.0.1/V3-GA/win/x86_64/lib</sb.home>
   </properties>
 
   <dependencies>
@@ -24,21 +25,14 @@
 		<artifactId>sbclient</artifactId>
 		<version>${be.version}</version>
 		<scope>system</scope>
-		<systemPath>${be.home}/lib/ext/tibco/sbclient.jar</systemPath>
+		<systemPath>${sb.home}/lib/ext/tibco/sbclient.jar</systemPath>
 	</dependency>
 	<dependency>
 		<groupId>com.tibco.str</groupId>
 		<artifactId>lv-client</artifactId>
 		<version>${be.version}</version>
 		<scope>system</scope>
-		<systemPath>${be.home}/lib/ext/tibco/lv-client.jar</systemPath>
-	</dependency>
-	<dependency>
-		<groupId>com.tibco.tra</groupId>
-		<artifactId>TIBCOtsm</artifactId>
-		<version>${be.version}</version>
-		<scope>system</scope>
-		<systemPath>${be.home}/lib/ext/tibco/TIBCOtsm.jar</systemPath>
+		<systemPath>${sb.home}/lib/ext/tibco/lv-client.jar</systemPath>
 	</dependency>
 	<dependency>
         <groupId>com.tibco.businessevents</groupId>
