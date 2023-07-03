@@ -25,6 +25,8 @@
     <modules>
        <!--<module>aws-catalog-fn</module>-->
        <module>cassandra-catalog-fn</module>
+       <module>analytics-catalog-fn</module>
+       <module>pattern-catalog-fn</module>
     </modules>
     
 </project>
