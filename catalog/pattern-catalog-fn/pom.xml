@@ -128,13 +128,6 @@
 			<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>com.tibco.tra</groupId>
-			<artifactId>TIBCOtsm</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/TIBCOtsm.jar</systemPath>
-		</dependency>
-		<dependency>
 			<groupId>com.tibco</groupId>
 			<artifactId>tibjms</artifactId>
 			<version>10.2.1</version>
