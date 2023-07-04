@@ -109,11 +109,6 @@
 		<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
 	</dependency>
 	<dependency>
-		<groupId>com.tibco</groupId>
-		<artifactId>tibjms</artifactId>
-		<version>10.2.1</version>
-	</dependency>
-	<dependency>
 		<groupId>com.tibco.businessevents</groupId>
                 <artifactId>cep-external-tibxml-sdk</artifactId>
 	</dependency>
