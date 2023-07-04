@@ -96,152 +96,95 @@
 	</repositories>
 
     <dependencies>
-		<dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-channel-api</artifactId>
         </dependency>
-		<dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-kernel</artifactId>
         </dependency>
-		<dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-common</artifactId>
         </dependency>
-		<dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-base</artifactId>
         </dependency>
-		<dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-drivers</artifactId>
         </dependency>
-		
-		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-clients</artifactId>
-			<version>3.4.0</version>
+	<dependency>
+		<groupId>org.apache.kafka</groupId>
+		<artifactId>kafka-clients</artifactId>
+		<version>3.4.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.xerial.snappy</groupId>
+		<artifactId>snappy-java</artifactId>
+		<version>1.1.8.4</version>
+	</dependency>
+	<dependency>
+		<groupId>org.lz4</groupId>
+		<artifactId>lz4-java</artifactId>
+		<version>1.8.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.kafka</groupId>
+		<artifactId>kafka-streams</artifactId>
+		<version>3.4.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.rocksdb</groupId>
+		<artifactId>rocksdbjni</artifactId>
+		<version>6.22.1.1</version>
+	</dependency>
+	<dependency>
+		<groupId>com.github.luben</groupId>
+		<artifactId>zstd-jni</artifactId>
+		<version>1.5.0-4</version>
+	</dependency>
+	<dependency>
+		<groupId>com.fasterxml.jackson.core</groupId>
+		<artifactId>jackson-annotations</artifactId>
+		<version>2.15.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.json</groupId>
+		<artifactId>json</artifactId>
+		<version>20230227</version>
+	</dependency>
+	<dependency>
+		<groupId>io.confluent</groupId>
+		<artifactId>kafka-schema-registry-client</artifactId>
+		<version>5.4.3</version>
+	</dependency>
+	<dependency>
+		<groupId>io.confluent</groupId>
+		<artifactId>common-config</artifactId>
+		<version>5.4.3</version>
+	</dependency>
+	<dependency>
+		<groupId>io.confluent</groupId>
+		<artifactId>common-utils</artifactId>
+		<version>5.4.3</version>
+	</dependency>
+	<dependency>
+		<groupId>com.tibco.businessevents</groupId>
+                <artifactId>cep-external-tibcrypt</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.xerial.snappy</groupId>
-			<artifactId>snappy-java</artifactId>
-			<version>1.1.8.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.lz4</groupId>
-			<artifactId>lz4-java</artifactId>
-			<version>1.8.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-streams</artifactId>
-			<version>3.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.rocksdb</groupId>
-			<artifactId>rocksdbjni</artifactId>
-			<version>6.22.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.luben</groupId>
-			<artifactId>zstd-jni</artifactId>
-			<version>1.5.0-4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>2.15.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20230227</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>io.confluent</groupId>
-			<artifactId>kafka-schema-registry-client</artifactId>
-			<version>5.4.3</version>
-		</dependency>
-		<dependency>
-			<groupId>io.confluent</groupId>
-			<artifactId>common-config</artifactId>
-			<version>5.4.3</version>
-		</dependency>
-		<dependency>
-			<groupId>io.confluent</groupId>
-			<artifactId>common-utils</artifactId>
-			<version>5.4.3</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibcrypt</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tra</groupId>
-			<artifactId>Deployment</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibxml-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>net.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.net.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibxml-util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>lex.yap.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.lex.yap.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.ae2xsd.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ae2xsd.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibxml-sdk</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.soap.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.soap.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.transform.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.transform.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibcoxml-wsdl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.xdata.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.xdata.eclipse.jar</systemPath>
-		</dependency>
-	</dependencies>
+	<dependency>
+		<groupId>com.tibco.tra</groupId>
+		<artifactId>Deployment</artifactId>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
+	</dependency>	
+	<dependency>
+		<groupId>com.tibco.businessevents</groupId>
+        	<artifactId>cep-external-tibxml-sdk</artifactId>
+	</dependency>
+    </dependencies>
 </project>
