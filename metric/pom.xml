@@ -24,6 +24,7 @@
     <!-- sub modules - Include module names here as they are added  -->
     <modules>
        <module>elasticsearch</module>
+       <module>liveview</module>
     </modules>
     
 </project>
