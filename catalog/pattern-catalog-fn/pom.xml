@@ -89,112 +89,45 @@
     </build>
 
     <dependencies>
-		<dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-kernel</artifactId>
         </dependency>
-		<dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-common</artifactId>
         </dependency>
-		<dependency>
+	<dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-base</artifactId>
         </dependency>
-		
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr</artifactId>
-			<version>3.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache</groupId>
-			<artifactId>antlr</artifactId>
-			<version>3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.tibco.tra</groupId>
-			<artifactId>TIBCOrt</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/TIBCOrt.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tra</groupId>
-			<artifactId>Deployment</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco</groupId>
-			<artifactId>tibjms</artifactId>
-			<version>10.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>jms</artifactId>
-			<version>2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibxml-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>net.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.net.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibxml-util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>lex.yap.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.lex.yap.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.ae2xsd.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ae2xsd.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibxml-sdk</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.soap.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.soap.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.transform.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.transform.eclipse.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-external-tibcoxml-wsdl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.tibco.tibcoxml</groupId>
-			<artifactId>xml.xdata.eclipse</artifactId>
-			<version>${be.version}</version>
-			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.xdata.eclipse.jar</systemPath>
-		</dependency>
-
-	</dependencies>
+	<dependency>
+		<groupId>org.antlr</groupId>
+		<artifactId>antlr</artifactId>
+		<version>3.2</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache</groupId>
+		<artifactId>antlr</artifactId>
+		<version>3</version>
+	</dependency>
+	<dependency>
+		<groupId>com.tibco.tra</groupId>
+		<artifactId>TIBCOrt</artifactId>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${be.home}/lib/ext/tibco/TIBCOrt.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>com.tibco.tra</groupId>
+		<artifactId>Deployment</artifactId>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
+	</dependency>	
+	<dependency>
+		<groupId>com.tibco.businessevents</groupId>
+        	<artifactId>cep-external-tibxml-sdk</artifactId>
+	</dependency>
+    </dependencies>
 </project>
