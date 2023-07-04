@@ -7,6 +7,7 @@ A BusinessEvents application can read from (dequeue) and write to (enqueue) any 
 ## Pre-requisites
 
 * The StreamBase Channel in BusinessEvents requires a Simple Event definition in the BusinessEvents Project to match the corresponding schema definition in the StreamBase application.
+* Since StreamBase jars are already removed, a property for SB home is set in pom.xml of SBChannel which is used to get the required jar (sb-java-tools.jar).
 
 ## Getting Started
 
