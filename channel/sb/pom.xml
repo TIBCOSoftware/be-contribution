@@ -100,7 +100,7 @@
 		</dependency>
     
 		<dependency>
-			<groupId>com.tibco.tra</groupId>
+			<groupId>com.tibco.businessevents</groupId>
 			<artifactId>cep-external-tibcrypt</artifactId>
 		</dependency>
 		<dependency>
