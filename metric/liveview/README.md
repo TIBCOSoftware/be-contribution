@@ -10,6 +10,10 @@ All metric store contributions that work with TIBCO BusinessEvents 6.1.0 and abo
 
 * Go through the developer guide [here](https://docs.tibco.com/emp/businessevents-enterprise/6.1.0/doc/html/Configuration/Custom-Application-Metrics-Store.htm) to get more details around the various classes/interfaces involved and how to set it up.
 
+## Pre-requisites
+
+* Since Liveview is dependent on SB classpath and as its jars are already removed, a property for SB home is set in pom.xml of Liveview Metric Store which is used to get the required jars (sbclient.jar and lv-client.jar).
+
 ## Getting Started
 
 * If a new metric store jar is needed, follow these [instructions](https://github.com/tibco/be-contribution) to clone/update/build a new jar.
