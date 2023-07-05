@@ -21,7 +21,7 @@ import static com.tibco.cep.pattern.functions.Helper.getCurrentThreadRSI;
 */
 
 @com.tibco.be.model.functions.BEPackage(
-		catalog = "CEP Pattern(Deprecated)",
+		catalog = "CEP Pattern",
         category = "Pattern.IO",
         synopsis = "Event input-output functions")
 public abstract class IOFunctions {
