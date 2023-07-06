@@ -18,7 +18,7 @@
 
     <properties>
         <analytics.version>1.12.261</analytics.version>
-	<terr.home>C:/dev_env/tsi-root/tibco/terr/6.0.2/V13-GA/win/x86_64/library/terrJava/java</terr.home>
+	<terr.home>C:/dev_env/tsi-root/tibco/terr/6.0.2/V13-GA/win/x86_64</terr.home>
     </properties>
 
     <build>
@@ -103,7 +103,7 @@
 	    	<artifactId>terr</artifactId>
 		<version>${be.version}</version>
 		<scope>system</scope>
-		<systemPath>${terr.home}/terrJava.jar</systemPath>
+		<systemPath>${terr.home}/library/terrJava/java/terrJava.jar</systemPath>
 	</dependency>
 	<dependency>
 		<groupId>org.jpmml</groupId>
