@@ -163,7 +163,7 @@
             <artifactId>tpcl-antlr</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tpcl/antlr-3.2.jar</systemPath>
+            <systemPath>${be.home}/lib/ext/tpcl/antlr.jar</systemPath>
         </dependency>
 
 <!--        <dependency>-->
