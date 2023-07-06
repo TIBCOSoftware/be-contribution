@@ -18,7 +18,7 @@
 	
 	<properties>
         <sb.version>11.0.1</sb.version>
-	<sb.home>C:/dev_env/tsi-root/tibco/str/11.0.1/V3-GA/win/x86_64/lib</sb.home>
+	<sb.home>C:/dev_env/tsi-root/tibco/str/11.0.1/V3-GA/win/x86_64</sb.home>
     </properties>
 	
 	<build>
@@ -95,7 +95,7 @@
 		<artifactId>sb-java-tools</artifactId>
 		<version>${be.version}</version>
 		<scope>system</scope>
-		<systemPath>${sb.home}/sb-java-tools.jar</systemPath>
+		<systemPath>${sb.home}/lib/sb-java-tools.jar</systemPath>
 	</dependency>
 	<dependency>
 		<groupId>com.tibco.businessevents</groupId>
