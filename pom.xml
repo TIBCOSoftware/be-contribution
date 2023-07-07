@@ -8,7 +8,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <be.home>/home/rakulkar/C/tibcohome/be/6.3</be.home>
+    <be.home>C:/tibcoInstall/6.3/v139/be/6.3</be.home>
     <be.version>6.3</be.version>
     <junit.verion>5.7.0</junit.verion>
     <testcontainer.verion>1.15.1</testcontainer.verion>

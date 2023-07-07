@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drivers>
+	<driver>
+        <type>Kafka Streams</type>
+        <label>Kafka Streams</label>
+        <class>com.tibco.cep.driver.kafkastreams.KafkaStreamsDriver</class>
+        <description>Kafka Streams is a client library for building applications and microservices, where the input and output data are stored in Kafka clusters. It combines the simplicity of writing and deploying standard Java and Scala applications on the client side with the benefits of Kafka's server-side cluster technology.</description>
+        <version>1.0.0.0</version>
+        <properties>
+            <property name="kafka.broker.urls" displayName="Kafka Broker URLs" type="String" default="localhost:9092" mandatory="true" gvToggle="true" />
+            <property name="kafka.security.protocol" displayName="Security Protocol" type="String" default="PLAINTEXT" mandatory="true" gvToggle="true" />
+            <property name="kafka.sasl.mechanism" displayName="SASL mechanism" type="String" default="PLAIN" mandatory="false" gvToggle="true" />
+			<property name="kafka.trusted.certs.folder" displayName="Trusted Certificates Folder" type="String" default="" mandatory="false" gvToggle="false" />
+            <property name="kafka.keystore.identity" displayName="KeyStore Identity" type="String" default="" mandatory="false" gvToggle="false" />
+            <property name="kafka.truststore.password" displayName="TrustStore Password" type="String" default="" mandatory="false" gvToggle="false" />
+        </properties>
+        <destinations>
+        	<property name="IncludeEventType" displayName="Include Event Type" type="String" default="ALWAYS" mandatory="true" gvToggle="true" />
+	        <property name="topic.name" displayName="Topic Name" type="String" default="be_kafka_streams_input" mandatory="true" gvToggle="true" />
+            <property name="regex.pattern" displayName="Is Regex Pattern" type="Boolean" default="false" gvToggle="false" />
+        	<property name="application.id" displayName="Application ID" type="String" default="be_kafka_streams" mandatory="true" gvToggle="true" />
+            <property name="key.serdes" displayName="Key Serdes" type="String" default="ByteArray" gvToggle="true" />
+            <property name="value.serdes" displayName="Value Serdes" type="String" default="String"  gvToggle="true" />
+            <property name="auto.offset.reset" displayName="Auto Offset Reset" type="String" default="earliest" gvToggle="true" />
+            <property name="processing.guarantee" displayName="Processing Guarantee" type="String" default="at_least_once" gvToggle="true" />
+            <property name="processor.topology" displayName="Processor Topology" type="String" default="{}" gvToggle="false" />
+        </destinations>
+        <serializers userdefined="true">
+            <serializer type="String" class="com.tibco.cep.driver.kafka.serializer.KafkaMapSerializer"/>
+            <serializer type="String" class="com.tibco.cep.driver.kafka.serializer.KafkaJsonSerializer"/>
+            <serializer type="String" class="com.tibco.cep.driver.kafka.serializer.KafkaXmlSerializer"/>
+            <serializer type="String" class="com.tibco.cep.driver.kafkastreams.serializer.KeyValueSerializer"/>
+        </serializers>
+        
+        <!-- Define combo-boxes etc that are referred to in destination properties. -->
+        <configuration>
+        	<property>
+                <name>IncludeEventType</name>
+                <parent>destination</parent>
+                <type>combo-box</type>
+                <choices default="ALWAYS">
+                    <choice displayed="When Serializing and Deserializing" value="ALWAYS" />
+                    <choice displayed="Only when Serializing" value="ON_SERIALIZE" />
+                    <choice displayed="Only when Deserializing" value="ON_DESERIALIZE" />
+                    <choice displayed="Never" value="NEVER" />
+                </choices>
+            </property>
+        	<property>
+	            <name>compression.type</name>
+	            <parent>destination</parent>
+	            <type>combo-box</type>
+	            <choices >
+	                <choice displayed="none" value="none" />
+	                <choice displayed="gzip" value="gzip" />
+	                <choice displayed="snappy" value="snappy" />
+	                <choice displayed="lz4" value="lz4" />
+	            </choices>
+            </property>
+            <property>
+	            <name>kafka.security.protocol</name>
+	            <parent>destination</parent>
+	            <type>combo-box</type>
+	            <choices >
+	                <choice displayed="PLAINTEXT" value="PLAINTEXT" />
+	                <choice displayed="SASL_PLAINTEXT" value="SASL_PLAINTEXT" />
+	                <choice displayed="SSL" value="SSL" />
+	                <choice displayed="SASL_SSL" value="SASL_SSL" />
+	            </choices>
+            </property>
+            <property>
+	            <name>kafka.sasl.mechanism</name>
+	            <parent>destination</parent>
+	            <type>combo-box</type>
+	            <choices >
+	                <choice displayed="PLAIN" value="PLAIN" />
+	                <choice displayed="GSSAPI" value="GSSAPI" />
+	                <choice displayed="SCRAM-SHA-256" value="SCRAM-SHA-256" />
+	                <choice displayed="SCRAM-SHA-512" value="SCRAM-SHA-512" />
+	            </choices>
+            </property>
+            <property>
+	            <name>key.serdes</name>
+	            <parent>destination</parent>
+	            <type>combo-box</type>
+	            <choices >
+	                <choice displayed="ByteArray" value="ByteArray" />
+	                <choice displayed="Double" value="Double" />
+	                <choice displayed="Integer" value="Integer" />
+	                <choice displayed="Long" value="Long" />
+	                <choice displayed="String" value="String" />
+	            </choices>
+            </property>
+            <property>
+	            <name>value.serdes</name>
+	            <parent>destination</parent>
+	            <type>combo-box</type>
+	            <choices >
+	                <choice displayed="ByteArray" value="ByteArray" />
+	                <choice displayed="Double" value="Double" />
+	                <choice displayed="Integer" value="Integer" />
+	                <choice displayed="Long" value="Long" />
+	                <choice displayed="String" value="String" />
+	            </choices>
+            </property>
+            <property>
+	            <name>processing.guarantee</name>
+	            <parent>destination</parent>
+	            <type>combo-box</type>
+	            <choices >
+	                <choice displayed="Exactly Once" value="exactly_once" />
+	                <choice displayed="At least Once" value="at_least_once" />
+	            </choices>
+            </property>
+            <property>
+	            <name>auto.offset.reset</name>
+	            <parent>destination</parent>
+	            <type>combo-box</type>
+	            <choices >
+	                <choice displayed="Earliest" value="EARLIEST" />
+	                <choice displayed="Latest" value="LATEST" />
+	            </choices>
+            </property>
+        </configuration>
+    </driver>
+</drivers>

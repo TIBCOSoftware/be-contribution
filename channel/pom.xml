@@ -32,6 +32,9 @@
     <modules>
        <module>aws-sqs</module>
        <module>kinesis</module>
+       <module>kafka-streams</module>
+       <module>mqtt</module>
+       <module>sb</module>
     </modules>
     
 </project>
