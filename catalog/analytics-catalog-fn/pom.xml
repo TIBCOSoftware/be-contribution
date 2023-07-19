@@ -129,12 +129,16 @@
 	<dependency>
 		<groupId>org.genxdm</groupId>
 		<artifactId>api</artifactId>
-		<version>1.4.1</version>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${be.home}/lib/ext/tibco/org.genxdm.api.jar</systemPath>
 	</dependency>
 	<dependency>
 		<groupId>org.genxdm</groupId>
 		<artifactId>bridgekit</artifactId>
-		<version>1.4.1</version>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${be.home}/lib/ext/tibco/org.genxdm.bridgekit.jar</systemPath>
 	</dependency>
     </dependencies>
 
