@@ -3,7 +3,10 @@
 All channel contributions that work with TIBCO BusinessEvents 5.6.0 and above. Below is the list of currently available channels,
 
 * [aws-sqs](https://github.com/tibco/be-contribution/tree/main/channel/aws-sqs)
+* [kafka-streams](https://github.com/TIBCOSoftware/be-contribution/tree/main/channel/kafka-streams)
 * [kinesis](https://github.com/tibco/be-contribution/tree/main/channel/kinesis)
+* [mqtt](https://github.com/TIBCOSoftware/be-contribution/tree/main/channel/mqtt)
+* [sb](https://github.com/TIBCOSoftware/be-contribution/tree/main/channel/sb)
 
 ## Pre-requisites
 
