@@ -1,4 +1,4 @@
-package com.tibco.cep.driver.kafka.serializer;
+package com.tibco.cep.driver.kafkastreams.serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,6 +19,7 @@ import com.tibco.be.custom.channel.EventWithId;
 import com.tibco.be.util.XiSupport;
 import com.tibco.cep.driver.kafka.KafkaEvent;
 import com.tibco.cep.driver.kafka.KafkaProperties;
+import com.tibco.cep.driver.kafka.serializer.KafkaSerializer;
 import com.tibco.cep.kernel.model.entity.Entity;
 import com.tibco.cep.kernel.service.logging.Logger;
 import com.tibco.jxpath.objects.XDateTime;

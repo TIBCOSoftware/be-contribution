@@ -1,4 +1,4 @@
-package com.tibco.cep.driver.kafka.serializer;
+package com.tibco.cep.driver.kafkastreams.serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

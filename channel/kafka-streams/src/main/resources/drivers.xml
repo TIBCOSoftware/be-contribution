@@ -26,9 +26,9 @@
             <property name="processor.topology" displayName="Processor Topology" type="String" default="{}" gvToggle="false" />
         </destinations>
         <serializers userdefined="true">
-            <serializer type="String" class="com.tibco.cep.driver.kafka.serializer.KafkaMapSerializer"/>
-            <serializer type="String" class="com.tibco.cep.driver.kafka.serializer.KafkaJsonSerializer"/>
-            <serializer type="String" class="com.tibco.cep.driver.kafka.serializer.KafkaXmlSerializer"/>
+            <serializer type="String" class="com.tibco.cep.driver.kafkastreams.serializer.KafkaMapSerializer"/>
+            <serializer type="String" class="com.tibco.cep.driver.kafkastreams.serializer.KafkaJsonSerializer"/>
+            <serializer type="String" class="com.tibco.cep.driver.kafkastreams.serializer.KafkaXmlSerializer"/>
             <serializer type="String" class="com.tibco.cep.driver.kafkastreams.serializer.KeyValueSerializer"/>
         </serializers>
         

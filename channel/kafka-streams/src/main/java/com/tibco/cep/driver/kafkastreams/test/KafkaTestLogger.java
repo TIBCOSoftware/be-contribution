@@ -1,4 +1,4 @@
-package com.tibco.cep.driver.kafka.test;
+package com.tibco.cep.driver.kafkastreams.test;
 
 import com.tibco.cep.driver.kafka.BEKafkaConsumer;
 import com.tibco.cep.driver.kafka.BEKafkaProducer;
