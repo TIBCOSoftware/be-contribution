@@ -1,4 +1,4 @@
-package com.tibco.cep.driver.kafka.test;
+package com.tibco.cep.driver.kafkastreams.test;
 
 import java.util.Date;
 import java.util.Properties;

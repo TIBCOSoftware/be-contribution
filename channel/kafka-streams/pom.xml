@@ -114,8 +114,15 @@
         </dependency>
 	<dependency>
             <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-kafka</artifactId>
+            <version>${be.version}</version>
+             <scope>system</scope>
+            <systemPath>${be.home}/lib/cep-kafka.jar</systemPath>
+     </dependency>
+    <dependency>
+            <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-drivers</artifactId>
-        </dependency>
+    </dependency>
 	<dependency>
 		<groupId>org.apache.kafka</groupId>
 		<artifactId>kafka-clients</artifactId>
