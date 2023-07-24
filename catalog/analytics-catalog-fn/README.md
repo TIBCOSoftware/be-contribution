@@ -6,6 +6,12 @@ A set of catalog functions supporting:
 * [Statistica](#statistica)
 * [TERR](#terr)
 
+Reference links of sample examples are as follows :
+
+* [AuditPMML](https://github.com/tibco/be-samples/tree/main/AuditPMML)
+* [FraudDetectionTerr](https://github.com/tibco/be-samples/tree/main/FraudDetectionTerr)
+* [LiveScore](https://github.com/tibco/be-samples/tree/main/LiveScore)
+
 ## PMML
 
 The PMML catalog functions allow you to manipulate PMML through the following operations:
