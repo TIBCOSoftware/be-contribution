@@ -3,6 +3,10 @@
 The Kafka Streams channel destination can be configured to use stream processors to create stream processing topologies. After the stream topology processes the incoming stream, a stream record is converted to a
 SimpleEvent that triggers the relevant rules.
 
+Reference link of sample example is as follows :
+
+* [KafkaStreamsChannel](https://github.com/tibco/be-samples/tree/main/KafkaStreamsChannel)
+
 ## Pre-requisites
 
 * To process incoming Kafka Streams records in your TIBCO BusinessEvents application, set up a Kafka Streams channel in your application.
