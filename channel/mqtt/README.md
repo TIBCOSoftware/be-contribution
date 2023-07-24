@@ -4,7 +4,7 @@ MQTT is a machine-to-machine connectivity protocol that enables remote connectio
 
 Reference link of sample example is as follows :
 
-* [KafkaStreamsChannel](https://github.com/tibco/be-samples/tree/main/MQTTChannel)
+* [MQTTChannel](https://github.com/tibco/be-samples/tree/main/MQTTChannel)
 
 ## Getting Started
 
