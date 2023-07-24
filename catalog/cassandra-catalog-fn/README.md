@@ -5,6 +5,10 @@ A set of catalog functions supporting:
 * [ConnectionInfo](#ConnectionInfo)
 * [QueryOptions](#QueryOptions)
 
+Reference link of sample example is as follows :
+
+* [Cassandra Catalog](https://github.com/tibco/be-samples/tree/main/CassandraCatalog)
+
 ## Note
 
 This document only list the functions that are specific to Cassandra and the newly introduced one, existing functions that are part of the original Store API are not mentioned here.
