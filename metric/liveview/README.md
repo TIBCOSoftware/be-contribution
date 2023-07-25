@@ -31,9 +31,9 @@ Based on the project configuration, TIBCO BusinessEvents generates a LiveView pr
 
 ## Reference Documents
 
-* Go through the [Custom Metric Store API](https://docs.tibco.com/emp/businessevents-enterprise/6.1.0/doc/html/api/javadoc/com/tibco/cep/runtime/appmetrics/package-summary.html) documentation.
+* Go through the [Custom Metric Store API](https://docs.tibco.com/emp/businessevents-enterprise/6.3.0/doc/html/api/javadoc/com/tibco/cep/runtime/appmetrics/package-summary.html) documentation.
 
-* Go through the developer guide [here](https://docs.tibco.com/emp/businessevents-enterprise/6.1.0/doc/html/Configuration/Custom-Application-Metrics-Store.htm) to get more details around the various classes/interfaces involved and how to set it up.
+* Go through the developer guide [here](https://docs.tibco.com/emp/businessevents-enterprise/6.3.0/doc/html/Configuration/Custom-Application-Metrics-Store.htm) to get more details around the various classes/interfaces involved and how to set it up.
 
 ## Pre-requisites
 
@@ -43,6 +43,7 @@ Based on the project configuration, TIBCO BusinessEvents generates a LiveView pr
 
 ## Getting Started
 
+* If a new metric store jar is needed, follow these [instructions](https://github.com/tibco/be-contribution) to clone/update/build a new jar.
 * Configure the application metrics for the metric store and add an inference agent for it.
 * Save the project.
 * Generate the LiveView configuration (.lvconf) files for the project using the studio-tools utility.
