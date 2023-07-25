@@ -4,6 +4,10 @@ Using the StreamBase channel, you can send messages back and forth between TIBCO
 
 A BusinessEvents application can read from (dequeue) and write to (enqueue) any StreamBase stream using the StreamBase channel. Thus, an existing StreamBase application requires no modification to exchange messages with a BusinessEvents application. The configurations for communicating with the StreamBase application is performed in the BusinessEvents application.
 
+Reference link of sample example is as follows :
+
+* [FraudDetectionStreamBase](https://github.com/tibco/be-samples/tree/main/FraudDetectionStreamBase)
+
 ## Pre-requisites
 
 * The StreamBase Channel in BusinessEvents requires a Simple Event definition in the BusinessEvents Project to match the corresponding schema definition in the StreamBase application.

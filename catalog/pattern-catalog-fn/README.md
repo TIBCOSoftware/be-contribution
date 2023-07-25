@@ -6,6 +6,10 @@ A set of catalog functions supporting:
 * [Manager](#manager)
 * [Service](#service)
 
+Reference link of sample example is as follows :
+
+* [PatternMatcher](https://github.com/tibco/be-samples/tree/main/PatternMatcher)
+
 ## IO
 
 The IO catalog functions allow you to manipulate IO through the following operations:

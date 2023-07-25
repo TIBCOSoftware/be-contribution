@@ -4,6 +4,10 @@ All metric store contributions that work with TIBCO BusinessEvents 6.1.0 and abo
 
 * [Liveview](https://github.com/tibco/be-contribution/tree/main/metric/liveview)
 
+Reference link of sample example is as follows :
+
+* [FraudDetectionLiveView](https://github.com/tibco/be-samples/tree/main/FraudDetectionLiveView)
+
 ## Reference Documents
 
 * Go through the [Custom Metric Store API](https://docs.tibco.com/emp/businessevents-enterprise/6.1.0/doc/html/api/javadoc/com/tibco/cep/runtime/appmetrics/package-summary.html) documentation.

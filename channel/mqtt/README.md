@@ -2,6 +2,10 @@
 
 MQTT is a machine-to-machine connectivity protocol that enables remote connections for IoT applications. By using the MQTT channel, TIBCO BusinessEvents can receive MQTT messages and transform them into TIBCO BusinessEvents events.
 
+Reference link of sample example is as follows :
+
+* [MQTTChannel](https://github.com/tibco/be-samples/tree/main/MQTTChannel)
+
 ## Getting Started
 
 * Assuming you have gone through all the documentation and appropriate [steps](https://github.com/tibco/be-contribution/tree/main/channel) are followed to setup the new channel.
