@@ -131,7 +131,11 @@ public class MqttChannel extends BaseChannel{
 		setState(State.STOPPED);
 	}
 	
-	private void configureByProperties() {
+	private void configureByProperties() throws Exception {
+		RuleServiceProvider rsp = (RuleServiceProvider)getRuleServiceProvider();
+		GlobalVariables gv = rsp.getGlobalVariables();
+		ArchiveResourceProvider provider = null;
+		provider = rsp.getProject().getSharedArchiveResourceProvider();
 		
 		brokerUrl = (String) getGlobalVariableValue(
 				getChannelProperties().getProperty(MqttProperties.MQTT_CHANNEL_PROPERTY_BROKER_URLS));
@@ -140,6 +144,44 @@ public class MqttChannel extends BaseChannel{
 				getChannelProperties().getProperty(MqttProperties.MQTT_CHANNEL_PROPERTY_USERNAME));
 		password = decryptPwd((String) getGlobalVariableValue(
 				getChannelProperties().getProperty(MqttProperties.MQTT_CHANNEL_PROPERTY_PASSWORD)));
+		
+		useSsl = Boolean.parseBoolean((String) getGlobalVariableValue(
+				getChannelProperties().getProperty(MqttProperties.MQTT_CHANNEL_PROPERTY_USESSL)));
+		if(useSsl)
+		{
+			sslProperties = new Properties();
+			
+			String trustStoreFolder = (String)getGlobalVariableValue(getChannelProperties().getProperty(MqttProperties.MQTT_CHANNEL_PROPERTY_TRUSTSTORE_FOLDER));
+			String truststorePassword = decryptPwd( (String)getGlobalVariableValue(getChannelProperties().getProperty(MqttProperties.MQTT_CHANNEL_PROPERTY_TRUSTSTORE_PASSWORD)));
+			KeyStore trustedKeysStore = SSLUtils.createKeystore(trustStoreFolder, null, provider, gv, true);
+			String trustStore = SSLUtils.storeKeystore(trustedKeysStore, truststorePassword, formFileKeystoreName(rsp.getProject().getName(), rsp.getName(), getUri()));
+			
+			sslProperties.put(SSLSocketFactoryFactory.TRUSTSTORE, trustStore);
+			sslProperties.put(SSLSocketFactoryFactory.TRUSTSTOREPWD, truststorePassword);
+	        sslProperties.put(SSLSocketFactoryFactory.TRUSTSTORETYPE, "JKS");
+	        
+	        boolean requiresClientAuth = Boolean.parseBoolean((String)getGlobalVariableValue(getChannelProperties().getProperty(MQTT_CHANNEL_PROPERTY_REQUIRES_CLIENT_AUTH)));
+	        if (requiresClientAuth) {
+	        	String keyStore = null;
+	    		final String idReference = (String) getGlobalVariableValue(getChannelProperties().getProperty(MQTT_CHANNEL_PROPERTY_KEYSTORE_IDENTITY));
+	        	if ((idReference != null) && !idReference.trim().isEmpty()) {
+	                if (!idReference.startsWith("/")) {
+	                    throw new Exception("Invalid SSL ID reference: " + idReference);
+	                }
+	                BEIdentity identity = BEIdentityUtilities.fetchIdentity(provider, gv, idReference);
+	                if (identity instanceof BEKeystoreIdentity) {
+	                	BEKeystoreIdentity id = (BEKeystoreIdentity) identity;
+	                	keyStore = id.getStrKeystoreURL();
+	                	
+	                	sslProperties.put(SSLSocketFactoryFactory.KEYSTORE, keyStore);
+	        	        sslProperties.put(SSLSocketFactoryFactory.KEYSTOREPWD, id.getStrStorePassword());
+	        	        sslProperties.put(SSLSocketFactoryFactory.KEYSTORETYPE, id.getStrStoreType());
+	                }else{
+	                	throw new Exception("Invalid identity File configuration: ");
+	                }
+	            }
+			}
+		}
 		
 	}
 	
