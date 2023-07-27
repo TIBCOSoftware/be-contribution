@@ -4,6 +4,7 @@ All catalog function contributions that work with TIBCO BusinessEvents 5.6.0 and
 
 * [analytics-catalog-fn](https://github.com/TIBCOSoftware/be-contribution/tree/main/catalog/analytics-catalog-fn)
 * [aws-catalog-fn](https://github.com/tibco/be-contribution/tree/main/catalog/aws-catalog-fn)
+* [cassandra-catalog-fn](https://github.com/TIBCOSoftware/be-contribution/blob/main/catalog/cassandra-catalog-fn)
 
 ## Pre-requisites
 
