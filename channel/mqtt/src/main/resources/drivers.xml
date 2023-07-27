@@ -10,6 +10,11 @@
             <property name="mqtt.broker.urls" displayName="MQTT Broker URLs" type="String" default="tcp://localhost:1883" mandatory="true" gvToggle="true" />
             <property name="UserName" displayName="User Name" type="String" default="" />
 			<property name="Password" displayName="Password" type="String" default=""  mask="true" />
+			<property name="useSsl" displayName="Use SSL" type="boolean" default="false" />
+			<property name="cert" displayName="Trusted Certificates Folder" type="String" default="" mandatory="false" gvToggle="false" />
+			<property name="trustStorePassword" displayName="TrustStore Password" type="String" default="" mandatory="false" gvToggle="false" />
+			<property name="requiresClientAuthentication" displayName="Requires Client Authentication" type="boolean" default="false" mandatory="false"  gvToggle="false" />
+			<property name="identity" displayName="KeyStore Identity" type="String" default="" mandatory="false" gvToggle="false" />
         </properties>
         <destinations>
         	<property name="IncludeEventType" displayName="Include Event Type" type="String" default="ALWAYS" mandatory="true" gvToggle="true" />
