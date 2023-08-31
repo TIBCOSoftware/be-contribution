@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <!-- parent pom -->
+  <parent>
+    <groupId>com.tibco.businessevents</groupId>
+    <artifactId>metric</artifactId>
+    <version>1.0</version>
+	<relativePath>../</relativePath>
+  </parent>
+
+  <groupId>com.tibco.businessevents</groupId>
+  <artifactId>liveview</artifactId>
+  <name>liveview</name>
+  <version>1.0.0</version>
+
+  <properties>
+	<liveview.version>1.0.0</liveview.version>
+	<sb.home>C:/dev_env/tsi-root/tibco/str/11.0.1/V3-GA/win/x86_64</sb.home>
+  </properties>
+
+  <dependencies>
+	<dependency>
+		<groupId>com.tibco.str</groupId>
+		<artifactId>sbclient</artifactId>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${sb.home}/lib/sbclient.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>com.tibco.str</groupId>
+		<artifactId>lv-client</artifactId>
+		<version>${be.version}</version>
+		<scope>system</scope>
+		<systemPath>${sb.home}/lib/lv-client.jar</systemPath>
+	</dependency>
+	<dependency>
+        <groupId>com.tibco.businessevents</groupId>
+        <artifactId>cep-kernel</artifactId>
+    </dependency>
+	<dependency>
+        <groupId>com.tibco.businessevents</groupId>
+        <artifactId>cep-common</artifactId>
+    </dependency>
+	<dependency>
+        <groupId>com.tibco.businessevents</groupId>
+        <artifactId>cep-base</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>
