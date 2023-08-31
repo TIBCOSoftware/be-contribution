@@ -23,8 +23,13 @@ By using the Amazon Kinesis channel, TIBCO BusinessEvents can convert Kinesis da
 | Field | Global Var? | Description |
 |---|---|---|
 Access Key  | Yes | Key used in combination with the Secret Key to make programmatic requests to AWS. For example, AKIAIOSFODNN7EXAMPLE. The access key is similar to a user name used in a username-password pair.
-Secret Key  | Yes | Key used in combination with the access key to make programmatic requests to AWS. For example, wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY. The access key is similar to the user name used in a user name-password pair.
+Secret Key  | Yes | Key used in combination with the Access key to make programmatic requests to AWS. For example, wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY. The access key is similar to the user name used in a user name-password pair.
+Session Token | Yes | Key used in combination with Access and Secret key to make programmatic requests to AWS. 
 Profile Name| Yes | You can store frequently used credentials and configuration settings in files. These files are divided into sections that are referenced by name. These sections are called profiles. Enter the profile name that contains the credentials and configuration settings that you want to use.
+Assumed Role ARN | Yes | This option is used in combination with Role Session Name. When your account is role based and the operations can be performed by assuming another role, this authentication method should be used. 
+Role Session Name | Yes | This option is used in combination with Assume Role ARN. When your account is role based and the operations can be performed by assuming another role, this authentication method should be used. 
+
+* Three options are available #1 Profile Name (configuration and credential file setup is must). #2 Combination of Access Key, Secret Key and Session Token. #3 Combination of Assumed Role ARN and Role Session Name. 
 
 ## AWS Kinesis Destination Configuration Properties
 

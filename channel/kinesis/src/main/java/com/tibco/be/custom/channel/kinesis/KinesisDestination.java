@@ -1,6 +1,8 @@
 package com.tibco.be.custom.channel.kinesis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
+import com.amazonaws.services.kinesis.model.ListStreamsRequest;
+import com.amazonaws.services.kinesis.model.ListStreamsResult;
 import com.amazonaws.services.kinesis.model.PutRecordRequest;
 import com.tibco.be.custom.channel.BaseDestination;
 import com.tibco.be.custom.channel.BaseEventSerializer;
@@ -44,6 +48,13 @@ public class KinesisDestination extends BaseDestination {
 	 */
 	@Override
 	public void start() throws Exception {
+		
+		this.createClient();
+		if(!this.isStreamExisiting()) {
+			getLogger().log(Level.DEBUG, "Kinesis Data Stream not found. - " + this.getUri());
+			throw new RuntimeException("Kinesis Data Stream is not available. Failed to start the channel.");
+		}
+		
 		if (consumer != null) {
 			executor = Executors.newFixedThreadPool(1, new DefaultThreadFactory("KinesisConsumer-" + this.getUri()));
 			this.executor.submit(consumer);
@@ -98,13 +109,10 @@ public class KinesisDestination extends BaseDestination {
 
 		this.serializationProperties.put(KinesisProperties.KEY_DESTINATION_INCLUDE_EVENTTYPE, true);
 		Object record = serializer.serializeUserEvent(event, serializationProperties);
-		AmazonKinesisClientBuilder clientBuilder = AmazonKinesisClientBuilder.standard();
-		clientBuilder.setRegion((String) getChannel().getGlobalVariableValue(getDestinationProperties().getProperty(KinesisProperties.KEY_DESTINATION_REGION_NAME)));
-		KinesisChannel kinesischannel = (KinesisChannel) getChannel();
-		AWSCredentialsProvider credentialsProvider = kinesischannel.getCredentialsProvider();
-
-		clientBuilder.setCredentials(credentialsProvider);
-		kinesisClient = clientBuilder.build();
+		
+		if (kinesisClient == null) {
+			this.createClient();
+		}
 
 		if (record instanceof PutRecordRequest) {
 			kinesisClient.putRecord((PutRecordRequest) record);
@@ -139,5 +147,33 @@ public class KinesisDestination extends BaseDestination {
 			this.getLogger().log(Level.INFO, "Destination Resumed : " + getUri());
 
 		}
+	}
+	
+
+	private void createClient() {
+		AmazonKinesisClientBuilder clientBuilder = AmazonKinesisClientBuilder.standard();
+		clientBuilder.setRegion((String) getChannel().getGlobalVariableValue(getDestinationProperties().getProperty(KinesisProperties.KEY_DESTINATION_REGION_NAME)));
+		KinesisChannel kinesischannel = (KinesisChannel) getChannel();
+		AWSCredentialsProvider credentialsProvider = kinesischannel.getCredentialsProvider();
+
+		clientBuilder.setCredentials(credentialsProvider);
+		kinesisClient = clientBuilder.build();
+	}
+
+	private boolean isStreamExisiting() {
+		String streamName = (String) getChannel().getGlobalVariableValue(getDestinationProperties().getProperty(KinesisProperties.KEY_DESTINATION_STREAM_NAME));
+		ListStreamsRequest listStreamsRequest = new ListStreamsRequest();
+		ListStreamsResult listStreamsResult = kinesisClient.listStreams(listStreamsRequest);
+		List<String> streamNames = new ArrayList<String>();
+		streamNames.addAll(listStreamsResult.getStreamNames());
+		while (listStreamsResult.getHasMoreStreams()) 
+		{
+			if (streamNames.size() > 0) {
+				listStreamsRequest.setExclusiveStartStreamName(streamNames.get(streamNames.size() - 1));
+			}
+			listStreamsResult = kinesisClient.listStreams(listStreamsRequest);
+			streamNames.addAll(listStreamsResult.getStreamNames());
+		}
+		return streamNames.stream().anyMatch(name -> streamName.equals(name));
 	}
 }
