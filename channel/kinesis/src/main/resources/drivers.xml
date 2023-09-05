@@ -9,7 +9,10 @@
         <properties>
 			<property name="access_key" displayName="Access Key" type="String" default="" mandatory="true" />
 			<property name="secret_key" displayName="Secret Key" type="String" default="" mandatory="true" />
+			<property name="session_token" displayName="Session Token" type="String" default="" mandatory="true" />
 			<property name="profile_name" displayName="Profile Name" type="String" default="" />
+			<property name="role_arn" displayName="Assumed Role ARN" type="String" default=""/>
+			<property name="role_session_name" displayName="Role Session Name" type="String" default=""/>
 		</properties>
         <destinations>
         	<property name="IncludeEventType" displayName="Include Event Type" type="String" default="ALWAYS" mandatory="true" gvToggle="true" />
