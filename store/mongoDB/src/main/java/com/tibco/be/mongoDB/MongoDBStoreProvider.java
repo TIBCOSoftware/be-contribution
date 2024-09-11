@@ -35,6 +35,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
 
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Updates.set;
@@ -67,9 +68,13 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 	public MongoDBStoreProvider(Cluster cluster, StoreProviderConfig storeConfig) throws Exception {
 		super(cluster, storeConfig);
-
+		lockProvider = MongoDBLockProvider.INSTANCE;
 	}
 
+	public static BaseStoreProvider getStoreProviderInstance() {
+		return INSTANCE;
+	}
+	
 	@Override
 	public void commit() {
 		try {
@@ -412,6 +417,59 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 				closeConnection();
 		}
 
+	}
+	
+	/**
+	 * Adds or updates a document in the collection
+	 * 
+	 * @param document
+	 * @param filters
+	 * @param collectionName
+	 * @param isInsert
+	 * @return boolean success or failure of the addOrUpdate method
+	 * */
+	public boolean addOrUpdateEntryWithFilter(Document document, List<Bson> filters, String collectionName, boolean isInsert) throws Exception {
+		MongoCollection<Document> collection = mongodatabase.getCollection(collectionName);
+		boolean isSuccess = false;
+		if (isInsert) {
+			isSuccess = collection.insertOne(document) == null ? false : true;
+		} else {
+			// updateOptions has upsert set as false here because we do not want to add a new entry if it already exists
+			// The update operation would not succeed if the entry already exists
+			UpdateOptions updateOptions = new UpdateOptions();
+			
+			// here, rather than sending the document as is, use Updates.set() and send it to the updateOne() method
+			isSuccess = collection.updateOne(and(filters), document, updateOptions.upsert(isInsert)) == null ? false : true;
+		}
+		return isSuccess;
+	}
+	
+	/**
+	 * Fetches a document from the collection 
+	 * 
+	 * @param document
+	 * @param collectionName
+	 * @return Document fetched based off the filter
+	 * */
+	public Document readWithFilter(Document document, String collectionName) throws Exception {
+		MongoCollection<Document> collection = mongodatabase.getCollection(collectionName);
+		return collection.find(document).first();
+	}
+
+	/**
+	 * Deletes a document from the collection
+	 * */
+	public DeleteResult deleteWithFilter(Document document, String collectionName) throws Exception {
+		MongoCollection<Document> collection = mongodatabase.getCollection(collectionName);
+		return collection.deleteOne(document);
+	}
+	
+	/**
+	 * Deletes all the document from the collection based off the filter
+	 * */
+	public void deleteManyWithFilter(Document document, String collectionName) throws Exception {
+		MongoCollection<Document> collection = mongodatabase.getCollection(collectionName);
+		collection.deleteMany(document);
 	}
 
 	private void delete_(StoreRowHolder queryHolder) {
