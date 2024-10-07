@@ -17,5 +17,9 @@ public interface MongoDBConstants {
 	String PROPERTY_KEY_MONGODB_ID = "_id";
 	String PROPERTY_KEY_MONGODB_TIME_CREATED = "time_created_";
 	String PROPERTY_KEY_MONGODB_TIME_MODIFIED = "time_last_modified_";
+	String LOCKS_COLLECTION_NAME = "locks";
+	String DOCUMENT_LOCKS_KEY_FIELD = "key";
+	String DOCUMENT_LOCKS_MEMBERID_FIELD = "memberid";
+	String DOCUMENT_LOCKS_SOCKET_FIELD = "socket";
 
 }
