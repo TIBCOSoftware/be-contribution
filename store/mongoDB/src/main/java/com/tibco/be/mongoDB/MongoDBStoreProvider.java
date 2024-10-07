@@ -428,7 +428,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	 * @param isInsert
 	 * @return boolean success or failure of the addOrUpdate method
 	 * */
-	public boolean addOrUpdateEntryWithFilter(Document document, List<Bson> filters, String collectionName, boolean isInsert) throws Exception {
+	public boolean addOrUpdateLockEntryWithFilter(Document document, List<Bson> filters, String collectionName, boolean isInsert) throws Exception {
 		MongoCollection<Document> collection = mongodatabase.getCollection(collectionName);
 		boolean isSuccess = false;
 		if (isInsert) {
@@ -451,7 +451,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	 * @param collectionName
 	 * @return Document fetched based off the filter
 	 * */
-	public Document readWithFilter(Document document, String collectionName) throws Exception {
+	public Document readLockEntryWithFilter(Document document, String collectionName) throws Exception {
 		MongoCollection<Document> collection = mongodatabase.getCollection(collectionName);
 		return collection.find(document).first();
 	}
@@ -459,7 +459,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	/**
 	 * Deletes a document from the collection
 	 * */
-	public DeleteResult deleteWithFilter(Document document, String collectionName) throws Exception {
+	public DeleteResult deleteLockEntryWithFilter(Document document, String collectionName) throws Exception {
 		MongoCollection<Document> collection = mongodatabase.getCollection(collectionName);
 		return collection.deleteOne(document);
 	}
@@ -467,7 +467,7 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 	/**
 	 * Deletes all the document from the collection based off the filter
 	 * */
-	public void deleteManyWithFilter(Document document, String collectionName) throws Exception {
+	public void deleteManyLockEntryWithFilter(Document document, String collectionName) throws Exception {
 		MongoCollection<Document> collection = mongodatabase.getCollection(collectionName);
 		collection.deleteMany(document);
 	}
@@ -484,11 +484,11 @@ public class MongoDBStoreProvider extends BaseStoreProvider {
 
 			if (filter != null) {
 				getLogger().log(Level.DEBUG, " ****** Filter delete query :" + filter.toString());
-				collection.deleteOne(filter);
+				collection.deleteMany(filter);
 				getLogger().log(Level.DEBUG, "Deleted Record: " + filter.toBsonDocument().toJson());
 
 			} else {
-				collection.deleteOne(query);
+				collection.deleteMany(query);
 				getLogger().log(Level.DEBUG, "Deleted All Records: " + query.toJson());
 			}
 
