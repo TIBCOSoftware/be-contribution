@@ -95,8 +95,13 @@ public class RedisStoreProvider extends BaseStoreProvider {
 
 	public RedisStoreProvider(Cluster cluster, StoreProviderConfig storeConfig) throws Exception {
 		super(cluster, storeConfig);
+		lockProvider = RedisLockProvider.INSTANCE;
 	}
 
+	public static BaseStoreProvider getStoreProviderInstance() {
+		return INSTANCE;
+	}
+	
 	@Override
 	public void commit() {
 		try {
@@ -407,6 +412,58 @@ public class RedisStoreProvider extends BaseStoreProvider {
 				closeConnection();
 			}
 		}
+	}
+	
+	/**
+	 * Adds or updates a Hash
+	 * 
+	 * @param hName
+	 * @param rowHolder
+	 * @param oldMemberId
+	 * @param isInsert
+	 * @return boolean success or failure status of the addOrUpdate method
+	 * */
+	public boolean addOrUpdateHashRowHolder(String hName, StoreRowHolder rowHolder, String oldMemberId, boolean isInsert) throws Exception {
+		boolean isSuccess = false;
+		List<StoreRowHolder> rowHolders = new ArrayList<>();
+		rowHolders.add(rowHolder);
+		try {
+			StoreRowHolder entryFromRedis = read(rowHolder);
+
+			if (isInsert) {
+				// Check if the entry already exists in Redis
+				// Add a new entry only if it does not already exist
+				if (null == entryFromRedis) {
+					write(rowHolders);
+					isSuccess = true;
+				}
+			} else {
+				if (null != entryFromRedis) {
+					// Update the entry in Redis
+					// Create a hmap that will search for an entry with the oldMemberId
+					Map<String, String> searchOldHMap = new HashMap<String, String>();
+					searchOldHMap.put(RedisConstants.LOCKS_KEY_FIELD, rowHolder.getColDataMap().get(RedisConstants.LOCKS_KEY_FIELD).getColumnValue().toString());
+					searchOldHMap.put(RedisConstants.LOCKS_MEMBERID_FIELD, oldMemberId);
+					searchOldHMap.put(RedisConstants.LOCKS_SOCKET_FIELD, rowHolder.getColDataMap().get(RedisConstants.LOCKS_SOCKET_FIELD).getColumnValue().toString());
+					
+					// Create a hmap that will store the entry from redis
+					Map<String, String> newHMap = new HashMap<String, String>();
+					newHMap.put(RedisConstants.LOCKS_KEY_FIELD, entryFromRedis.getColDataMap().get(RedisConstants.LOCKS_KEY_FIELD).getColumnValue().toString());
+					newHMap.put(RedisConstants.LOCKS_MEMBERID_FIELD, entryFromRedis.getColDataMap().get(RedisConstants.LOCKS_MEMBERID_FIELD).getColumnValue().toString());
+					newHMap.put(RedisConstants.LOCKS_SOCKET_FIELD, entryFromRedis.getColDataMap().get(RedisConstants.LOCKS_SOCKET_FIELD).getColumnValue().toString());
+					
+					// Update the entry only if the hmap entry from Redis matches the searchOldMap entry (which has oldMemberId)
+					if (newHMap.equals(searchOldHMap)) {
+						write(rowHolders);
+						isSuccess = true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.ERROR, "Redis store lock :: Failed while trying to insert/update entry in Redis store", e);
+			isSuccess = false;
+		}
+		return isSuccess;
 	}
 
 	@Override

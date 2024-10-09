@@ -13,5 +13,9 @@ public interface RedisConstants {
 	String PROPERTY_KEY_SSL_IDENTITY_FILE_PATH = "ssl.identity.file.path";
 	String PROPERTY_KEY_SSL_TRUSTED_STORE_PASSWORD = "ssl.trusted.store.password";
 	String PROPERTY_KEY_REDIS_AUTH_PASSWORD = "password";
+	String LOCKS_HASH_NAME = "locks";
+	String LOCKS_KEY_FIELD = "key";
+	String LOCKS_MEMBERID_FIELD = "memberid";
+	String LOCKS_SOCKET_FIELD = "socket";
 
 }
