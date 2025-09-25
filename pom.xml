@@ -8,10 +8,10 @@
   <packaging>pom</packaging>
 
   <properties>
-    <be.home>C:/tibcoInstall/6.3/v139/be/6.3</be.home>
-    <be.version>6.3</be.version>
-    <junit.verion>5.7.0</junit.verion>
-    <testcontainer.verion>1.15.1</testcontainer.verion>
+    <be.home>/path/to/be/home</be.home>
+    <be.version>6.3.2</be.version>
+    <junit.version>5.7.0</junit.version>
+    <testcontainer.version>1.15.1</testcontainer.version>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
     <mockito.version>3.7.0</mockito.version>
@@ -62,7 +62,7 @@
             <scope>system</scope>
             <systemPath>${be.home}/lib/cep-ui-rt-common.jar</systemPath>
         </dependency>
-	<dependency>
+	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-tibcrypt</artifactId>
             <version>${be.version}</version>
@@ -102,76 +102,78 @@
             <artifactId>cep-external-emf-ecore</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore_2.23.0.v20200630-0516.jar</systemPath>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore.jar</systemPath>
         </dependency>
-	<dependency>
+	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-emf-common</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.common_2.20.0.v20200822-0801.jar</systemPath>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.common.jar</systemPath>
         </dependency>
 	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-emf-ecore-xmi</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
-            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar</systemPath>
+            <systemPath>${be.home}/lib/ext/tpcl/emf/org.eclipse.emf.ecore.xmi.jar</systemPath>
         </dependency>
-	<dependency>
+	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-tibcoxml-wsdl</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
             <systemPath>${be.home}/lib/ext/tibco/com.tibco.tibcoxml.xml.ws.wsdl.eclipse.jar</systemPath>
         </dependency>
-	<dependency>
+	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-store</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
             <systemPath>${be.home}/lib/cep-store.jar</systemPath>
         </dependency>
-	<dependency>
+	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-backingstore</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
             <systemPath>${be.home}/lib/cep-backingstore.jar</systemPath>
         </dependency>
-	<dependency>
+	      <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>be-functions</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
             <systemPath>${be.home}/lib/be-functions.jar</systemPath>
         </dependency>
-		<dependency>
+		    <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>api</artifactId>
             <version>${be.version}</version>
             <scope>system</scope>
             <systemPath>${be.home}/lib/ext/tibco/org.genxdm.api.jar</systemPath>
         </dependency>
+
+        <!-- End of common TIBCO BusinessEvents dependencies -->
 		
         <!-- Other common dependencies like junit/testcontainers/etc-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.verion}</version>
+              <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.verion}</version>
+              <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-params</artifactId>
-        <version>${junit.verion}</version>
-        <scope>test</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+              <version>${junit.version}</version>
+            <scope>test</scope>
       </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -188,13 +190,13 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>${testcontainer.verion}</version>
+              <version>${testcontainer.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainer.verion}</version>
+              <version>${testcontainer.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

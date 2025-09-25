@@ -21,13 +21,6 @@
 
     <packaging>pom</packaging>
 
-<!--    <dependency>-->
-<!--        <groupId>com.tibco.businessevents</groupId>-->
-<!--        <artifactId>cep-channel-api</artifactId>-->
-<!--        <scope>system</scope>-->
-<!--        <systemPath>${be.home}/lib/cep-channel-api.jar</systemPath>-->
-<!--    </dependency>-->
-
     <!-- sub modules - Include module names here as they are added  -->
     <modules>
        <module>aws-sqs</module>

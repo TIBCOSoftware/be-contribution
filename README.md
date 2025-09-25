@@ -13,13 +13,13 @@ Below are some modules where contributions are available and/or can be added,
 
  Some pre-requisites that generically apply to all contributions existing or new. If there are conflicts/changes/limitations, call them out in individual contribution README's.
 
- * Download/install Java and setup appropriate JAVA_HOME and PATH environment variables. Existing contributions use `Java 11`. So use Java 11 or above.
+ * Download/install Java and setup appropriate JAVA_HOME and PATH environment variables. Existing contributions use `Java 17`. So use Java 17 or above.
 
- * All contributions will be maven projects. Download/Install Maven and setup appropriate M2_HOME and PATH environment variables. Existing contribution use `Maven 3.5.4`. So use maven 3.5.4 or above.
+ * All contributions will be maven projects. Download/Install Maven and setup appropriate M2_HOME and PATH environment variables. Existing contribution use `Maven 3.9.6`. So use maven 3.9.6 or above.
 
  * Install docker, since most integration test will need to create a light throw away container.
 
- * Install `TIBCO BusinessEvents 6.1.0` and above.
+ * Install `TIBCO BusinessEvents 6.3.x` and above.
 
  * Add necessary unit and/or integration tests for each contribution.
 
@@ -50,16 +50,16 @@ Below are some modules where contributions are available and/or can be added,
   Follow the below steps to build a contribution jar,
 
   * Once all changes for existing ones or for any new contributions are done. Edit root `pom.xml` file located under 'be-contribution',
-    - Set `<be.home>` path to point to the TIBCO BusinessEvents installation home.
+    - Set `<be.home>` path to point to the TIBCO BusinessEvents installation home or pass it at command line while building the jar, ref below.
     - Any common third-party dependency version changes if needed.
     - Exclude any conflicting/duplicate jars off BusinessEvents and/or thirdparty dependencies from being packaged into the 'uber jar'. Some obvious ones are already excluded. Examples of conflicting/duplicate jars are BusinessEvents jars or common 3rd party ones like, jackson, httpclient, log4j, etc, these are already available under 'BE_HOME/lib/ext/tpcl', so it would be best to avoid packaging them again to prevent any class loading as well as jar size related issues.
 
   * Any contribution specific dependencies go in contribution specific `pom.xml` file.
 
-  * Once done, open the command prompt, goto the the specific contribution folder('/modules-name/contribution-name') and run the maven command to build a new jar. E.g. 
+  * Once done, open the command prompt, goto the the specific contribution folder('/modules-name/contribution-name') and run the maven command to build a new jar. E.g. passing the be.home path and skipping tests.
 ```
     cd /metric/elasticsearch
-    mvn clean install
+    mvn clean install -Dbe.home=/path/to/be/home -DskipTests
 ```
   
   * A new jar should be created under '/modules-name/contribution-name/target'. E.g. /metric/elasticsearch/target. You can then copy this jar to 'BE_HOME/lib/ext/tpcl/contrib' to make it available for use in BusinessEvents.

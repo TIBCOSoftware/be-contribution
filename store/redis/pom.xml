@@ -91,7 +91,7 @@
 			<artifactId>tpcl-antlr</artifactId>
 			<version>${be.version}</version>
 			<scope>system</scope>
-			<systemPath>${be.home}/lib/ext/tpcl/antlr.jar</systemPath>
+			<systemPath>${be.home}/lib/ext/tpcl/antlr-complete.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

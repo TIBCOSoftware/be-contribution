@@ -18,7 +18,7 @@
 	
 	<properties>
         <sb.version>11.0.1</sb.version>
-	<sb.home>C:/dev_env/tsi-root/tibco/str/11.0.1/V3-GA/win/x86_64</sb.home>
+	    <sb.home>/path/to/sb/home</sb.home>
     </properties>
 	
 	<build>
@@ -90,49 +90,49 @@
     </build>
 
     <dependencies>
-	<dependency>
-		<groupId>com.tibco.str</groupId>
-		<artifactId>sb-java-tools</artifactId>
-		<version>${be.version}</version>
-		<scope>system</scope>
-		<systemPath>${sb.home}/lib/sb-java-tools.jar</systemPath>
-	</dependency>
-	<dependency>
-		<groupId>com.tibco.businessevents</groupId>
-		<artifactId>cep-external-tibcrypt</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>com.tibco.tra</groupId>
-		<artifactId>Deployment</artifactId>
-		<version>${be.version}</version>
-		<scope>system</scope>
-		<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
-	</dependency>
-	<dependency>
-		<groupId>com.tibco.businessevents</groupId>
-                <artifactId>cep-external-tibxml-sdk</artifactId>
-	</dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-base</artifactId>
+        <dependency>
+            <groupId>com.tibco.str</groupId>
+            <artifactId>sb-java-tools</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${sb.home}/lib/sb-java-tools.jar</systemPath>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-common</artifactId>
+            <artifactId>cep-external-tibcrypt</artifactId>
         </dependency>
-	<dependency>
+        <dependency>
+            <groupId>com.tibco.tra</groupId>
+            <artifactId>Deployment</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-kernel</artifactId>
+                    <artifactId>cep-external-tibxml-sdk</artifactId>
         </dependency>
-	<dependency>
-            <groupId>com.tibco.businessevents</groupId>
-            <artifactId>cep-drivers</artifactId>
+        <dependency>
+                <groupId>com.tibco.businessevents</groupId>
+                <artifactId>cep-base</artifactId>
+            </dependency>
+        <dependency>
+                <groupId>com.tibco.businessevents</groupId>
+                <artifactId>cep-common</artifactId>
+            </dependency>
+        <dependency>
+                <groupId>com.tibco.businessevents</groupId>
+                <artifactId>cep-kernel</artifactId>
+            </dependency>
+        <dependency>
+                <groupId>com.tibco.businessevents</groupId>
+                <artifactId>cep-drivers</artifactId>
+            </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>stringtemplate</artifactId>
+            <version>3.2</version>
         </dependency>
-	<dependency>
-		<groupId>org.antlr</groupId>
-		<artifactId>stringtemplate</artifactId>
-		<version>3.2</version>
-	</dependency>
     </dependencies>
 
 </project>

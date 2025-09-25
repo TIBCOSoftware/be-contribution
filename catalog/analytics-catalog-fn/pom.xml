@@ -18,7 +18,7 @@
 
     <properties>
         <analytics.version>1.12.261</analytics.version>
-	<terr.home>C:/dev_env/tsi-root/tibco/terr/6.0.2/V13-GA/win/x86_64</terr.home>
+	    <terr.home>/path/to/terr/home</terr.home>
     </properties>
 
     <build>
@@ -90,56 +90,52 @@
     </build>
 
     <dependencies>
-	<dependency>
-	        <groupId>com.tibco.businessevents</groupId>
-	        <artifactId>cep-common</artifactId>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-common</artifactId>
         </dependency>
-	<dependency>
-	        <groupId>com.tibco.businessevents</groupId>
-	        <artifactId>cep-kernel</artifactId>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-kernel</artifactId>
         </dependency>	
-	<dependency>
-	    	<groupId>com.tibco</groupId>
-	    	<artifactId>terr</artifactId>
-		<version>${be.version}</version>
-		<scope>system</scope>
-		<systemPath>${terr.home}/library/terrJava/java/terrJava.jar</systemPath>
-	</dependency>
-	<dependency>
-		<groupId>org.jpmml</groupId>
-		<artifactId>pmml-evaluator-extension</artifactId>
-		<version>1.4.15</version>
-	</dependency>
-	<dependency>
-		<groupId>com.sun.xml.messaging.saaj</groupId>
-		<artifactId>saaj-impl</artifactId>
-		<version>1.5.1</version>
-	</dependency>		
-	<dependency>
-		<groupId>com.tibco.businessevents</groupId>
-		<artifactId>cep-external-tibcrypt</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>com.tibco.tra</groupId>
-		<artifactId>Deployment</artifactId>
-		<version>${be.version}</version>
-		<scope>system</scope>
-		<systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
-	</dependency>
-	<dependency>
-		<groupId>org.genxdm</groupId>
-		<artifactId>api</artifactId>
-		<version>${be.version}</version>
-		<scope>system</scope>
-		<systemPath>${be.home}/lib/ext/tibco/org.genxdm.api.jar</systemPath>
-	</dependency>
-	<dependency>
-		<groupId>org.genxdm</groupId>
-		<artifactId>bridgekit</artifactId>
-		<version>${be.version}</version>
-		<scope>system</scope>
-		<systemPath>${be.home}/lib/ext/tibco/org.genxdm.bridgekit.jar</systemPath>
-	</dependency>
+        <dependency>
+            <groupId>com.tibco</groupId>
+            <artifactId>terr</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${terr.home}/library/terrJava/java/terrJava.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.jpmml</groupId>
+            <artifactId>pmml-evaluator-extension</artifactId>
+            <version>1.4.15</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>1.5.1</version>
+        </dependency>		
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>cep-external-tibcrypt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.businessevents</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tibco.tra</groupId>
+            <artifactId>Deployment</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/Deployment.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.genxdm</groupId>
+            <artifactId>bridgekit</artifactId>
+            <version>${be.version}</version>
+            <scope>system</scope>
+            <systemPath>${be.home}/lib/ext/tibco/org.genxdm.bridgekit.jar</systemPath>
+        </dependency>
     </dependencies>
-
 </project>
