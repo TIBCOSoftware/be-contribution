@@ -25,6 +25,7 @@
     <modules>
        <module>aws-catalog-fn</module>
        <module>cassandra-catalog-fn</module>
+       <module>ftl-catalog-fn</module>
        <module>analytics-catalog-fn</module>
     </modules>
     
