@@ -17,7 +17,7 @@
 	<version>1.0.0</version>
 	
 	<properties>
-		<ftl-version>6.8.0</ftl-version>
+		<ftl-version>7.0.1</ftl-version>
 		<ftl.home>/path/to/ftl/home</ftl.home>
 	</properties>
 
