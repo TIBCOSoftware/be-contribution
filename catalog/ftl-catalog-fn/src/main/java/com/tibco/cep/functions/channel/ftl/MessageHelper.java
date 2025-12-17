@@ -7,10 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @com.tibco.be.model.functions.BEPackage(
-        catalog = "FTL",
+        catalog = "Communication",
         category = "FTL.Message",
         synopsis = "Message Functions",
-        enabled = @com.tibco.be.model.functions.Enabled(value=false)
+        enabled = @com.tibco.be.model.functions.Enabled(value=true)
         )
 public class MessageHelper {
 
