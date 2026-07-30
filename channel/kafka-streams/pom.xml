@@ -103,6 +103,14 @@
 		<artifactId>snappy-java</artifactId>
 		<version>1.1.10.4</version>
 	</dependency>
+	<!--
+	  ACCEPTED RISK (2026-07-30): lz4-java 1.8.1 is the latest release and still
+	  carries open advisories GHSA-cmp6-m4wj-q63q (High) and GHSA-xx22-p4ch-683r
+	  (Medium) with NO patched version available upstream. Kept as-is because it
+	  is Kafka's LZ4 compression codec, exploitable only when decompressing
+	  untrusted LZ4 streams. The corresponding Dependabot alerts are intentionally
+	  left OPEN as a reminder to bump once a fix ships (or Kafka swaps the codec).
+	-->
 	<dependency>
 		<groupId>org.lz4</groupId>
 		<artifactId>lz4-java</artifactId>
