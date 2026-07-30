@@ -112,10 +112,10 @@ module's pom references via a `system`-scope `systemPath`; those four modules ca
 ### channel — Custom Channel drivers
 | Module | Base package | External home | Key third-party deps |
 |--------|--------------|---------------|----------------------|
-| aws-sqs | `com.tibco.be.custom.channel.aws.sqs` | — | AWS SDK v1 (sqs/sns/s3/sts/core) 1.12.261, OpenSAML 2.6.4, jsoup |
-| kafka-streams | `com.tibco.cep.driver.kafkastreams` | — (uses BE `cep-kafka.jar`) | kafka-clients/streams 3.4.0, rocksdbjni, Confluent schema-registry client 5.4.3 |
-| kinesis | `com.tibco.be.custom.channel.kinesis` | — | amazon-kinesis-client 1.14.4, aws-java-sdk 1.12.538 |
-| mqtt | `com.tibco.cep.driver.mqtt` | — (uses BE HTTP driver `SSLUtils`) | Eclipse Paho mqttv3 1.2.5, jackson |
+| aws-sqs | `com.tibco.be.custom.channel.aws.sqs` | — | AWS SDK v1 (sqs/sns/s3/sts/core) 1.12.780, OpenSAML 2.6.4 (EOL), jsoup 1.18.1, bcprov-jdk18on 1.78.1 |
+| kafka-streams | `com.tibco.cep.driver.kafkastreams` | — (uses BE `cep-kafka.jar`) | kafka-clients/streams 3.7.2, rocksdbjni, Confluent schema-registry client 7.7.1 |
+| kinesis | `com.tibco.be.custom.channel.kinesis` | — | amazon-kinesis-client 1.14.10, aws-java-sdk 1.12.788 |
+| mqtt | `com.tibco.cep.driver.mqtt` | — (uses BE HTTP driver `SSLUtils`) | Eclipse Paho mqttv3 1.2.5, jackson 2.17.2 |
 | sb | `com.tibco.cep.driver.sb` | **StreamBase** (`sb.home` → `lib/sb-java-tools.jar`) | antlr stringtemplate 3.2 |
 
 Common shape: a `*Driver` (entry), `*Channel` (lifecycle), `*Destination` (send/consume), and one or
@@ -126,9 +126,9 @@ strategies (default chain, access/secret key, assume-role/STS, SAML). Only **aws
 | Module | Base package | External home | Notes |
 |--------|--------------|---------------|-------|
 | aws-catalog-fn | `com.tibco.be.custom.aws.services.*` | — | `AWS.{s3.Bucket, sns.Notification, sqs.Queue}` functions; 4 auth modes each; has unit+integration tests |
-| cassandra-catalog-fn | `com.tibco.cep.store.cassandra.*` | — | *Both* a `store` SPI provider **and** `CEP Store` catalog functions; Datastax driver 4.15.0 (pre-shaded) |
+| cassandra-catalog-fn | `com.tibco.cep.store.cassandra.*` | — | *Both* a `store` SPI provider **and** `CEP Store` catalog functions; Datastax driver 4.17.0 (pre-shaded) |
 | ftl-catalog-fn | `com.tibco.cep.functions.channel.ftl` | **FTL** (`ftl.home` → `lib/tibftl.jar`) | Single class `MessageHelper`: `FTL.Message` get/set/clear/destroy |
-| analytics-catalog-fn | `com.tibco.cep.analytics.*` | **TERR** (`terr.home` → `library/terrJava/java/terrJava.jar`) | `Analytics.{PMML, Statistica, TERR}` catalogs; jpmml 1.4.15, saaj 1.5.1 |
+| analytics-catalog-fn | `com.tibco.cep.analytics.*` | **TERR** (`terr.home` → `library/terrJava/java/terrJava.jar`) | `Analytics.{PMML, Statistica, TERR}` catalogs; jpmml 1.4.15 (see remediation note), saaj 1.5.3 |
 
 Catalog functions are plain classes annotated with `@com.tibco.be.model.functions.BEPackage` (class)
 and `@BEFunction` (methods); BE discovers them by annotation scanning at engine start.
@@ -136,7 +136,7 @@ and `@BEFunction` (methods); BE discovers them by annotation scanning at engine 
 ### metric — Application metric stores
 | Module | Base package | External home | Notes |
 |--------|--------------|---------------|-------|
-| elasticsearch | `com.tibco.metric.store.elasticsearch` | — | ES REST high-level client 7.10.1; publishes entity data to ES on RTC completion; has tests |
+| elasticsearch | `com.tibco.metric.store.elasticsearch` | — | ES REST high-level client 7.17.28; publishes entity data to ES on RTC completion; has tests |
 | liveview | `com.tibco.cep.liveview` | **StreamBase/LiveView** (`sb.home` → `lib/sbclient.jar`, `lib/lv-client.jar`) | Publishes concepts/events/scorecards to a LiveView (Live DataMart) server |
 
 Each provides a `*MetricsStoreProvider` (implements `MetricsStoreProvider<T>`) and a
@@ -146,8 +146,8 @@ application's `metrics-store.xml` via `Class.forName`.
 ### store — Object persistence / backing stores
 | Module | Base package | External home | Notes |
 |--------|--------------|---------------|-------|
-| mongoDB | `com.tibco.be.mongoDB` | — | MongoDB sync driver 4.2.3; has tests |
-| redis | `com.tibco.be.redis` | — | Lettuce 6.0.0 + LettuSearch 2.4.4 (RediSearch 2.0); has tests |
+| mongoDB | `com.tibco.be.mongoDB` | — | MongoDB sync driver 4.11.5; has tests |
+| redis | `com.tibco.be.redis` | — | Lettuce 6.2.6 + LettuSearch 2.4.4 (RediSearch 2.0); has tests |
 
 Each provides a `*StoreProvider` (extends `BaseStoreProvider`), a `*LockProvider` (extends
 `AbstractLockProvider` / implements `ILockProvider`), a `*DataTypeMapper`, and an aggregation
@@ -195,26 +195,24 @@ classes leak into any jar — the only `com/tibco/...` entries are each plugin's
 `mongoDB` is the cleanest drop-in. The remaining risk is duplicate **third-party** libraries, not BE
 classes.
 
-⚠️ **Known packaging pitfalls — read before shipping a jar:**
+The root shade config now (a) excludes the full set of BE-provided libraries — `com.tibco.*:cep*`,
+all core `jackson` (core/databind/annotations/cbor), `log4j-api`+`log4j-core`, the httpclient stack
+(`httpclient`/`httpcore`/`httpcore-nio`/`httpasyncclient`/`commons-httpclient`), `commons-codec`,
+`commons-logging`, `com.google.guava:guava`, `io.netty:*`, and `slf4j-api`; and (b) strips bundled
+JAR signatures (`META-INF/*.SF/*.DSA/*.RSA`) so repackaged signed deps (e.g. BouncyCastle) don't
+throw `SecurityException` at class-load. The previously-divergent per-module shade overrides in the
+channel/catalog modules were **removed** so every module inherits this one exclude list — verify with
+`jar tf target/<artifact>.jar | grep -E 'com/fasterxml/jackson|io/netty|com/google/common|org/apache/logging/log4j'`
+(should be empty; a 2-class `com.google.guava:failureaccess` shim may remain — no CVE).
 
-1. **Per-module shade overrides drop the parent exclude list.** `aws-catalog-fn`, `kinesis`, `mqtt`,
-   `kafka-streams`, and `cassandra-catalog-fn` re-declare their own maven-shade execution whose
-   `<artifactSet><excludes>` contains only `*:cep-*`. Maven *replaces* (does not merge) the
-   `artifactSet`, so the parent's jackson/log4j/httpclient exclusions are lost for those modules — and
-   their jars do bundle `jackson-databind`, and (for kafka/kinesis) `guava`, and (for aws-catalog-fn)
-   `bouncycastle` + legacy httpclient. `elasticsearch`/`mongoDB`/`redis` declare no shade override and
-   correctly inherit the full parent list.
-2. **The parent exclude list is incomplete** for what actually ships in BE: it omits
-   `jackson-databind`, `jackson-annotations`, `log4j-core` (only `-api` is excluded), `guava`,
-   `io.netty`, `protobuf`, `bouncycastle`, `httpasyncclient`, `commons-httpclient` (3.x), `slf4j-api`.
-   When editing packaging, prefer adding these to the parent and using `combine.children="append"` in
-   module overrides (or removing the overrides) so exclusions apply everywhere.
-3. **redis uber-jar is not directly usable.** Its README requires copying `lettusearch-2.4.4.jar`
-   *before* `lettuce-core-6.0.0.RELEASE.jar` on `tibco.env.STD_EXT_CP` in `be-engine.tra` (class
-   ordering). It also bundles `io.netty` (~1,475 classes).
-4. **elasticsearch** needs `commons-codec` ≥ 1.11 under `BE_HOME/lib/ext/tpcl/apache` for
+⚠️ **Remaining packaging notes — read before shipping a jar:**
+
+1. **redis uber-jar is not directly usable.** Its README requires copying `lettusearch-2.4.4.jar`
+   *before* `lettuce-core-*.jar` on `tibco.env.STD_EXT_CP` in `be-engine.tra` (class ordering).
+   Netty is now excluded from the jar (provided by BE / pinned via the root `netty-bom`).
+2. **elasticsearch** needs `commons-codec` ≥ 1.11 under `BE_HOME/lib/ext/tpcl/apache` for
    username/password auth (documented known issue in its README).
-5. **Copy target vs discovery mismatch.** Channel/catalog module poms copy the shaded jar to
+3. **Copy target vs discovery mismatch.** Channel/catalog module poms copy the shaded jar to
    `${be.home}/lib/ext/tpcl` at `install`, but metric/store descriptor discovery scans
    `.../lib/ext/tpcl/contrib`. The documented manual drop-in target is `.../tpcl/contrib` — reconcile
    when relying on auto-copy for metric/store jars.
@@ -280,3 +278,31 @@ classes.
   [Packaging & drop-in](#packaging--drop-in). `mongoDB` is a clean drop-in as built.
 - **Tests:** not executed here — Docker daemon unavailable in the validation environment. Re-run with
   Docker to exercise the integration suites.
+
+## Dependency & Vulnerability Remediation
+
+A Dependabot remediation pass bumped vulnerable third-party dependencies and repaired the packaging
+so the fixes ship in the drop-in jars. Strategy:
+
+- **Root `dependencyManagement` pins** (affect all modules, incl. transitive deps): `jackson-bom`
+  2.17.2, `netty-bom` 4.1.115.Final, `aws-java-sdk-bom` 1.12.788, `guava` 33.3.1-jre.
+- **Direct bumps by module** (highlights): AWS SDK v1 → 1.12.780/1.12.788; `amazon-kinesis-client`
+  → 1.14.10 (kept on v1 API); Kafka clients/streams → 3.7.2 + Confluent → 7.7.1; jackson → 2.17.2;
+  DataStax driver → 4.17.0; Elasticsearch RHLC → 7.17.28 (import fix: `TimeValue` →
+  `org.elasticsearch.core`); MongoDB driver → 4.11.5; Lettuce → 6.2.6 + reactor → 3.4.34 +
+  commons-pool2 → 2.12.0; `bcprov-jdk15on` 1.67 → `bcprov-jdk18on` 1.78.1 (old 1.51 excluded from the
+  opensaml/xmltooling subtree in both AWS modules); jsoup → 1.18.1; commons-io → 2.17.0; commons-lang3
+  → 3.18.0.
+- **Packaging:** per-module shade overrides removed; root shade excludes extended + signature-strip
+  filter added (see [Packaging & Drop-in](#packaging--drop-in)).
+
+**Known remaining items (need code work, not just a bump):**
+1. **OpenSAML 2.6.4 (EOL)** in `aws-sqs` + `aws-catalog-fn` — a v4/v5 upgrade is a migration (changed
+   `org.opensaml.*` packages/APIs, requires Java 17, and live-IdP + STS `AssumeRoleWithSAML` testing).
+   Only 4 files use it (`saml2/SAMLService`, `saml2/IdpMetadataService` in each module). Left at 2.6.4
+   (compiles) pending a dedicated migration. Its transitive stack (`xmlsec` 1.5.7, `velocity` 1.7,
+   `openws`, `not-yet-commons-ssl`) clears only with that migration.
+2. **`org.jpmml:pmml-evaluator-extension` 1.4.15** in `analytics-catalog-fn` — cannot be bumped as a
+   drop-in: the artifact stops at 1.5.16 and jpmml ≥1.5 refactored the API
+   (`ValueOptimizer`/`NodeScoreOptimizer` moved, `ModelEvaluatorFactory.newModelEvaluator` signature
+   changed), which breaks `pmml/io/PmmlFunctionsDelegate.java`. Requires source changes.

@@ -199,6 +199,42 @@
               <version>${testcontainer.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- ============================================================== -->
+        <!-- Transitive-vulnerability pins (Dependabot remediation).        -->
+        <!-- These force known-vulnerable transitive libraries pulled in by -->
+        <!-- module dependencies (AWS SDK, Kafka, Lettuce, ES client, etc.) -->
+        <!-- up to fixed versions repo-wide. Modules that declare these     -->
+        <!-- directly with an explicit <version> still override these.      -->
+        <!-- ============================================================== -->
+        <dependency>
+            <groupId>com.fasterxml.jackson</groupId>
+            <artifactId>jackson-bom</artifactId>
+            <version>2.17.2</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-bom</artifactId>
+            <version>4.1.115.Final</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.3.1-jre</version>
+        </dependency>
+        <!-- Align all AWS SDK v1 artifacts (incl. transitive cloudwatch/dynamodb/ -->
+        <!-- kms/s3 pulled by the Kinesis client) to a single fixed 1.12.x.        -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-bom</artifactId>
+            <version>1.12.788</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -216,19 +252,42 @@
             </goals>
             <configuration>
               <createDependencyReducedPom>false</createDependencyReducedPom>
+              <!-- Strip bundled-jar signatures. Shade rewrites MANIFEST.MF,   -->
+              <!-- which invalidates signatures from signed deps (e.g. Bouncy   -->
+              <!-- Castle bcprov) and causes a SecurityException at class-load. -->
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <artifactSet>
                 <excludes>
                   <!-- Duplicate BE jars -->
                   <exclude>com.tibco.*:cep*</exclude>
-                  <!-- Duplicate/conflicting tpcl jars -->
+                  <!-- Duplicate/conflicting tpcl jars already shipped under -->
+                  <!-- BE_HOME/lib/ext/tpcl. Excluded from the uber-jar to   -->
+                  <!-- avoid class-loading/version-skew conflicts at runtime. -->
                   <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+                  <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+                  <exclude>com.fasterxml.jackson.core:jackson-annotations</exclude>
                   <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor</exclude>
                   <exclude>org.apache.logging.log4j:log4j-api</exclude>
+                  <exclude>org.apache.logging.log4j:log4j-core</exclude>
                   <exclude>org.apache.httpcomponents:httpclient</exclude>
                   <exclude>org.apache.httpcomponents:httpcore</exclude>
                   <exclude>org.apache.httpcomponents:httpcore-nio</exclude>
+                  <exclude>org.apache.httpcomponents:httpasyncclient</exclude>
+                  <exclude>commons-httpclient:commons-httpclient</exclude>
                   <exclude>commons-codec:commons-codec</exclude>
                   <exclude>commons-logging:commons-logging</exclude>
+                  <exclude>com.google.guava:guava</exclude>
+                  <exclude>io.netty:*</exclude>
+                  <exclude>org.slf4j:slf4j-api</exclude>
                 </excludes>
               </artifactSet>
             </configuration>

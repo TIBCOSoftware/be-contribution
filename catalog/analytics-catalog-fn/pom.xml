@@ -24,36 +24,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>*:cep-*</exclude>
-                                </excludes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
@@ -113,8 +83,17 @@
         <dependency>
             <groupId>com.sun.xml.messaging.saaj</groupId>
             <artifactId>saaj-impl</artifactId>
-            <version>1.5.1</version>
-        </dependency>		
+            <version>1.5.3</version>
+        </dependency>
+        <!-- JAXB API (javax.xml.bind namespace, 2.3.x line) required by pmml-model for
+             javax.xml.bind.JAXBException. Previously pulled in transitively by saaj-impl 1.5.1;
+             saaj-impl 1.5.3 no longer provides it, so declare it explicitly. Stays on the javax
+             namespace (2.3.x) to avoid the jakarta 3.x namespace break. -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
         <dependency>
             <groupId>com.tibco.businessevents</groupId>
             <artifactId>cep-external-tibcrypt</artifactId>
