@@ -5,30 +5,44 @@
  */
 package com.tibco.be.custom.channel.aws.sqs.saml2;
 
-import org.opensaml.saml2.metadata.EntityDescriptor;
-import org.opensaml.saml2.metadata.SingleSignOnService;
-import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.xml.parse.BasicParserPool;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
+import net.shibboleth.utilities.java.support.resolver.ResolverException;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
+import org.opensaml.core.criterion.EntityIdCriterion;
+import org.opensaml.saml.metadata.resolver.impl.FilesystemMetadataResolver;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 
 import java.io.File;
 
 
 public class IdpMetadataService {
-	
+
 	/*
 	 * Parse and Return IDP metadata Entity Descriptor object
 	 */
-	public EntityDescriptor parseIdpMetadataFromFile(String idpMetadataFilePath, String entityId) throws MetadataProviderException{
-		
-		FilesystemMetadataProvider idpMetaDataProvider = new FilesystemMetadataProvider(new File(idpMetadataFilePath));
-		idpMetaDataProvider.setRequireValidMetadata(true);
-		idpMetaDataProvider.setParserPool(new BasicParserPool());
-		idpMetaDataProvider.initialize();
-		EntityDescriptor idpEntityDescriptor = idpMetaDataProvider.getEntityDescriptor(entityId);
-		return idpEntityDescriptor;
+	public EntityDescriptor parseIdpMetadataFromFile(String idpMetadataFilePath, String entityId) throws ResolverException{
+
+		try {
+			BasicParserPool parserPool = new BasicParserPool();
+			parserPool.setNamespaceAware(true);
+			parserPool.initialize();
+
+			FilesystemMetadataResolver idpMetaDataResolver = new FilesystemMetadataResolver(new File(idpMetadataFilePath));
+			idpMetaDataResolver.setRequireValidMetadata(true);
+			idpMetaDataResolver.setParserPool(parserPool);
+			idpMetaDataResolver.setId("idpFilesystemMetadataResolver");
+			idpMetaDataResolver.initialize();
+
+			EntityDescriptor idpEntityDescriptor = idpMetaDataResolver
+					.resolveSingle(new CriteriaSet(new EntityIdCriterion(entityId)));
+			return idpEntityDescriptor;
+		} catch (ComponentInitializationException e) {
+			throw new ResolverException("Error initializing IDP metadata resolver", e);
+		}
 	}
-	
+
 	/*
 	 * Return HTTP Post End point URL from bindings
 	 */

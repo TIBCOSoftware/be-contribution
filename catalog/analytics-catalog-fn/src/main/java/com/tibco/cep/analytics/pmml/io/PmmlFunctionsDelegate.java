@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.cep.analytics.pmml.io;
 
 import java.io.File;
@@ -19,7 +23,7 @@ import org.dmg.pmml.Visitor;
 import org.jpmml.evaluator.Computable;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.InputField;
-import org.jpmml.evaluator.ModelEvaluatorFactory;
+import org.jpmml.evaluator.ModelEvaluatorBuilder;
 import org.jpmml.evaluator.OutputField;
 import org.jpmml.evaluator.TargetField;
 import org.jpmml.evaluator.visitors.MiningFieldInterner;
@@ -30,10 +34,10 @@ import org.jpmml.model.visitors.ArrayListTransformer;
 import org.jpmml.model.visitors.DoubleInterner;
 import org.jpmml.model.visitors.IntegerInterner;
 import org.jpmml.model.visitors.StringInterner;
-import org.jpmml.evaluator.visitors.ValueOptimizer;
+import org.jpmml.evaluator.visitors.ValueParser;
 import org.jpmml.model.visitors.FloatInterner;
 import org.jpmml.model.visitors.LocatorTransformer;
-import org.jpmml.model.visitors.NodeScoreOptimizer;
+import org.jpmml.evaluator.visitors.NodeScoreParser;
 import com.tibco.cep.analytics.pmml.io.utils.Helper;
 import com.tibco.cep.kernel.service.logging.LogManagerFactory;
 import com.tibco.cep.kernel.service.logging.Logger;
@@ -57,8 +61,11 @@ public class PmmlFunctionsDelegate {
             		throw new RuntimeException("Attribute 'functionName' of TreeModel is not specified");	
             	}
             }
-            ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
-            Evaluator evaluator = modelEvaluatorFactory.newModelEvaluator(pmml);
+            // jpmml 1.5.x removed ModelEvaluatorFactory.newModelEvaluator(PMML); the single-arg
+            // form now requires an explicit Model. ModelEvaluatorBuilder(pmml).build() selects the
+            // active/top-level model from the PMML and returns a ready Evaluator, preserving the
+            // original single-argument behaviour.
+            Evaluator evaluator = new ModelEvaluatorBuilder(pmml).build();
             evaluator.verify();
 
             if (optimize) {
@@ -196,7 +203,11 @@ public class PmmlFunctionsDelegate {
     
     
     private static List<? extends Visitor> getOptimizers(){
-        return Arrays.asList(new ValueOptimizer(), new NodeScoreOptimizer());
+        // jpmml 1.5.x renamed the load-time optimizers: ValueOptimizer -> ValueParser
+        // (org.jpmml.evaluator.visitors) and NodeScoreOptimizer -> NodeScoreParser
+        // (moved from org.jpmml.model.visitors to org.jpmml.evaluator.visitors). Same intent:
+        // parse/optimise DataField values and TreeModel node scores into typed values.
+        return Arrays.asList(new ValueParser(), new NodeScoreParser());
     }
     private static List<? extends Visitor> getInterners(){
         return Arrays.asList(new DoubleInterner(), new IntegerInterner(), new StringInterner(), new FloatInterner(), new MiningFieldInterner(), new PredicateInterner(), new ScoreDistributionInterner());

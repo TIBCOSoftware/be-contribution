@@ -5,115 +5,123 @@
  */
 package com.tibco.be.custom.aws.services.saml2;
 
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.saml2.core.AttributeStatement;
-import org.opensaml.saml2.core.Response;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.ConfigurationException;
-import org.opensaml.xml.XMLObject;
-import org.opensaml.xml.io.Unmarshaller;
-import org.opensaml.xml.io.UnmarshallerFactory;
-import org.opensaml.xml.io.UnmarshallingException;
-import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.parse.XMLParserException;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
+import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import org.opensaml.core.config.InitializationException;
+import org.opensaml.core.config.InitializationService;
+import org.opensaml.core.xml.XMLObject;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.Unmarshaller;
+import org.opensaml.core.xml.io.UnmarshallerFactory;
+import org.opensaml.core.xml.io.UnmarshallingException;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Attribute;
+import org.opensaml.saml.saml2.core.AttributeStatement;
+import org.opensaml.saml.saml2.core.Response;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SAMLService {
-	
+
 	private static SAMLService samlService = null;
-	
-	private SAMLService() throws ConfigurationException, SAMLException{
-	
+
+	private SAMLService() throws SAMLException{
+
 		Thread thread = Thread.currentThread();
 	    ClassLoader loader = thread.getContextClassLoader();
 	    thread.setContextClassLoader(this.getClass().getClassLoader());
 	    try {
 			//Initialize opensaml
-			DefaultBootstrap.bootstrap();
-	    } catch (ConfigurationException e) {
-	        throw new SAMLException("Error in bootstrapping the OpenSAML2 library");
+			InitializationService.initialize();
+	    } catch (InitializationException e) {
+	        throw new SAMLException("Error in bootstrapping the OpenSAML library");
 	    } finally {
 	        thread.setContextClassLoader(loader);
 	    }
 	}
 
-	public static SAMLService getInstance() throws ConfigurationException, SAMLException{
+	public static SAMLService getInstance() throws SAMLException{
 		if(samlService == null)
 			samlService = new SAMLService();
 		return samlService;
 	}
-	
+
 	/*
 	 * Parse SAML Response and return assertion object.
 	 */
-	
+
 	public Assertion parseSAMLResponse(String samlResponse)throws ParserConfigurationException, SAXException, IOException, UnmarshallingException, XMLParserException
 	{
 		BasicParserPool parser = new BasicParserPool();
 	    parser.setNamespaceAware(true);
-	     
-	    StringReader reader = new StringReader(samlResponse);
-	     
-	    Document document = parser.parse(reader);
+	    try {
+	        parser.initialize();
+	    } catch (ComponentInitializationException e) {
+	        throw new XMLParserException("Unable to initialize parser pool", e);
+	    }
+
+	    InputStream inputStream = new ByteArrayInputStream(samlResponse.getBytes(StandardCharsets.UTF_8));
+
+	    Document document = parser.parse(inputStream);
 		Element element = document.getDocumentElement();
-		 
-		UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
+
+		UnmarshallerFactory unmarshallerFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();
 		Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(element);
 		XMLObject responseXmlObj = unmarshaller.unmarshall(element);
 		Response response = (Response) responseXmlObj;
 		return response.getAssertions().get(0);
 	}
-	
+
 	/*
 	 * Returns Attribute Object for provided Attribute name.
 	 */
 	 public Attribute getRoleAttribute(Assertion assertionObj, String attributeName) throws SAMLException{
 		 List<AttributeStatement> attrStmtLst =  assertionObj.getAttributeStatements();
-		 
+
 		 for(AttributeStatement attrStmt : attrStmtLst){
 			 List<Attribute> attrLst = attrStmt.getAttributes();
-			 
+
 			 for(Attribute attr : attrLst){
 				 if(attr.getName().equals(attributeName))
 					 return attr;
 			 }
 		 }
-		 
+
 		 throw new SAMLException("SAML Attribute not found - "+ attributeName);
 	 }
-	 
+
 	 /*
 		 * Returns Attribute Object for provided Attribute name.
 		 */
 		 public List<String> getRoleAttributeValues(Assertion assertionObj, String attributeName) throws SAMLException{
 			 List<AttributeStatement> attrStmtLst =  assertionObj.getAttributeStatements();
-			 
+
 			 for(AttributeStatement attrStmt : attrStmtLst){
 				 List<Attribute> attrLst = attrStmt.getAttributes();
-				 
+
 				 for(Attribute attr : attrLst){
 					 if(attr.getName().equals(attributeName))
 					 {
 						 List<String> attrLstStr = new ArrayList<String>();
 						 for(XMLObject xmlObj : attr.getAttributeValues())
 						 {
-							 attrLstStr.add(xmlObj.getDOM().getTextContent());									
+							 attrLstStr.add(xmlObj.getDOM().getTextContent());
 						 }
 						 return attrLstStr;
 					 }
 				 }
 			 }
-			 
+
 			 throw new SAMLException("SAML Attribute not found - "+ attributeName);
 		 }
 }

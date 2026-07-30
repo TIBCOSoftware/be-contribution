@@ -112,7 +112,7 @@ module's pom references via a `system`-scope `systemPath`; those four modules ca
 ### channel — Custom Channel drivers
 | Module | Base package | External home | Key third-party deps |
 |--------|--------------|---------------|----------------------|
-| aws-sqs | `com.tibco.be.custom.channel.aws.sqs` | — | AWS SDK v1 (sqs/sns/s3/sts/core) 1.12.780, OpenSAML 2.6.4 (EOL), jsoup 1.18.1, bcprov-jdk18on 1.78.1 |
+| aws-sqs | `com.tibco.be.custom.channel.aws.sqs` | — | AWS SDK v1 (sqs/sns/s3/sts/core) 1.12.780, OpenSAML 4.3.2, jsoup 1.18.1, bcprov-jdk18on 1.78.1 |
 | kafka-streams | `com.tibco.cep.driver.kafkastreams` | — (uses BE `cep-kafka.jar`) | kafka-clients/streams 3.7.2, rocksdbjni, Confluent schema-registry client 7.7.1 |
 | kinesis | `com.tibco.be.custom.channel.kinesis` | — | amazon-kinesis-client 1.14.10, aws-java-sdk 1.12.788 |
 | mqtt | `com.tibco.cep.driver.mqtt` | — (uses BE HTTP driver `SSLUtils`) | Eclipse Paho mqttv3 1.2.5, jackson 2.17.2 |
@@ -125,10 +125,10 @@ strategies (default chain, access/secret key, assume-role/STS, SAML). Only **aws
 ### catalog — Catalog (rule) functions
 | Module | Base package | External home | Notes |
 |--------|--------------|---------------|-------|
-| aws-catalog-fn | `com.tibco.be.custom.aws.services.*` | — | `AWS.{s3.Bucket, sns.Notification, sqs.Queue}` functions; 4 auth modes each; has unit+integration tests |
+| aws-catalog-fn | `com.tibco.be.custom.aws.services.*` | — | `AWS.{s3.Bucket, sns.Notification, sqs.Queue}` functions; 4 auth modes each (OpenSAML 4.3.2); has unit+integration tests |
 | cassandra-catalog-fn | `com.tibco.cep.store.cassandra.*` | — | *Both* a `store` SPI provider **and** `CEP Store` catalog functions; Datastax driver 4.17.0 (pre-shaded) |
 | ftl-catalog-fn | `com.tibco.cep.functions.channel.ftl` | **FTL** (`ftl.home` → `lib/tibftl.jar`) | Single class `MessageHelper`: `FTL.Message` get/set/clear/destroy |
-| analytics-catalog-fn | `com.tibco.cep.analytics.*` | **TERR** (`terr.home` → `library/terrJava/java/terrJava.jar`) | `Analytics.{PMML, Statistica, TERR}` catalogs; jpmml 1.4.15 (see remediation note), saaj 1.5.3 |
+| analytics-catalog-fn | `com.tibco.cep.analytics.*` | **TERR** (`terr.home` → `library/terrJava/java/terrJava.jar`) | `Analytics.{PMML, Statistica, TERR}` catalogs; jpmml 1.5.16, saaj 1.5.3 |
 
 Catalog functions are plain classes annotated with `@com.tibco.be.model.functions.BEPackage` (class)
 and `@BEFunction` (methods); BE discovers them by annotation scanning at engine start.
@@ -242,8 +242,8 @@ channel/catalog modules were **removed** so every module inherits this one exclu
   `store:1.0`. Jar is `redis-1.0.jar`; all other modules are `-1.0.0.jar`.
 - **kinesis** copies its jar to `lib/ext/tpcl/contrib` at install; other channel/catalog modules copy
   to `lib/ext/tpcl`; metric/store modules do not auto-copy.
-- **Extra Maven repos:** `kafka-streams` adds the Confluent repo; `aws-catalog-fn` adds the
-  Shibboleth repo (for OpenSAML).
+- **Extra Maven repos:** `kafka-streams` adds the Confluent repo; `aws-catalog-fn` and `aws-sqs` add
+  the Shibboleth repo (for OpenSAML 4.3.2).
 - **Stale reference:** `metric/elasticsearch/src/main/resources/metrics-store.xml` has a comment
   naming `com.tibco.cep.runtime.service.cluster.metric.MetricsStore` (a package that does not exist in
   the engine); the actually-implemented interface is `com.tibco.cep.runtime.appmetrics.MetricsStoreProvider`.
@@ -296,13 +296,21 @@ so the fixes ship in the drop-in jars. Strategy:
 - **Packaging:** per-module shade overrides removed; root shade excludes extended + signature-strip
   filter added (see [Packaging & Drop-in](#packaging--drop-in)).
 
-**Known remaining items (need code work, not just a bump):**
-1. **OpenSAML 2.6.4 (EOL)** in `aws-sqs` + `aws-catalog-fn` — a v4/v5 upgrade is a migration (changed
-   `org.opensaml.*` packages/APIs, requires Java 17, and live-IdP + STS `AssumeRoleWithSAML` testing).
-   Only 4 files use it (`saml2/SAMLService`, `saml2/IdpMetadataService` in each module). Left at 2.6.4
-   (compiles) pending a dedicated migration. Its transitive stack (`xmlsec` 1.5.7, `velocity` 1.7,
-   `openws`, `not-yet-commons-ssl`) clears only with that migration.
-2. **`org.jpmml:pmml-evaluator-extension` 1.4.15** in `analytics-catalog-fn` — cannot be bumped as a
-   drop-in: the artifact stops at 1.5.16 and jpmml ≥1.5 refactored the API
-   (`ValueOptimizer`/`NodeScoreOptimizer` moved, `ModelEvaluatorFactory.newModelEvaluator` signature
-   changed), which breaks `pmml/io/PmmlFunctionsDelegate.java`. Requires source changes.
+**Code migrations completed (compile-verified; require runtime validation before release):**
+1. **OpenSAML 2.6.4 (EOL) → 4.3.2** in `aws-sqs` + `aws-catalog-fn` (Java-11 compatible; no JDK bump).
+   Removed `opensaml:2.6.4` + `xmltooling:1.4.6`; added the seven `opensaml-*:4.3.2` artifacts
+   (java-support 8.4.2 transitive). Rewrote `saml2/SAMLService` (`DefaultBootstrap`→
+   `InitializationService`, v4 `org.opensaml.saml.saml2.*` + `core.xml` packages, initialized
+   `net.shibboleth...BasicParserPool` parsing an `InputStream`) and `saml2/IdpMetadataService`
+   (`FilesystemMetadataProvider`→`FilesystemMetadataResolver` with `CriteriaSet`/`EntityIdCriterion`).
+   Added the Shibboleth repo to aws-sqs; restored `commons-lang:2.6` in aws-catalog-fn (v2 used to
+   supply it transitively for `s3/Bucket.java`). ⚠️ **Not runtime-tested** — a reviewer must validate
+   `parseSAMLResponse`, metadata resolution, and the end-to-end `AssumeRoleWithSAML` STS flow against a
+   real IdP (ADFS/PingFederate/Shibboleth).
+2. **`org.jpmml:pmml-evaluator-extension` 1.4.15 → 1.5.16** in `analytics-catalog-fn` (newest release
+   that keeps `org.dmg.pmml.FieldName`; 1.6.x removes it, which would force a large signature rewrite).
+   Fixed `pmml/io/PmmlFunctionsDelegate.java`: `ModelEvaluatorFactory.newModelEvaluator(pmml)` →
+   `new ModelEvaluatorBuilder(pmml).build()`; `ValueOptimizer`/`NodeScoreOptimizer` →
+   `ValueParser`/`NodeScoreParser`. ⚠️ **Not runtime-tested** — a reviewer must score a real PMML model
+   and confirm parity with 1.4.15. (Pre-existing quirk preserved: optimizer visitors run *after* the
+   evaluator is built, so they don't affect the cached evaluator.)

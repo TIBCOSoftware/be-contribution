@@ -4,6 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <repositories>
+        <repository>
+            <id>shibboleth-repo</id>
+            <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
     <!-- parent pom -->
     <parent>
         <groupId>com.tibco.businessevents</groupId>
@@ -156,21 +163,41 @@
             <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.opensaml/opensaml -->
+        <!-- OpenSAML 4.3.2 (Java 11 compatible) replaces EOL OpenSAML v2 -->
         <dependency>
             <groupId>org.opensaml</groupId>
-            <artifactId>opensaml</artifactId>
-            <version>2.6.4</version>
-            <!-- opensaml -> xmltooling transitively pulls the EOL, vulnerable   -->
-            <!-- bcprov-jdk15on:1.51. Exclude it so only the bumped              -->
-            <!-- bcprov-jdk18on:1.78.1 (declared below) is present; package names -->
-            <!-- are identical (org.bouncycastle.*) so runtime stays satisfied.   -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>opensaml-core</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-saml-api</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-saml-impl</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xmlsec-api</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xmlsec-impl</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-security-api</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-security-impl</artifactId>
+            <version>4.3.2</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->

@@ -223,28 +223,43 @@
             <version>1.18.1</version>
         </dependency>
 
+        <!-- OpenSAML 4.3.2 (Java 11 compatible) replaces EOL OpenSAML v2 + xmltooling -->
         <dependency>
             <groupId>org.opensaml</groupId>
-            <artifactId>opensaml</artifactId>
-            <version>2.6.4</version>
+            <artifactId>opensaml-core</artifactId>
+            <version>4.3.2</version>
         </dependency>
-        
         <dependency>
             <groupId>org.opensaml</groupId>
-            <artifactId>xmltooling</artifactId>
-            <version>1.4.6</version>
-            <!-- xmltooling 1.4.6 pulls the EOL, vulnerable bcprov-jdk15on:1.51. -->
-            <!-- Exclude it so only the bumped bcprov-jdk18on:1.78.1 (declared -->
-            <!-- directly below) is present; package names are identical        -->
-            <!-- (org.bouncycastle.*) so xmltooling remains satisfied at runtime.-->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>opensaml-saml-api</artifactId>
+            <version>4.3.2</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-saml-impl</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xmlsec-api</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xmlsec-impl</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-security-api</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-security-impl</artifactId>
+            <version>4.3.2</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -257,6 +272,15 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.17.0</version>
+        </dependency>
+
+        <!-- Previously supplied transitively by OpenSAML v2 / xmltooling      -->
+        <!-- (removed in the 4.3.2 migration). Bucket.java uses                 -->
+        <!-- org.apache.commons.lang.SerializationUtils, so declare it directly.-->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
