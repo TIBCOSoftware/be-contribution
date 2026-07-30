@@ -235,6 +235,24 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
+        <!-- Align BouncyCastle (incl. bcpkix/bcutil pulled transitively by      -->
+        <!-- OpenSAML) to a fixed, CVE-free version. 1.84 clears GHSA-574f-3g2m- -->
+        <!-- x479 (critical) and GHSA-c3fc-8qff-9hwx (moderate).                 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.84</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>1.84</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcutil-jdk18on</artifactId>
+            <version>1.84</version>
+        </dependency>
     </dependencies>
   </dependencyManagement>
 

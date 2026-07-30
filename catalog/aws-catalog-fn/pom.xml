@@ -274,20 +274,20 @@
             <version>2.17.0</version>
         </dependency>
 
-        <!-- Previously supplied transitively by OpenSAML v2 / xmltooling      -->
-        <!-- (removed in the 4.3.2 migration). Bucket.java uses                 -->
-        <!-- org.apache.commons.lang.SerializationUtils, so declare it directly.-->
+        <!-- Bucket.java uses SerializationUtils. commons-lang 2.x is EOL with  -->
+        <!-- an unfixable CVE (GHSA-j288-q9x7-2f5v); use commons-lang3 instead  -->
+        <!-- (Bucket.java import updated accordingly).                          -->
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.18.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.78.1</version>
+            <version>1.84</version>
         </dependency>
 
 

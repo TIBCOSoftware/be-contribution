@@ -45,7 +45,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 @BEPackage(
         catalog = "AWS",//Add a catalog name here

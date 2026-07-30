@@ -112,8 +112,8 @@ module's pom references via a `system`-scope `systemPath`; those four modules ca
 ### channel — Custom Channel drivers
 | Module | Base package | External home | Key third-party deps |
 |--------|--------------|---------------|----------------------|
-| aws-sqs | `com.tibco.be.custom.channel.aws.sqs` | — | AWS SDK v1 (sqs/sns/s3/sts/core) 1.12.780, OpenSAML 4.3.2, jsoup 1.18.1, bcprov-jdk18on 1.78.1 |
-| kafka-streams | `com.tibco.cep.driver.kafkastreams` | — (uses BE `cep-kafka.jar`) | kafka-clients/streams 3.7.2, rocksdbjni, Confluent schema-registry client 7.7.1 |
+| aws-sqs | `com.tibco.be.custom.channel.aws.sqs` | — | AWS SDK v1 (sqs/sns/s3/sts/core) 1.12.780, OpenSAML 4.3.2, jsoup 1.18.1, bcprov-jdk18on 1.84 |
+| kafka-streams | `com.tibco.cep.driver.kafkastreams` | — (uses BE `cep-kafka.jar`) | kafka-clients/streams 3.9.2, rocksdbjni, Confluent schema-registry client 7.9.1 |
 | kinesis | `com.tibco.be.custom.channel.kinesis` | — | amazon-kinesis-client 1.14.10, aws-java-sdk 1.12.788 |
 | mqtt | `com.tibco.cep.driver.mqtt` | — (uses BE HTTP driver `SSLUtils`) | Eclipse Paho mqttv3 1.2.5, jackson 2.17.2 |
 | sb | `com.tibco.cep.driver.sb` | **StreamBase** (`sb.home` → `lib/sb-java-tools.jar`) | antlr stringtemplate 3.2 |
@@ -285,16 +285,23 @@ A Dependabot remediation pass bumped vulnerable third-party dependencies and rep
 so the fixes ship in the drop-in jars. Strategy:
 
 - **Root `dependencyManagement` pins** (affect all modules, incl. transitive deps): `jackson-bom`
-  2.17.2, `netty-bom` 4.1.115.Final, `aws-java-sdk-bom` 1.12.788, `guava` 33.3.1-jre.
+  2.17.2, `netty-bom` 4.1.115.Final, `aws-java-sdk-bom` 1.12.788, `guava` 33.3.1-jre, and BouncyCastle
+  `bcprov`/`bcpkix`/`bcutil-jdk18on` 1.84 (aligns the bcpkix/bcutil pulled transitively by OpenSAML).
 - **Direct bumps by module** (highlights): AWS SDK v1 → 1.12.780/1.12.788; `amazon-kinesis-client`
-  → 1.14.10 (kept on v1 API); Kafka clients/streams → 3.7.2 + Confluent → 7.7.1; jackson → 2.17.2;
+  → 1.14.10 (kept on v1 API); Kafka clients/streams → 3.9.2 + Confluent → 7.9.1; jackson → 2.17.2;
   DataStax driver → 4.17.0; Elasticsearch RHLC → 7.17.28 (import fix: `TimeValue` →
   `org.elasticsearch.core`); MongoDB driver → 4.11.5; Lettuce → 6.2.6 + reactor → 3.4.34 +
-  commons-pool2 → 2.12.0; `bcprov-jdk15on` 1.67 → `bcprov-jdk18on` 1.78.1 (old 1.51 excluded from the
-  opensaml/xmltooling subtree in both AWS modules); jsoup → 1.18.1; commons-io → 2.17.0; commons-lang3
-  → 3.18.0.
+  commons-pool2 → 2.12.0; `bcprov-jdk15on` 1.67 → `bcprov-jdk18on` **1.84** (clears critical
+  GHSA-574f-3g2m-x479; old 1.51 excluded from the opensaml/xmltooling subtree); jsoup → 1.18.1;
+  commons-io → 2.17.0; commons-lang3 → 3.18.0; log4j-core (test scope) → 2.25.4; `lz4-java` → 1.8.1.
+  In `aws-catalog-fn`, `s3/Bucket.java` was migrated off EOL `commons-lang` 2.6 (no fix available) to
+  `commons-lang3` `SerializationUtils`.
 - **Packaging:** per-module shade overrides removed; root shade excludes extended + signature-strip
   filter added (see [Packaging & Drop-in](#packaging--drop-in)).
+- **Residual (unfixable) alert:** `org.lz4:lz4-java` (a Kafka compression codec) has open advisories
+  with **no patched release** (GHSA-cmp6-m4wj-q63q, GHSA-xx22-p4ch-683r; latest is 1.8.1). Accept-risk:
+  only relevant when decompressing untrusted LZ4 streams. Revisit if the library ships a fix or Kafka
+  swaps the codec.
 
 **Code migrations completed (compile-verified; require runtime validation before release):**
 1. **OpenSAML 2.6.4 (EOL) → 4.3.2** in `aws-sqs` + `aws-catalog-fn` (Java-11 compatible; no JDK bump).
