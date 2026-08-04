@@ -16,9 +16,7 @@ import java.security.KeyStore;
 import java.util.Base64;
 import java.util.Iterator;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -134,14 +132,7 @@ public class ElasticSearchMetricsStoreProvider implements MetricsStoreProvider<E
 					credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
 					httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
 				}
-				return httpClientBuilder
-					.setSSLContext(sslContext)
-					.setSSLHostnameVerifier(new HostnameVerifier() {
-						@Override
-						public boolean verify(String arg0, SSLSession arg1) {
-							return true;
-						}
-					});});
+				return httpClientBuilder.setSSLContext(sslContext);});
 		}
 
 		elasticClient = new RestHighLevelClient(restBuilder);

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.be.custom.aws.services.sqs;
 
 import static com.tibco.be.custom.aws.services.sqs.Queue.*;
@@ -6,11 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 import java.util.Map;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,12 +37,21 @@ import org.testcontainers.utility.DockerImageName;
 public class QueueUnitTest {
 
     private static DockerImageName localStackImage =
-        DockerImageName.parse("localstack/localstack:latest");
+        DockerImageName.parse("localstack/localstack:3");
 
     @Container
     private static LocalStackContainer localStackContainer = new
         LocalStackContainer(localStackImage)
-        .withServices(Service.SQS);
+        .withServices(Service.SQS)
+        .withEnv("SQS_ENDPOINT_STRATEGY", "path");
+
+    static {
+        // AWS SDK v1 routes SQS operations to the host:port embedded in the queue
+        // URL that LocalStack returns (it ignores the client's endpoint override).
+        // LocalStack bakes its internal edge port (4566) into that URL, so pin the
+        // host port to 4566 to keep the returned queue URLs reachable.
+        localStackContainer.setPortBindings(java.util.Arrays.asList("4566:4566"));
+    }
 
     @BeforeEach
     void prerequisitesExist() {
@@ -47,6 +62,17 @@ public class QueueUnitTest {
 
     @BeforeAll
     public static void setup() {
+        // The no-credential production helpers build their SQS client with a
+        // DefaultAWSCredentialsProviderChain. Feed that chain the LocalStack
+        // credentials via system properties (LocalStack accepts any values).
+        System.setProperty("aws.accessKeyId", localStackContainer.getAccessKey());
+        System.setProperty("aws.secretKey", localStackContainer.getSecretKey());
+    }
+
+    @AfterAll
+    public static void teardown() {
+        System.clearProperty("aws.accessKeyId");
+        System.clearProperty("aws.secretKey");
     }
 
 
@@ -71,7 +97,9 @@ public class QueueUnitTest {
         AmazonSQS client = AmazonSQSClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-            .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
+            .withEndpointConfiguration(new EndpointConfiguration(
+                localStackContainer.getEndpointOverride(LocalStackContainer.Service.SQS).toString(),
+                localStackContainer.getRegion()))
             .build();
 
 
@@ -112,7 +140,9 @@ public class QueueUnitTest {
         AmazonSQS client = AmazonSQSClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-            .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
+            .withEndpointConfiguration(new EndpointConfiguration(
+                localStackContainer.getEndpointOverride(LocalStackContainer.Service.SQS).toString(),
+                localStackContainer.getRegion()))
             .build();
 
 
@@ -155,7 +185,9 @@ public class QueueUnitTest {
         AmazonSQS client = AmazonSQSClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-            .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
+            .withEndpointConfiguration(new EndpointConfiguration(
+                localStackContainer.getEndpointOverride(LocalStackContainer.Service.SQS).toString(),
+                localStackContainer.getRegion()))
             .build();
 
 
@@ -198,7 +230,9 @@ public class QueueUnitTest {
         AmazonSQS client = AmazonSQSClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-            .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SQS))
+            .withEndpointConfiguration(new EndpointConfiguration(
+                localStackContainer.getEndpointOverride(LocalStackContainer.Service.SQS).toString(),
+                localStackContainer.getRegion()))
             .build();
 
 

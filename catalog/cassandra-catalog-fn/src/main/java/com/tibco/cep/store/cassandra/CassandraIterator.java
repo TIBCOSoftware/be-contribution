@@ -9,8 +9,6 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.datastax.oss.driver.api.core.cql.ColumnDefinition;
 import com.datastax.oss.driver.api.core.cql.ColumnDefinitions;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
@@ -117,7 +115,7 @@ public class CassandraIterator extends StoreIterator {
 			if (bytes==null) {
 				return null;
 			}
-			return SerializationUtils.deserialize(bytes.array());
+			return SafeObjectInputStream.deserialize(bytes.array(), "java.", "javax.", "com.tibco.");
 		default: 
 			return null;
 		}

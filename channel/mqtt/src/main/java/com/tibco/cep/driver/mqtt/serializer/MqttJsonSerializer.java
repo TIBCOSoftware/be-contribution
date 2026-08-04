@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.cep.driver.mqtt.serializer;
 
 import java.io.IOException;
@@ -27,7 +31,7 @@ public class MqttJsonSerializer extends MqttBaseSerializer{
 		
 		Event event = null;
 		MqttMessage mqttMessage = (MqttMessage) message;
-		String eventJsonStr = (String) deserialize(mqttMessage.getPayload());
+		String eventJsonStr = new String(mqttMessage.getPayload(), java.nio.charset.StandardCharsets.UTF_8);
 		
 		event = deserializeFromJSON(eventJsonStr, mqttMessage, properties);
 		
@@ -37,7 +41,7 @@ public class MqttJsonSerializer extends MqttBaseSerializer{
 	@Override
 	public Object serializeUserEvent(EventWithId event, Map<String, Object> properties) throws Exception {
 		String eventJsonStr = serializeToJSON(event, properties, false);
-		return serialize(eventJsonStr);
+		return eventJsonStr.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 	}
 	
 	private Event deserializeFromJSON(String json, MqttMessage mqttMessage, Map<String, Object> properties) throws Exception {

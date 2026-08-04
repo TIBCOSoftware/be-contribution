@@ -14,7 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 import com.amazonaws.services.sqs.model.GetQueueUrlRequest;
@@ -92,45 +96,50 @@ public class SQSChannelIntegrationTest {
     private Channel sqsChannel;
     private SqsDestination sqsDestination;
     
-    private static DockerImageName localStackImage = DockerImageName.parse("localstack/localstack:0.12.5");
+    private static DockerImageName localStackImage = DockerImageName.parse("localstack/localstack:3");
 
     @Container
     private static LocalStackContainer localStackContainer = new LocalStackContainer(localStackImage)
-            .withServices(Service.SQS);
+            .withServices(Service.SQS)
+            .withEnv("SQS_ENDPOINT_STRATEGY", "path");
+
+    static {
+        // AWS SDK v1 routes SQS operations to the host:port embedded in the queue
+        // URL returned by LocalStack (it ignores the client's endpoint override).
+        // LocalStack bakes its internal edge port (4566) into that URL, so pin the
+        // host port to 4566 to keep the returned queue URLs reachable from the host.
+        localStackContainer.setPortBindings(java.util.Arrays.asList("4566:4566"));
+    }
     
 	@BeforeAll
 	void setup() {
 		try {
-			queueUrl = localStackContainer.getEndpointOverride(Service.SQS).toString().replace("127.0.0.1", "localhost") 
-					+ Path.SEPARATOR 
-					+ accountNo
-					+ Path.SEPARATOR
-					+ queueName;
-			
+			// Create the queue up-front with a direct client and capture the exact
+			// queue URL LocalStack assigns. Reusing the real URL keeps the channel's
+			// CONFIG_QUEUE_URL, the SQS client endpoint and getQueueUrl() consistent
+			// (LocalStack's URL format is no longer the legacy 0.12.5 layout).
+			AmazonSQS bootstrapClient = AmazonSQSClientBuilder.standard()
+					.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(
+							localStackContainer.getAccessKey(), localStackContainer.getSecretKey())))
+					.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
+							localStackContainer.getEndpointOverride(Service.SQS).toString(),
+							localStackContainer.getRegion()))
+					.build();
+
+			CreateQueueResult createQueueResult = bootstrapClient.createQueue(queueName);
+			assertNotNull(createQueueResult, String.format("Queue[%s] created !!", queueName));
+			queueUrl = createQueueResult.getQueueUrl();
+			bootstrapClient.shutdown();
+
 			mockObjects();
-			
+
 			SqsDriver sqsDriver = new SqsDriver();
 			sqsChannel = sqsDriver.createChannel(channelManager, channelURI, channelConfig);
 			sqsChannel.init();
 			sqsChannel.connect();
 			CustomDestination destination = (CustomDestination) sqsChannel.getDestinations().get(channelURI + Path.SEPARATOR + destinationName);
 			sqsDestination = (SqsDestination) destination.getBaseDestination();
-			
-			//create test queue
-			String queueUrl = getQueueUrl();
-			if (queueUrl == null) {
 
-					CreateQueueResult createQueueResult = sqsDestination.getSQSClient().createQueue(queueName);
-
-
-//				CreateQueueResponse createQueueResponse = sqsDestination.getSQSClient().createQueue( CreateQueueRequest.builder()
-//						.queueName(queueName)
-//						.build());
-
-				assertNotNull(createQueueResult , String.format("Queue[%s] created !!", queueName));
-				
-			}
-			
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
@@ -152,18 +161,24 @@ public class SQSChannelIntegrationTest {
 	@Test
 	@Order(2)
 	public void testRecordsReceived() {
-		TestEventProcessor evp = new TestEventProcessor(eventPayloadJSON, 1);
+		// SqsDestination.send() writes a fixed "hello world" body, so that is what the
+		// round-trip delivers back through the serializer and listener.
+		TestEventProcessor evp = new TestEventProcessor("hello world", 1);
 		sqsDestination.setEventProcessor(evp);
 		try {
 			sqsDestination.bind(evp);
 			sqsDestination.start();
-			
-			while (!evp.allMessagesReceived()) {
+
+			// Bounded wait so a broken round-trip fails fast instead of hanging forever.
+			int waitedSeconds = 0;
+			while (!evp.allMessagesReceived() && waitedSeconds < 120) {
 				Thread.sleep(1000);
+				waitedSeconds++;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		assertTrue(evp.allMessagesReceived(), "Expected SQS message was not received within the timeout");
 	}
 	
 	@Test
@@ -198,9 +213,11 @@ public class SQSChannelIntegrationTest {
 	
 	private void mockObjects() {
 		final Properties channelProperties = new Properties();
+		channelProperties.put(SqsDestination.CONFIG_AWS_SQS_AUTH_TYPE, "CREDENTIALS");
 		channelProperties.put(SqsDestination.CONFIG_AWS_REGION, localStackContainer.getRegion());
 		channelProperties.put(SqsDestination.CONFIG_AWS_SQS_CREDENTIALS_ACCESS_KEY, localStackContainer.getAccessKey());
 		channelProperties.put(SqsDestination.CONFIG_AWS_SQS_CREDENTIALS_SECRET_KEY, localStackContainer.getSecretKey());
+		channelProperties.put(SqsDestination.CONFIG_AWS_SQS_CREDENTIALS_EXPIRATION, "60");
 		
 		rspMgrInstance = Mockito.mock(RuleServiceProviderManager.class);
 		rsp = Mockito.mock(RuleServiceProvider.class);
@@ -253,19 +270,10 @@ public class SQSChannelIntegrationTest {
 	}
 
 	private String getQueueUrl() {
-		String queueUrl = null;
-		//GetQueueUrlResponse queueUrlResponse = null;
 		try {
-
-			AmazonSQS sqsClient = sqsDestination.getSQSClient();
-
-			GetQueueUrlRequest request = new GetQueueUrlRequest()
-					.withQueueName(getQueueUrl());
-
 			return sqsDestination.getSQSClient().getQueueUrl(queueName).getQueueUrl();
-
-		} catch (Exception e) {}
-
-		return queueUrl;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

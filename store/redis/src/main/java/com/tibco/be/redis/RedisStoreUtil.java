@@ -14,8 +14,6 @@ import java.util.Calendar;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.tibco.security.AXSecurityException;
 import com.tibco.security.ObfuscationEngine;
 
@@ -68,7 +66,7 @@ public class RedisStoreUtil {
 			if (bytes==null) {
 				return null;
 			}
-			origValue = SerializationUtils.deserialize(bytes.array());
+			origValue = SafeObjectInputStream.deserialize(bytes.array(), "java.", "javax.", "com.tibco.");
 			break;
 		case "STRING":
 			origValue = value;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.be.custom.aws.services.s3;
 
 import static com.tibco.be.custom.aws.services.s3.Bucket.*;
@@ -8,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -33,7 +36,7 @@ import org.testcontainers.utility.DockerImageName;
 public class BucketUnitTest {
 
   private static final DockerImageName localStackImage =
-      DockerImageName.parse("localstack/localstack:latest");
+      DockerImageName.parse("localstack/localstack:3");
 
   @Container
   private static final LocalStackContainer localStackContainer = new
@@ -61,16 +64,18 @@ public class BucketUnitTest {
 
       kmsKeyID = UUID.randomUUID().toString();
 
-      //BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(localStackContainer.getAccessKey(), localStackContainer.getSecretKey());
+      BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(
+          localStackContainer.getAccessKey(), localStackContainer.getSecretKey());
 
-      EndpointConfiguration endpointConfiguration = localStackContainer
-          .getEndpointConfiguration(Service.SQS);
+      EndpointConfiguration endpointConfiguration = new EndpointConfiguration(
+          localStackContainer.getEndpointOverride(Service.S3).toString(),
+          localStackContainer.getRegion());
 
       client = AmazonS3ClientBuilder
         .standard()
-        //.withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-          .withCredentials(new DefaultAWSCredentialsProviderChain())
+          .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
         .withEndpointConfiguration(endpointConfiguration)
+        .withPathStyleAccessEnabled(true)
         .build();
 
 

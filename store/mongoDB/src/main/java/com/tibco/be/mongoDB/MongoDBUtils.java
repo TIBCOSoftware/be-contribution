@@ -1,7 +1,10 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.be.mongoDB;
 
 import java.util.Calendar;
-import org.apache.commons.lang3.SerializationUtils;
 import org.bson.BsonValue;
 import com.tibco.security.AXSecurityException;
 import com.tibco.security.ObfuscationEngine;
@@ -62,7 +65,7 @@ public class MongoDBUtils {
 			origValue = value.asNumber().intValue();
 			break;
 		case "BINARY":
-			origValue = SerializationUtils.deserialize(value.asBinary().getData());
+			origValue = SafeObjectInputStream.deserialize(value.asBinary().getData(), "java.", "javax.", "com.tibco.");
 			break;
 		case "STRING":
 			origValue = value.asString().getValue();

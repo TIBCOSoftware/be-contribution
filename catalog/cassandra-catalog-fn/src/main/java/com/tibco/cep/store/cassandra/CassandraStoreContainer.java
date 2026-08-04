@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.cep.store.cassandra;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
@@ -10,8 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
-import org.apache.commons.lang3.SerializationUtils;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.BatchStatement;
@@ -185,7 +187,7 @@ public class CassandraStoreContainer extends StoreContainer<CassandraStoreItem> 
 				if (bytes==null) {
 					return null;
 				}
-				return SerializationUtils.deserialize(bytes.array());
+				return SafeObjectInputStream.deserialize(bytes.array(), "java.", "javax.", "com.tibco.");
 			default: 
 				return null;
 			}

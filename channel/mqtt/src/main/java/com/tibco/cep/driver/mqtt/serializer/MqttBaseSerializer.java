@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.cep.driver.mqtt.serializer;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +37,7 @@ public abstract class MqttBaseSerializer extends BaseEventSerializer{
 	
 	protected Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		ObjectInputStream ois = new ObjectInputStream(bais);
+		ObjectInputStream ois = SafeObjectInputStream.create(bais, "java.lang.", "java.util.", "java.time.", "java.math.");
 		return ois.readObject();
 	}
 	

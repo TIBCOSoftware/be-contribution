@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.cep.driver.kafkastreams.serializer;
 
 import java.io.ByteArrayInputStream;
@@ -131,7 +135,7 @@ public class KafkaMapSerializer extends BaseEventSerializer {
 
 	private Map deserializeMap(byte[] data) throws IOException, ClassNotFoundException {
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		ObjectInputStream ois = new ObjectInputStream(bais);
+		ObjectInputStream ois = SafeObjectInputStream.create(bais, "java.lang.", "java.util.", "java.time.", "java.math.");
 		return (Map) ois.readObject();
 	}
 

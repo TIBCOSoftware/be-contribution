@@ -1728,7 +1728,7 @@ public class Bucket {
 
         try {
             S3Object s3Object = client.getObject(bucketName, objectName);
-            ObjectInputStream ois = new ObjectInputStream(s3Object.getObjectContent());
+            ObjectInputStream ois = com.tibco.be.custom.aws.services.SafeObjectInputStream.create(s3Object.getObjectContent(), "java.", "javax.", "com.tibco.");
             Object object = ois.readObject();
 
             return object;

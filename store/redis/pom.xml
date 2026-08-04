@@ -114,13 +114,19 @@
 		</dependency>
 		<dependency>
 			<groupId>io.lettuce</groupId>
+			<!-- Pinned to 6.0.0 to match lettusearch 2.4.4 (built against it):     -->
+			<!-- lettusearch calls LettuceStrings.isEmpty(String), whose signature  -->
+			<!-- changed after 6.0.x, so 6.1+/6.2+ throw NoSuchMethodError at        -->
+			<!-- runtime. netty CVEs remain remediated via the root netty-bom pin   -->
+			<!-- regardless of the Lettuce version.                                  -->
 			<artifactId>lettuce-core</artifactId>
-			<version>6.2.6.RELEASE</version>
+			<version>6.0.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor</groupId>
+			<!-- Matches lettuce-core 6.0.0's expected reactor. -->
 			<artifactId>reactor-core</artifactId>
-			<version>3.4.34</version>
+			<version>3.3.10.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

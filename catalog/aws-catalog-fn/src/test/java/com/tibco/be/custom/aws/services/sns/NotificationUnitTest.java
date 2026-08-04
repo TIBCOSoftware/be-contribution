@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary.
+ */
+
 package com.tibco.be.custom.aws.services.sns;
 
 import static com.tibco.be.custom.aws.services.sns.Notification.*;
@@ -8,6 +12,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 
@@ -41,7 +48,7 @@ class NotificationUnitTest {
     final static String smsMaxPrice = "0.50";
 
   final private static DockerImageName localStackImage =
-      DockerImageName.parse("localstack/localstack:latest");
+      DockerImageName.parse("localstack/localstack:3");
 
   @Container
   final private static LocalStackContainer localStackContainer = new
@@ -60,8 +67,11 @@ class NotificationUnitTest {
     try {
     client = AmazonSNSClientBuilder
         .standard()
-        .withEndpointConfiguration(localStackContainer.getEndpointConfiguration(Service.SNS))
-        .withCredentials(localStackContainer.getDefaultCredentialsProvider())
+        .withEndpointConfiguration(new EndpointConfiguration(
+            localStackContainer.getEndpointOverride(Service.SNS).toString(),
+            localStackContainer.getRegion()))
+        .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(
+            localStackContainer.getAccessKey(), localStackContainer.getSecretKey())))
         .build();
 
     topicARN = client.createTopic("MyTopic").getTopicArn();
