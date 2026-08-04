@@ -219,16 +219,32 @@ channel/catalog modules were **removed** so every module inherits this one exclu
 
 ## Testing
 
-- All test suites are **Testcontainers-based integration tests** (JUnit 5 Jupiter + Mockito 3.7 +
-  Testcontainers 1.15.1). Even classes named `*UnitTest` (in `aws-catalog-fn`) are `@Testcontainers`
-  with a static `@Container`, so **they require a running Docker daemon.** Without Docker they fail at
-  class initialization with `Could not find a valid Docker environment` — this is an environment
-  limitation, not a code defect. Test *sources compile and execute* up to container startup.
+- All test suites are **Testcontainers-based integration tests** (JUnit 5 Jupiter + Mockito +
+  Testcontainers 1.20.4). Even classes named `*UnitTest` (in `aws-catalog-fn`) are `@Testcontainers`
+  with a static `@Container`, so **they require a running Docker daemon.**
 - Modules with tests: `channel/aws-sqs` (localstack), `catalog/aws-catalog-fn` (localstack),
   `catalog/cassandra-catalog-fn` (cassandra), `metric/elasticsearch` (elasticsearch),
   `store/mongoDB` (mongodb), `store/redis` (redis). The remaining modules have no `src/test`.
 - Run with Docker available: `mvn test -Dbe.home=/path/to/be/home` (per module), or add `-fae` at the
   reactor root to test every module regardless of earlier failures.
+
+### Running the integration tests on a modern JDK / Docker
+The root `pom.xml` `maven-surefire-plugin` config makes the (2020-era) test stack work on a current
+JDK and Docker Engine — do not remove it:
+- **`-Dapi.version=${dockerApiVersion}` (default 1.44):** docker-java otherwise negotiates Docker API
+  **v1.32**, which Docker Engine ≥ 28 rejects with HTTP 400 (`client version 1.32 is too old`).
+  docker-java reads the version from the `api.version` **system property** (not the `DOCKER_API_VERSION`
+  env var). Override per-host with `-DdockerApiVersion=<supported>` if your daemon differs.
+- **`--add-opens` argLine:** mirrors the JDK module opens from BE's `be-engine.tra`, so tests that touch
+  BE engine code (e.g. its XML factories) don't fail under JDK strong encapsulation with
+  `InaccessibleObject`/`IllegalAccess` errors.
+- Docker detection is automatic (Docker Desktop socket); Testcontainers 1.20.4 handles it. JDK 25 works.
+- **Known environment-limited modules:** `store/redis`'s integration test can't run against a modern
+  JDK because its unmaintained `com.redislabs:lettusearch:2.4.4` pins an old Lettuce/netty chain (its
+  `f050` fix is the same `SafeObjectInputStream` validated by the mongoDB/cassandra tests). And
+  `catalog/aws-catalog-fn`'s `*IntegrationTest` classes are **real-AWS** tests (no `@Container`) that
+  need live credentials + a `src/test/resources/my-junit.properties` — its localstack-based `*UnitTest`
+  classes do run and pass.
 
 ## Conventions & Gotchas
 
@@ -321,3 +337,24 @@ so the fixes ship in the drop-in jars. Strategy:
    `ValueParser`/`NodeScoreParser`. ⚠️ **Not runtime-tested** — a reviewer must score a real PMML model
    and confirm parity with 1.4.15. (Pre-existing quirk preserved: optimizer visitors run *after* the
    evaluator is built, so they don't affect the cached evaluator.)
+
+## Security Hardening (BESEC-18)
+
+A security audit (Jira **BESEC-18**) flagged 7 findings, all remediated:
+
+- **Unsafe Java deserialization (CWE-502)** in six sinks — MQTT (`MqttBaseSerializer`), Kafka-Streams
+  (`KafkaMapSerializer`), S3 (`s3/Bucket.getObject2`), Cassandra (`CassandraStoreContainer`,
+  `CassandraIterator`), MongoDB (`MongoDBUtils`), Redis (`RedisStoreUtil`). Each module now has a
+  `SafeObjectInputStream` helper that installs a **JEP-290 `ObjectInputFilter` allowlist**; every
+  `readObject`/`SerializationUtils.deserialize` on external bytes goes through it. Channel serializers
+  use a tight JDK-value-type allowlist; store/S3 sinks use `java.`/`javax.`/`com.tibco.`. The allowlist
+  is **runtime-extensible** without a rebuild via the system property
+  `-Dbe.contribution.deserialization.allowlist=<comma-separated-prefixes>` (e.g. to permit an
+  application's own serialized value classes stored in a backing store). The MQTT **JSON** serializer
+  additionally dropped Java serialization entirely — it now reads/writes raw UTF-8 JSON (wire-format
+  change; both ends must run the updated serializer).
+- **Improper TLS certificate validation (CWE-297)** — `ElasticSearchMetricsStoreProvider` no longer
+  installs a `return true` `HostnameVerifier`; the ES client uses the default `DefaultHostnameVerifier`.
+
+When adding a store/channel that (de)serializes external bytes, deserialize through the module's
+`SafeObjectInputStream` (or add one) rather than a bare `ObjectInputStream`/`SerializationUtils`.
